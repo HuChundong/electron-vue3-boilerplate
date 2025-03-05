@@ -1,0 +1,140 @@
+<template>
+    <div class="session">
+        <div class="session-header">
+            <div class="left">
+                <span class="session-title">相亲相爱一家人 (5)</span>
+            </div>
+            <div class="right">
+                <div class="button" @click="">
+                    <font-awesome-icon icon="fa-solid fa-robot" size="lg" />
+                </div>
+                <div class="button" @click="">
+                    <font-awesome-icon icon="fa-solid fa-ellipsis" size="lg" />
+                </div>
+            </div>
+        </div>
+        <div class="session-body"></div>
+        <div class="session-footer">
+            <div class="tools"></div>
+            <div class="input-container">
+                <textarea v-model="sendText" placeholder=""
+                    style="height: 100%;width: 100%; outline: none; border: none; resize: none;background-color: transparent; " />
+            </div>
+            <div class="send-button">
+                <t-button :disabled="sendBtnDisabled" theme="primary"
+                    style="padding-left: 25px;padding-right: 25px;">发送(S)</t-button>
+            </div>
+        </div>
+    </div>
+</template>
+<script setup lang="ts">
+import { WxMessage } from "@/typings/wx";
+import { ref, watch } from "vue";
+// todo 群聊，或者单聊，都有历史记录，这个历史记录的话，考虑直接采用json存储？标题是 群聊名称+(人数)
+// 图片的话，考虑保存到本地，然后异步加载，因为服务器上只保留7天在minio上
+const props = defineProps<{
+    message: WxMessage | undefined;
+}>();
+let sendBtnDisabled = ref(true);
+let sendText = ref("");
+watch(() => sendText.value, (newVal) => {
+    if (newVal !== '') {
+        sendBtnDisabled.value = false;
+    } else {
+        sendBtnDisabled.value = true;
+    }
+})
+</script>
+<style lang="less" scoped>
+.session {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+
+    .session-header {
+        padding-top: 30px;
+        padding-left: 16px;
+        padding-right: 16px;
+        border-bottom: 1px solid var(--td-bg-color-component);
+        display: flex;
+        flex-direction: row;
+
+        .left {
+            flex: 1;
+
+            .session-title {
+                font-size: 17px;
+                color: var(--td-text-color-anti);
+            }
+        }
+
+        .right {
+            display: flex;
+            flex-direction: row;
+            color: var(--td-text-color-secondary);
+        }
+    }
+
+    .session-body {
+        flex: 1;
+    }
+
+    .session-footer {
+        height: 180px;
+        border-top: 1px solid var(--td-bg-color-component);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+
+        .tools {
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+            height: 30px;
+            width: 100%;
+            padding-left: 16px;
+            padding-right: 16px;
+            color: var(--td-text-color-secondary);
+        }
+
+        .input-container {
+            flex: 1;
+            width: 100%;
+            padding-left: 16px;
+            padding-right: 16px;
+
+            textarea {
+                caret-color: var(--td-brand-color);
+                color: var(--td-text-color-primary);
+                font-size: 14px;
+            }
+        }
+
+        .send-button {
+            width: 100%;
+            text-align: right;
+            padding-right: 12px;
+            padding-bottom: 12px;
+            color: var(--td-text-color-anti);
+        }
+    }
+}
+
+.button {
+    margin-left: 6px;
+    margin-bottom: 2px;
+    width: 40px;
+    padding: 10px;
+    display: flex;
+    border-radius: 4px;
+    justify-content: center;
+    align-items: center;
+    color: var(--td-text-color-secondary);
+
+    &:hover {
+        background-color: var(--td-bg-color-secondarycontainer-hover);
+    }
+}
+</style>

@@ -3,12 +3,12 @@ import { BrowserWindow, ipcMain } from "electron";
 import WindowBase from "../window-base";
 import appState from "../../app-state";
 
-class FramelessWindow extends WindowBase{
+class WechatWindow extends WindowBase{
   constructor(){
     // 调用WindowBase构造函数创建窗口
     super({
-      width: 600,
-      height: 360,
+      width: 1080,
+      height: 720,
       frame: false,
       webPreferences: {
         preload: path.join(__dirname, "preload.js"),
@@ -17,7 +17,7 @@ class FramelessWindow extends WindowBase{
       parent: appState.primaryWindow?.browserWindow as BrowserWindow,
     });
 
-    this.openRouter("/frameless-sample");
+    this.openRouter("/wechat");
   }
 
   protected registerIpcMainHandler(): void{  
@@ -40,4 +40,4 @@ class FramelessWindow extends WindowBase{
   }
 }
 
-export default FramelessWindow;
+export default WechatWindow;

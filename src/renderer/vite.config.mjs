@@ -1,8 +1,9 @@
 import path from "path";
 import vuePlugin from "@vitejs/plugin-vue";
 import { defineConfig } from "vite";
+import AutoImport from 'unplugin-auto-import/vite';
 import Components from "unplugin-vue-components/vite";
-import { AntDesignVueResolver } from "unplugin-vue-components/resolvers";
+import { TDesignResolver } from 'unplugin-vue-components/resolvers';
 
 /**
  * https://vitejs.dev/config
@@ -26,16 +27,20 @@ export default defineConfig({
       "@lib": path.join(__dirname, "../lib"),
       "@file-download": path.join(__dirname, "../lib/file-download"),
       "@utils": path.join(__dirname, "../lib/utils"),
+      "@": path.join(__dirname, "./"),
     },
   },
   plugins: [
     vuePlugin(),
+    AutoImport({
+      resolvers: [TDesignResolver({
+        library: 'vue-next'
+      })],
+    }),
     Components({
-      resolvers: [
-        AntDesignVueResolver({
-          importStyle: false, // css in js
-        }),
-      ],
+      resolvers: [TDesignResolver({
+        library: 'vue-next'
+      })],
     }),
   ],
 });

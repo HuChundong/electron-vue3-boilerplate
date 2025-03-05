@@ -79,7 +79,6 @@ module.exports = {
     // 模版字符串中去除空格 `${ fo  }` =>${fo}
     "template-curly-spacing": [ "error", "never" ],
     // 链式调用换行
-    "newline-per-chained-call": [ "error", { "ignoreChainWithDepth": 1 } ],
     // 禁止重复模块导入
     "no-duplicate-imports": "error",
     // 注释开头添加空格

@@ -1,6 +1,6 @@
 import { BrowserWindow, app, dialog, session, Menu } from "electron";
 import log from "electron-log/main";
-import PrimaryWindow from "./windows/primary";
+import WechatWindow from "./windows/wechat";
 import { CreateAppTray } from "./tray";
 import appState from "./app-state";
 
@@ -26,7 +26,7 @@ if(!gotLock && appState.onlyAllowSingleInstance){
 
     log.info("App initialize ok");
 
-    appState.primaryWindow = new PrimaryWindow();
+    appState.primaryWindow = new WechatWindow();
     appState.tray = CreateAppTray();
 
     session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
@@ -48,7 +48,7 @@ if(!gotLock && appState.onlyAllowSingleInstance){
   // On macOS it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
     if(BrowserWindow.getAllWindows().length === 0)
-      appState.primaryWindow = new PrimaryWindow();
+      appState.primaryWindow = new WechatWindow();
   });
 
   app.on("window-all-closed", () => {

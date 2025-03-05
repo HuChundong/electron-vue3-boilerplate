@@ -10,8 +10,6 @@
       <img src="/vite.svg" class="logo vite" alt="Vite logo">
     </a>
   </div>
-  <HelloWorld msg="Electron + Vue3 + Vite" />
-  
   <a-collapse v-model:activeKey="activeKey" class="collapse">
     <a-collapse-panel key="1" header="功能">
       <a-space>

@@ -16,7 +16,8 @@
         "@views/*": ["./views/*"],
         "@utils/*": ["../lib/utils/*"],
         "@lib/*": ["../lib/*"],
-        "@file-download/*": ["../lib/file-download/*"]
+        "@file-download/*": ["../lib/file-download/*"],
+        "@/*": ["./*"]
       }
     },
     "include": ["./**/*.ts", "./**/*.d.ts", "./**/*.tsx", "./**/*.vue"]

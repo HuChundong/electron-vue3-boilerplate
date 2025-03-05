@@ -4,8 +4,8 @@
 
 import path from "path";
 import { Tray, app, dialog } from "electron";
+import WechatWindow from "./windows/wechat";
 import PrimaryWindow from "./windows/primary";
-import FramelessWindow from "./windows/frameless";
 import log from "electron-log/main";
 import { Singleton } from "../lib/utils/shared";
 import fd from "../lib/file-download/main";
@@ -93,10 +93,7 @@ class AppState extends Singleton{
   public readonly appEnv: AppEnv = AppEnv.Production;
 
   // 主窗口对象
-  public primaryWindow: null | PrimaryWindow = null;
-
-  // 无边框示例窗口的对象
-  public framelessWindow : null | FramelessWindow = null;
+  public primaryWindow: null | WechatWindow = null;
 
   // 系统托盘
   public tray: null | Tray = null;

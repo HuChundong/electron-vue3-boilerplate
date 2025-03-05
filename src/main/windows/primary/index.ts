@@ -2,7 +2,6 @@ import path from "path";
 import { app, dialog, ipcMain } from "electron";
 import appState from "../../app-state";
 import WindowBase from "../window-base";
-import FramelessWindow from "../frameless";
 import axiosInst from "../../../lib/axios-inst/main";
 
 class PrimaryWindow extends WindowBase{
@@ -46,25 +45,25 @@ class PrimaryWindow extends WindowBase{
       console.log(message);
     });
   
-    ipcMain.on("show-frameless-sample-window", (event) => {
-      if(!appState.framelessWindow?.valid){
-        appState.framelessWindow = new FramelessWindow();
-      }
+    // ipcMain.on("show-frameless-sample-window", (event) => {
+    //   if(!appState.framelessWindow?.valid){
+    //      appState.framelessWindow = new FramelessWindow();
+    //   }
       
-      const win = appState.framelessWindow?.browserWindow;
-      if(win){
-        // 居中到父窗体中
-        const parent = win.getParentWindow();
-        if(parent){
-          const parentBounds = parent.getBounds();
-          const x = Math.round(parentBounds.x + (parentBounds.width - win.getSize()[0]) / 2);
-          const y = Math.round(parentBounds.y + (parentBounds.height - win.getSize()[1]) / 2);
+    //   const win = appState.framelessWindow?.browserWindow;
+    //   if(win){
+    //     // 居中到父窗体中
+    //     const parent = win.getParentWindow();
+    //     if(parent){
+    //       const parentBounds = parent.getBounds();
+    //       const x = Math.round(parentBounds.x + (parentBounds.width - win.getSize()[0]) / 2);
+    //       const y = Math.round(parentBounds.y + (parentBounds.height - win.getSize()[1]) / 2);
 
-          win.setPosition(x, y, false);
-        }
-        win.show();
-      }
-    });
+    //       win.setPosition(x, y, false);
+    //     }
+    //     win.show();
+    //   }
+    // });
     
     function delay(time){
       return new Promise(resolve => setTimeout(resolve, time));
