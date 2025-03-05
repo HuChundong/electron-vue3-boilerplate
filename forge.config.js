@@ -35,7 +35,7 @@ async function prunePackageJson(buildPath) {
 
 module.exports = {
   packagerConfig: {
-    name: "Electron-Vue3-Boilerplate",
+    name: "Wechat-Plus",
     appCopyright: "Copyright (C) 2024",
     icon: "./setup/exe.ico",
     // ElectronForge默认会将项目根目录下的所有文件及目录打包到resources
@@ -64,9 +64,9 @@ module.exports = {
       "^(\/screenshot$)",
     ],
     win32metadata: {
-      ProductName: "electron-vue-boilerplate",
+      ProductName: "wechat-plus",
       CompanyName: "",
-      FileDescription: "A Electron + Vue3 + Vite Boilerplate",
+      FileDescription: "Wechat with Ai",
       // 如果安装包需要以管理员权限运行，请打开下面的注释
       // "requested-execution-level": "requireAdministrator",
     },
