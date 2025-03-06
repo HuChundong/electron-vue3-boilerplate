@@ -5,6 +5,7 @@
     <div class="message-content">
       <div class="contact-and-time">
         <div class="contact">{{ message.strNickName }}</div>
+        <!-- 这里的时间需要优化，根据微信的逻辑，距离当前时间远近不同，有不同的显示逻辑-->
         <div class="time">{{ dayjs(message.nTime).format("HH:mm") }}</div>
       </div>
       <div class="content-and-status">
