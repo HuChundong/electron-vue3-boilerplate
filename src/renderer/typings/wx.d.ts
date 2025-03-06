@@ -33,8 +33,9 @@ export interface WxMessage {
   "thumb": string,
   "extra": string,
   "xml": string,
-  "files": string[],
-  "videos": string[],
-  "audios": string[],
-  "extra_msg": any | null
+  "images": string[] | null,
+  "files": string[] | null,
+  "videos": string[] | null,
+  "audios": string[] | null,
+  "extra_msg": WxMessage | null
 }
