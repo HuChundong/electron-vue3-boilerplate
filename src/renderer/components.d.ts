@@ -17,6 +17,7 @@ declare module 'vue' {
     TInput: typeof import('tdesign-vue-next')['Input']
     TLayout: typeof import('tdesign-vue-next')['Layout']
     TList: typeof import('tdesign-vue-next')['List']
+    TListItem: typeof import('tdesign-vue-next')['ListItem']
     TSpace: typeof import('tdesign-vue-next')['Space']
   }
 }

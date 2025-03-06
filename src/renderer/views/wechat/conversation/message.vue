@@ -11,7 +11,7 @@
         <div class="content">{{ message.strContent }}</div>
         <div class="status">
           <font-awesome-icon
-            v-if="!message.ChatRoomNotify"
+            v-if="!message.nStatus"
             icon="fa-regular fa-bell-slash"
             size="xs"
           />
@@ -43,13 +43,14 @@ const target = useTemplateRef<HTMLDivElement>('target')
 const targetIsVisible = useElementVisibility(target)
 watch(() => targetIsVisible.value, (newVal) => {
   if (newVal) {
-    image.value = props.message.avatar
+    image.value = props.message.bigHeadImgUrl || ''
   }
 })
 </script>
 <style scoped lang="less">
 .message {
   height: 68px;
+  width: 100%;
   display: flex;
   flex-direction: row;
   background-color: var(--td-bg-color-component-disabled);
@@ -57,7 +58,7 @@ watch(() => targetIsVisible.value, (newVal) => {
   user-select: none;
   justify-content: center;
   align-items: center;
-  padding: 10px;
+  padding: 14px 10px;
   &.active {
     background-color: var(--td-bg-color-component-hover);
   }
@@ -71,7 +72,7 @@ watch(() => targetIsVisible.value, (newVal) => {
       flex-direction: row;
       .contact {
         max-width: 200px; // todo 后期在搞，现在写实宽度
-        font-size: 16px;
+        font-size: 14px;
         flex: 1;
         color: var(--td-text-color-anti);
         overflow: hidden;

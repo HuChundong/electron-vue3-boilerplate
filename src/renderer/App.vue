@@ -1,18 +1,18 @@
-<template>
-  <router-view v-slot="{ Component }">
-    <component :is="Component" />
-  </router-view>
-</template>
-
 <script setup lang="ts">
 import { onMounted } from 'vue';
-import "./theme.css";
-
+import './theme.css'
 onMounted(() => {
   // todo 根据系统主题设置
   //document.documentElement.setAttribute('theme-mode', 'dark');
 })
 </script>
-
+<template>
+  <router-view v-slot="{ Component }">
+    <component :is="Component" />
+  </router-view>
+</template>
 <style lang="less">
+body {
+  font-family: var(--global-font-family);
+}
 </style>

@@ -2,7 +2,7 @@
     <div class="session">
         <div class="session-header">
             <div class="left">
-                <span class="session-title">相亲相爱一家人 (5)</span>
+                <span class="session-title">{{ message?.strNickName }}</span>
             </div>
             <div class="right">
                 <div class="button" @click="">
@@ -21,7 +21,7 @@
                     style="height: 100%;width: 100%; outline: none; border: none; resize: none;background-color: transparent; " />
             </div>
             <div class="send-button">
-                <t-button :disabled="sendBtnDisabled" theme="primary"
+                <t-button :disabled="sendBtnDisabled" theme="primary" @click="onSendBtnClick"
                     style="padding-left: 25px;padding-right: 25px;">发送(S)</t-button>
             </div>
         </div>
@@ -44,6 +44,12 @@ watch(() => sendText.value, (newVal) => {
         sendBtnDisabled.value = true;
     }
 })
+
+function onSendBtnClick(){
+    console.log(sendText.value);
+    sendText.value = ''
+    // todo 消息上屏，loading动画是在上面显示的
+}
 </script>
 <style lang="less" scoped>
 .session {

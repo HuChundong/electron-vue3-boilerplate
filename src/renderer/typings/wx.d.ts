@@ -1,8 +1,20 @@
 export interface WxMessage {
-  strUsrName: string
-  strNickName: string
+  strUsrName: string,
+  strNickName: string,
+  nMsgType: number,
+  Reserved4: number,
+  nMsgStatus: number,
+  nIsSend: number,
   strContent: string,
+  nMsgLocalID: number,
+  othersAtMe: number,
+  Reserved0: number,
+  nUnReadCount: number,
   nTime: number,
-  ChatRoomNotify: boolean,
-  avatar: string
+  nStatus: number,
+  editContent: string,
+  Reserved2: number,
+  smallHeadImgUrl: string,
+  bigHeadImgUrl: string,
+  nOrder: number,
 }
