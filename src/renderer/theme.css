@@ -1,6 +1,5 @@
 :root,
 :root[theme-mode="light"] {
-  --global-font-family: "Helvetica Neue",Helvetica,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif;
   --wechat-side-width: 60px;
   --drag-bar-height: 36px;
   --brand-main: var(--td-brand-color-4);

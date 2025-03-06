@@ -5,7 +5,7 @@
         <span class="session-title">{{ conversation?.strNickName }}</span>
       </div>
       <div class="right">
-        <div class="button" @click="">
+        <div class="button" @click="onRobotSettingClick">
           <font-awesome-icon icon="fa-solid fa-robot" size="lg" />
         </div>
         <div class="button" @click="">
@@ -165,6 +165,11 @@ onMounted(() => {
     },
   });
 });
+
+function onRobotSettingClick(){
+  console.log("onRobotSettingClick");
+  // 这里准备打开机器人的设置菜单
+}
 </script>
 <style lang="less" scoped>
 .session {
@@ -230,7 +235,7 @@ onMounted(() => {
       textarea {
         caret-color: var(--td-brand-color);
         color: var(--td-text-color-primary);
-        font-size: 14px;
+        font-size: 16px;
       }
     }
 
