@@ -131,7 +131,8 @@ onMounted(() => {
     subtype: null,
     ts: 1741270132,
     roomid: "kingme_hu",
-    content: "在干嘛",
+    content:
+      "在干嘛在干嘛在干嘛在干嘛在干嘛在干嘛在干嘛在干嘛在干嘛在干嘛在干嘛在干嘛在干嘛在干嘛在干嘛在干嘛在干嘛在干嘛在干嘛在干嘛在干嘛在干嘛",
     sender: "kingme_hu",
     sign: "ef938613a65b42704469ce5196dc6b1a",
     thumb: "",
@@ -150,7 +151,7 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   height: 100%;
-
+  min-width: 500px;
   .session-header {
     padding-top: 30px;
     padding-left: 16px;

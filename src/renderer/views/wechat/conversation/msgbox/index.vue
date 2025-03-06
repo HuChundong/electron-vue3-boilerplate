@@ -52,6 +52,10 @@ const props = defineProps<{
       color: var(--td-bg-color-page);
     }
   }
+
+  .msg-box-content{
+    max-width: calc(80% - 100px);
+  }
   .msg-bg {
     background-color: var(--td-bg-color-secondarycomponent);
     padding: 6px 10px;
