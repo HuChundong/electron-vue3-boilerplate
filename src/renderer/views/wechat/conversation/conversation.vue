@@ -52,6 +52,7 @@
       </div>
       <div class="send-button">
         <t-button
+          class="btn-disable-custom"
           :disabled="sendBtnDisabled"
           theme="primary"
           @click="onSendBtnClick"
@@ -126,23 +127,42 @@ onMounted(() => {
   messages.value.push({
     is_self: false,
     is_group: false,
-    id: 5607554084662995410,
-    type: 1,
-    subtype: null,
-    ts: 1741270132,
+    id: 6136162355092375655,
+    type: 49,
+    subtype: 57,
+    ts: 1741283845,
     roomid: "kingme_hu",
-    content:
-      "在干嘛在干嘛在干嘛在干嘛在干嘛在干嘛在干嘛在干嘛在干嘛在干嘛在干嘛在干嘛在干嘛在干嘛在干嘛在干嘛在干嘛在干嘛在干嘛在干嘛在干嘛在干嘛",
+    content: "测",
     sender: "kingme_hu",
-    sign: "ef938613a65b42704469ce5196dc6b1a",
+    sign: "f1135fa625a10e8ef671b536fccaed07",
     thumb: "",
-    extra: "",
-    xml: "<msgsource>\n    <alnode>\n        <fr>1</fr>\n    </alnode>\n    <signature>V1_43rzLYBv|v1_43rzLYBv</signature>\n    <tmp_node>\n        <publisher-id />\n    </tmp_node>\n    <sec_msg_node>\n        <alnode>\n            <fr>1</fr>\n        </alnode>\n    </sec_msg_node>\n</msgsource>\n",
+    extra:
+      "D:/WeChatAi/WeChat/WeChat Files/wxid_jypzaftm8wxe22/FileStorage/Cache/2025-03/1f34adbe2a40e46e635926781e3dce23",
+    xml: "<msgsource>\n    <alnode>\n        <fr>1</fr>\n    </alnode>\n    <sec_msg_node>\n        <uuid>f584dc47a1a5ff7342da0cddf525ca5e_</uuid>\n        <risk-file-flag />\n        <risk-file-md5-list />\n        <alnode>\n            <fr>1</fr>\n        </alnode>\n    </sec_msg_node>\n    <signature>V1_k0jKrqvz|v1_Lb0kjI+y</signature>\n    <tmp_node>\n        <publisher-id />\n    </tmp_node>\n</msgsource>\n",
     images: null,
     files: null,
     videos: null,
     audios: null,
-    extra_msg: null,
+    extra_msg: {
+      is_self: false,
+      is_group: false,
+      id: 6136162355092375655,
+      type: 1,
+      subtype: null,
+      ts: 1741283845,
+      roomid: null,
+      content: "在干嘛",
+      sender: "",
+      sign: null,
+      thumb: null,
+      extra: null,
+      xml: null,
+      images: null,
+      files: null,
+      videos: null,
+      audios: null,
+      extra_msg: null,
+    },
   });
 });
 </script>
@@ -152,6 +172,7 @@ onMounted(() => {
   flex-direction: column;
   height: 100%;
   min-width: 500px;
+
   .session-header {
     padding-top: 30px;
     padding-left: 16px;
@@ -236,6 +257,15 @@ onMounted(() => {
 
   &:hover {
     background-color: var(--td-bg-color-secondarycontainer-hover);
+  }
+}
+
+.btn-disable-custom {
+  &.t-is-disabled {
+    background-color: var(--td-bg-color-component-disabled) !important;
+    border-color: var(--td-bg-color-component-disabled) !important;
+    color: var(--td-text-color-disabled) !important;
+    cursor: unset !important;
   }
 }
 </style>

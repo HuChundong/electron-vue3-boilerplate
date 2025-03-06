@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { WxMessage } from "@/typings/wx";
 import { configParseEmoji, getEmojis, parseEmoji } from "wechat-emoji-parser";
-import { ref } from "vue";
+import quotebox from "./quotebox.vue";
 configParseEmoji({ size: 15 }); // 设置一些参数
 const props = defineProps<{
   message: WxMessage | undefined;
@@ -31,9 +31,16 @@ const props = defineProps<{
       <!-- 这里就要判断一下了，这里可能的消息类型，要通过不同的形式来展示，语音，图片，文本，视频 以及引用, 这里发送消息，可能还需要匹配用户名呢-->
       <div
         class="msg-box-content-text msg-bg"
-        v-if="message?.type === 1"
+        v-if="
+          message?.type === 1 ||
+          (message?.type === 49 && message?.subtype === 57)
+        "
         v-html="parseEmoji(message?.content)"
       ></div>
+      <quotebox
+        v-if="message?.extra_msg"
+        :message="message?.extra_msg"
+      ></quotebox>
     </div>
   </div>
 </template>
@@ -47,19 +54,41 @@ const props = defineProps<{
     flex-direction: row-reverse;
     .msg-bg {
       background-color: var(--td-brand-color-7);
+      &::before {
+      content: "";
+      position: absolute;
+      top: 10px; /* 距离顶部 8px */
+      left: unset!important;
+      right: -4px!important; /* 调整小三角的位置 */
+      border-top: 4px solid transparent;
+      border-bottom: 4px solid transparent;
+      border-right: transparent; /* 移除左边框 */
+      border-left: 4px solid var(--td-brand-color-7); /* 小三角颜色 */
+    }
     }
     .msg-box-content-text {
       color: var(--td-bg-color-page);
     }
   }
 
-  .msg-box-content{
+  .msg-box-content {
     max-width: calc(80% - 100px);
   }
   .msg-bg {
     background-color: var(--td-bg-color-secondarycomponent);
     padding: 6px 10px;
     border-radius: 4px;
+    position: relative;
+    &::before {
+      content: "";
+      position: absolute;
+      top: 10px; /* 距离顶部 5px */
+      left: -4px; /* 调整小三角的位置 */
+      border-top: 4px solid transparent;
+      border-bottom: 4px solid transparent;
+      border-left: transparent; /* 移除左边框 */
+      border-right: 4px solid var(--td-bg-color-secondarycomponent); /* 小三角颜色 */
+    }
   }
 
   .msg-box-content-text {
@@ -68,6 +97,12 @@ const props = defineProps<{
     display: flex;
     justify-content: center;
     align-items: center;
+    width: fit-content;
+  }
+
+  .msg-box-content-extra {
+    margin-top: 4px;
+    background-color: var(--td-bg-color-secondarycomponent);
   }
 }
 </style>
