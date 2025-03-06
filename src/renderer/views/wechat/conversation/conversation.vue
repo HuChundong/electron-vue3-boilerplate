@@ -121,8 +121,8 @@ function onSendBtnClick(){
         .send-button {
             width: 100%;
             text-align: right;
-            padding-right: 12px;
-            padding-bottom: 12px;
+            padding-right: 16px;
+            padding-bottom: 16px;
             color: var(--td-text-color-anti);
         }
     }

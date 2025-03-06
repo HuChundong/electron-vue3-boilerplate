@@ -52,6 +52,7 @@
     "eslint-plugin-vue": "^9.32.0",
     "less": "^4.2.2",
     "less-loader": "^12.2.0",
+    "mqtt": "^5.10.4",
     "tdesign-vue-next": "^1.11.2",
     "typescript": "^5.8.2",
     "unplugin-auto-import": "^19.1.1",

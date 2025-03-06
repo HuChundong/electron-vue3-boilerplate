@@ -51,8 +51,9 @@
   </div>
 </template>
 <script setup lang="ts">
+// todo 这里实现拖动改变div大小的方法，第一个版本先不实现，全部写实，不要浪费时间在非核心功能上, 优化滚动条的样式, 
+// 虚拟滚动要重新设置位置，目前tdesign好像不支持，后续看直接换成熟的虚拟滚动吧
 import { useDebounceFn } from "@vueuse/core";
-// todo 这里实现拖动改变div大小的方法，第一个版本先不实现，全部写实，不要浪费时间在非核心功能上, 优化滚动条的样式
 import { onMounted, ref, useTemplateRef, watchEffect } from "vue";
 import message from "./message.vue";
 import conversation from "./conversation.vue";
