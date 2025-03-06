@@ -35,18 +35,20 @@
             :key="index"
             style="margin: 0 !important; padding: 0 !important"
           >
-            <message
+            <conversationItem
               :message="item"
               @message-click="onMessageClick"
               :active="item.strUsrName == currentMessage?.strUsrName"
-            ></message>
+            ></conversationItem>
           </t-list-item>
         </t-list>
       </div>
     </div>
-    <!-- 点击对话，右侧内容区域刷新，查询最近的聊天记录，这个可以考虑直接从本地去获取，毕竟mqtt里面一直在实时刷新，不需要再查询了吧？先不做消息同步机制-->
+    <!-- 点击对话，右侧内容区域刷新，查询最近的聊天记录，这个可以考虑直接从本地去获取，毕竟mqtt里面一直在实时刷新，不需要再查询了吧？先不做消息同步机制
+    这里还要考虑一下占位符，如果没有聊天记录的话，这里应该是空的？ 
+    -->
     <div class="conversation-content">
-      <conversation :message="currentMessage"></conversation>
+      <conversation :conversation="currentMessage"></conversation>
     </div>
   </div>
 </template>
@@ -55,18 +57,18 @@
 // 虚拟滚动要重新设置位置，目前tdesign好像不支持，后续看直接换成熟的虚拟滚动吧
 import { useDebounceFn } from "@vueuse/core";
 import { onMounted, ref, useTemplateRef, watchEffect } from "vue";
-import message from "./message.vue";
+import conversationItem from "./conversation-item.vue";
 import conversation from "./conversation.vue";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
-import { WxMessage } from "@/typings/wx";
+import { WxConversation } from "@/typings/wx";
 import { ListInstanceFunctions, ListProps } from "tdesign-vue-next";
 dayjs.extend(utc);
 let conversationListWidth = ref("290");
-let currentMessage = ref<WxMessage>();
+let currentMessage = ref<WxConversation>();
 let currentTop = ref(0);
 const list = ref<ListInstanceFunctions>(); // 用于存储对 t-list 的引用
-const messages = ref<WxMessage[]>([]); // 使用 ref 来存储列表数据
+const messages = ref<WxConversation[]>([]); // 使用 ref 来存储列表数据
 let f = [
   {
     "Reserved5": null,
@@ -182,7 +184,7 @@ const throttledFn = useDebounceFn((e) => {
   console.log(e);
 }, 200);
 const scrollHandler: ListProps["onScroll"] = throttledFn;
-function onMessageClick(message: WxMessage) {
+function onMessageClick(message: WxConversation) {
   currentMessage.value = message;
   console.log(message);
 }

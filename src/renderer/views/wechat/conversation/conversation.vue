@@ -2,7 +2,7 @@
     <div class="session">
         <div class="session-header">
             <div class="left">
-                <span class="session-title">{{ message?.strNickName }}</span>
+                <span class="session-title">{{ conversation?.strNickName }}</span>
             </div>
             <div class="right">
                 <div class="button" @click="">
@@ -13,7 +13,27 @@
                 </div>
             </div>
         </div>
-        <div class="session-body"></div>
+        <div class="session-body">
+            <t-list
+          @scroll="scrollHandler"
+          ref="list"
+          style="height: 100%"
+          :scroll="{
+            type: 'virtual',
+            rowHeight: 68,
+            bufferSize: 50,
+            threshold: 100,
+          }"
+        >
+          <t-list-item
+            v-for="(item, index) in messages"
+            :key="index"
+            style="margin: 0 !important; padding: 0 !important"
+          >
+          <MsxBox :message="item" />
+          </t-list-item>
+        </t-list>
+        </div>
         <div class="session-footer">
             <div class="tools"></div>
             <div class="input-container">
@@ -28,12 +48,15 @@
     </div>
 </template>
 <script setup lang="ts">
-import { WxMessage } from "@/typings/wx";
-import { ref, watch } from "vue";
+import { WxConversation } from "@/typings/wx";
+import { useDebounceFn } from "@vueuse/core";
+import { ListInstanceFunctions, ListProps } from "tdesign-vue-next";
+import { onMounted, ref, watch } from "vue";
+import MsxBox from './msgbox/index.vue'
 // todo 群聊，或者单聊，都有历史记录，这个历史记录的话，考虑直接采用json存储？标题是 群聊名称+(人数)
 // 图片的话，考虑保存到本地，然后异步加载，因为服务器上只保留7天在minio上
 const props = defineProps<{
-    message: WxMessage | undefined;
+    conversation: WxConversation | undefined;
 }>();
 let sendBtnDisabled = ref(true);
 let sendText = ref("");
@@ -50,6 +73,20 @@ function onSendBtnClick(){
     sendText.value = ''
     // todo 消息上屏，loading动画是在上面显示的
 }
+
+const list = ref<ListInstanceFunctions>(); // 用于存储对 t-list 的引用
+const messages = ref<WxConversation[]>([]); // 使用 ref 来存储列表数据
+
+// 每次加载路由，需要重新设置滚动条位置？
+const throttledFn = useDebounceFn((e) => {
+  // do something, it will be called at most 1 time per second
+  console.log(e);
+}, 200);
+const scrollHandler: ListProps["onScroll"] = throttledFn;
+
+onMounted(() => {
+
+})
 </script>
 <style lang="less" scoped>
 .session {

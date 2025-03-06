@@ -1,4 +1,4 @@
-export interface WxMessage {
+export interface WxConversation {
   strUsrName: string,
   strNickName: string,
   nMsgType: number,
@@ -17,4 +17,24 @@ export interface WxMessage {
   smallHeadImgUrl: string,
   bigHeadImgUrl: string,
   nOrder: number,
+}
+
+export interface WxMessage {
+  "is_self": boolean,
+  "is_group": boolean,
+  "id": number,
+  "type": number,
+  "subtype": number | null,
+  "ts": number,
+  "roomid": string,
+  "content": string,
+  "sender": string,
+  "sign": string,
+  "thumb": string,
+  "extra": string,
+  "xml": string,
+  "files": string[],
+  "videos": string[],
+  "audios": string[],
+  "extra_msg": any | null
 }

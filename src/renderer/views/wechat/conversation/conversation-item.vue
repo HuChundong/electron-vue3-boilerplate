@@ -26,13 +26,13 @@ import { useTemplateRef, watch } from 'vue'
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 dayjs.extend(utc);
-import { WxMessage } from "@/typings/wx";
+import { WxConversation } from "@/typings/wx";
 import { ref } from "vue";
 const emit = defineEmits<{
-  (e: "messageClick", message: WxMessage): void;
+  (e: "messageClick", message: WxConversation): void;
 }>();
 const props = defineProps<{
-  message: WxMessage;
+  message: WxConversation;
   active: boolean;
 }>();
 function onMessageClick() {
