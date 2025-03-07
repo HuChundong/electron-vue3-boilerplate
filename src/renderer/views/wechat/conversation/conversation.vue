@@ -15,6 +15,7 @@
     </div>
     <div class="session-body">
       <VList
+      ref="listRef"
         :data="messages"
         :style="{ height: '100%' }"
         #default="{ item, index }"
@@ -54,7 +55,7 @@
 </template>
 <script setup lang="ts">
 import { WxConversation, WxMessage } from "@/typings/wx";
-import { useDebounceFn } from "@vueuse/core";
+import { templateRef, useDebounceFn } from "@vueuse/core";
 import { onMounted, ref, watch } from "vue";
 import MsxBox from "./msgbox/index.vue";
 import utils from "@utils/renderer";
@@ -65,6 +66,7 @@ import { ipcRenderer } from "electron";
 const props = defineProps<{
   conversation: WxConversation | undefined;
 }>();
+const listRef = templateRef("listRef")
 let sendBtnDisabled = ref(true);
 let sendText = ref("");
 watch(
@@ -77,12 +79,12 @@ watch(
     }
   }
 );
-
 function onSendBtnClick() {
   console.log(sendText.value);
   sendText.value = "";
   sendBtnDisabled.value = true;
   // todo 消息上屏，loading动画是在上面显示的
+  // 要在这里构建信息吗？
 }
 
 const messages = ref<WxMessage[]>([]); // 使用 ref 来存储列表数据
@@ -104,7 +106,8 @@ utils.onMsgReceived((msg: any) => {
   messages.value.push(JSON.parse(msg.payload));
   setTimeout(() => {
     // list.value?.scrollTo({ key: messages.value.length - 1})
-  }, 500);
+    listRef?.value?.scrollTo(10000000000000000000)
+  }, 200);
 });
 </script>
 <style lang="less" scoped>
