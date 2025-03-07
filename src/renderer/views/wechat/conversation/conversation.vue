@@ -15,17 +15,22 @@
     </div>
     <div class="session-body">
       <VList
-      ref="listRef"
+        ref="listRef"
         :data="messages"
         :style="{ height: '100%' }"
         #default="{ item, index }"
       >
-        <MsxBox :key="index" :message="item" />
+        <MsxBox
+          :key="index"
+          :message="item"
+          :avatar="props.conversation?.bigHeadImgUrl"
+        />
       </VList>
     </div>
     <div class="session-footer">
       <div class="tools"></div>
       <div class="input-container">
+        <!--todo 参考实现：https://juejin.cn/post/7312848658718375971-->
         <textarea
           v-model="sendText"
           placeholder=""
@@ -66,7 +71,7 @@ import { ipcRenderer } from "electron";
 const props = defineProps<{
   conversation: WxConversation | undefined;
 }>();
-const listRef = templateRef("listRef")
+const listRef = templateRef("listRef");
 let sendBtnDisabled = ref(true);
 let sendText = ref("");
 watch(
@@ -103,10 +108,11 @@ function onRobotSettingClick() {
 }
 
 utils.onMsgReceived((msg: any) => {
-  messages.value.push(JSON.parse(msg.payload));
+  let wxMsg: WxMessage = JSON.parse(msg.payload);
+  messages.value.push(wxMsg);
   setTimeout(() => {
     // list.value?.scrollTo({ key: messages.value.length - 1})
-    listRef?.value?.scrollTo(10000000000000000000)
+    listRef?.value?.scrollTo(Number.MAX_SAFE_INTEGER);
   }, 200);
 });
 </script>

@@ -20,15 +20,15 @@
       </div>
       <div class="conversation-container-list">
         <VList
-          :data="messages"
+          :data="conversations"
           :style="{ height: '100%' }"
           #default="{ item, index }"
         >
           <conversationItem
             :key="index"
             :message="item"
-            @message-click="onMessageClick"
-            :active="item.strUsrName == currentMessage?.strUsrName"
+            @message-click="onConversationClick"
+            :active="item.strUsrName == currentCinversation?.strUsrName"
           ></conversationItem>
         </VList>
       </div>
@@ -37,7 +37,7 @@
     这里还要考虑一下占位符，如果没有聊天记录的话，这里应该是空的？ 
     -->
     <div class="conversation-content">
-      <conversation :conversation="currentMessage"></conversation>
+      <conversation :conversation="currentCinversation"></conversation>
     </div>
   </div>
 </template>
@@ -55,9 +55,9 @@ import { VList } from "virtua/vue";
 
 dayjs.extend(utc);
 let conversationListWidth = ref("290");
-let currentMessage = ref<WxConversation>();
+let currentCinversation = ref<WxConversation>();
 let currentTop = ref(0);
-const messages = ref<WxConversation[]>([]); // 使用 ref 来存储列表数据
+const conversations = ref<WxConversation[]>([]); // 使用 ref 来存储列表数据
 let f = [
   {
     Reserved5: null,
@@ -171,7 +171,7 @@ let f = [
 
 onMounted(() => {
   for (let i = 0; i < f.length; i++) {
-    messages.value.push(f[i]);
+    conversations.value.push(f[i]);
   }
 });
 // 每次加载路由，需要重新设置滚动条位置？
@@ -180,8 +180,8 @@ const throttledFn = useDebounceFn((e) => {
   currentTop.value = e.scrollTop % 68;
   console.log(e);
 }, 200);
-function onMessageClick(message: WxConversation) {
-  currentMessage.value = message;
+function onConversationClick(message: WxConversation) {
+  currentCinversation.value = message;
   console.log(message);
 }
 </script>

@@ -5,6 +5,7 @@ import quotebox from "./quotebox.vue";
 configParseEmoji({ size: 15 }); // 设置一些参数
 const props = defineProps<{
   message: WxMessage | undefined;
+  avatar: string | undefined;
 }>();
 // 这里是准备写消息的收发的框框，宽度有最大值，高度也有最大值，两边有箭头，同时，发送和接收是两种背景色，发送最好加一下loading效果
 // 这里还有时间的显示的问题，看起来是一段时间显示一次，而不是每次都显示，这个应该是考虑在聊天记录的上下文中自动插入的，也是作为一个消息吗？
@@ -20,7 +21,7 @@ const props = defineProps<{
       <t-avatar
         size="34px"
         shape="round"
-        image="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"
+        :image="avatar"
       ></t-avatar>
     </div>
     <div class="msg-box-content">
