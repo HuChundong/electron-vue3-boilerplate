@@ -14,25 +14,13 @@
       </div>
     </div>
     <div class="session-body">
-      <t-list
-        @scroll="scrollHandler"
-        ref="list"
-        style="height: 100%"
-        :scroll="{
-          type: 'virtual',
-          rowHeight: 68,
-          bufferSize: 50,
-          threshold: 100,
-        }"
+      <VList
+        :data="messages"
+        :style="{ height: '100%' }"
+        #default="{ item, index }"
       >
-        <t-list-item
-          v-for="(item, index) in messages"
-          :key="index"
-          style="margin: 0 !important; padding: 0 !important"
-        >
-          <MsxBox :message="item" />
-        </t-list-item>
-      </t-list>
+        <MsxBox :key="index" :message="item" />
+      </VList>
     </div>
     <div class="session-footer">
       <div class="tools"></div>
@@ -48,6 +36,7 @@
             resize: none;
             background-color: transparent;
           "
+          @keydown.enter="onSendBtnClick"
         ></textarea>
       </div>
       <div class="send-button">
@@ -66,10 +55,10 @@
 <script setup lang="ts">
 import { WxConversation, WxMessage } from "@/typings/wx";
 import { useDebounceFn } from "@vueuse/core";
-import { ListInstanceFunctions, ListProps } from "tdesign-vue-next";
 import { onMounted, ref, watch } from "vue";
 import MsxBox from "./msgbox/index.vue";
 import utils from "@utils/renderer";
+import { VList } from "virtua/vue";
 import { ipcRenderer } from "electron";
 // todo 群聊，或者单聊，都有历史记录，这个历史记录的话，考虑直接采用json存储？标题是 群聊名称+(人数)
 // 图片的话，考虑保存到本地，然后异步加载，因为服务器上只保留7天在minio上
@@ -92,10 +81,10 @@ watch(
 function onSendBtnClick() {
   console.log(sendText.value);
   sendText.value = "";
+  sendBtnDisabled.value = true;
   // todo 消息上屏，loading动画是在上面显示的
 }
 
-const list = ref<ListInstanceFunctions>(); // 用于存储对 t-list 的引用
 const messages = ref<WxMessage[]>([]); // 使用 ref 来存储列表数据
 
 // 每次加载路由，需要重新设置滚动条位置？
@@ -103,7 +92,6 @@ const throttledFn = useDebounceFn((e) => {
   // do something, it will be called at most 1 time per second
   console.log(e);
 }, 200);
-const scrollHandler: ListProps["onScroll"] = throttledFn;
 
 onMounted(() => {});
 
@@ -111,7 +99,6 @@ function onRobotSettingClick() {
   console.log("onRobotSettingClick");
   // 这里准备打开机器人的设置菜单
 }
-
 
 utils.onMsgReceived((msg: any) => {
   messages.value.push(JSON.parse(msg.payload));
