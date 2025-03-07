@@ -69,6 +69,8 @@ import { useDebounceFn } from "@vueuse/core";
 import { ListInstanceFunctions, ListProps } from "tdesign-vue-next";
 import { onMounted, ref, watch } from "vue";
 import MsxBox from "./msgbox/index.vue";
+import utils from "@utils/renderer";
+import { ipcRenderer } from "electron";
 // todo 群聊，或者单聊，都有历史记录，这个历史记录的话，考虑直接采用json存储？标题是 群聊名称+(人数)
 // 图片的话，考虑保存到本地，然后异步加载，因为服务器上只保留7天在minio上
 const props = defineProps<{
@@ -103,73 +105,20 @@ const throttledFn = useDebounceFn((e) => {
 }, 200);
 const scrollHandler: ListProps["onScroll"] = throttledFn;
 
-onMounted(() => {
-  messages.value.push({
-    is_self: true,
-    is_group: false,
-    id: 1406619447016008771,
-    type: 1,
-    subtype: null,
-    ts: 1741270108,
-    roomid: "kingme_hu",
-    content: "不需要[呲牙]",
-    sender: "kingme_hu",
-    sign: "1762e5173dc4ea86fdefce8d58bc3573",
-    thumb: "",
-    extra: "",
-    xml: "<msgsource>\n <alnode>\n <fr>1</fr>\n </alnode>\n <signature>V1_TAgK4fjc|v1_TAgK4fjc</signature>\n <tmp_node>\n <publisher-id />\n </tmp_node>\n <sec_msg_node>\n <alnode>\n <fr>1</fr>\n </alnode>\n </sec_msg_node>\n</msgsource>\n",
-    images: null,
-    files: null,
-    videos: null,
-    audios: null,
-    extra_msg: null,
-  });
-  messages.value.push({
-    is_self: false,
-    is_group: false,
-    id: 6136162355092375655,
-    type: 49,
-    subtype: 57,
-    ts: 1741283845,
-    roomid: "kingme_hu",
-    content: "测",
-    sender: "kingme_hu",
-    sign: "f1135fa625a10e8ef671b536fccaed07",
-    thumb: "",
-    extra:
-      "D:/WeChatAi/WeChat/WeChat Files/wxid_jypzaftm8wxe22/FileStorage/Cache/2025-03/1f34adbe2a40e46e635926781e3dce23",
-    xml: "<msgsource>\n    <alnode>\n        <fr>1</fr>\n    </alnode>\n    <sec_msg_node>\n        <uuid>f584dc47a1a5ff7342da0cddf525ca5e_</uuid>\n        <risk-file-flag />\n        <risk-file-md5-list />\n        <alnode>\n            <fr>1</fr>\n        </alnode>\n    </sec_msg_node>\n    <signature>V1_k0jKrqvz|v1_Lb0kjI+y</signature>\n    <tmp_node>\n        <publisher-id />\n    </tmp_node>\n</msgsource>\n",
-    images: null,
-    files: null,
-    videos: null,
-    audios: null,
-    extra_msg: {
-      is_self: false,
-      is_group: false,
-      id: 6136162355092375655,
-      type: 1,
-      subtype: null,
-      ts: 1741283845,
-      roomid: null,
-      content: "在干嘛",
-      sender: "",
-      sign: null,
-      thumb: null,
-      extra: null,
-      xml: null,
-      images: null,
-      files: null,
-      videos: null,
-      audios: null,
-      extra_msg: null,
-    },
-  });
-});
+onMounted(() => {});
 
-function onRobotSettingClick(){
+function onRobotSettingClick() {
   console.log("onRobotSettingClick");
   // 这里准备打开机器人的设置菜单
 }
+
+
+utils.onMsgReceived((msg: any) => {
+  messages.value.push(JSON.parse(msg.payload));
+  setTimeout(() => {
+    // list.value?.scrollTo({ key: messages.value.length - 1})
+  }, 500);
+});
 </script>
 <style lang="less" scoped>
 .session {
@@ -204,6 +153,8 @@ function onRobotSettingClick(){
 
   .session-body {
     flex: 1;
+    height: 0;
+    overflow: hidden;
   }
 
   .session-footer {

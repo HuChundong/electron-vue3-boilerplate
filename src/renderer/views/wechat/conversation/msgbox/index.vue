@@ -48,7 +48,7 @@ const props = defineProps<{
 .msg-box {
   width: 100%;
   display: flex;
-  padding: 12px 18px;
+  padding: 10px 18px;
   gap: 10px;
   &.self {
     flex-direction: row-reverse;

@@ -31,6 +31,18 @@ class Utils{
     return (window as any).__ElectronUtils__.getAppVersion() as string;
   }
 
+  public onMqttConnect(callback){
+    (window as any).__ElectronUtils__.onMqttConnect(callback);
+  }
+  public onMqttDisconnect(callback){
+    (window as any).__ElectronUtils__.onMqttDisconnect(callback);
+  }
+  public onMsgReceived(callback){
+    (window as any).__ElectronUtils__.onMsgReceived(callback);
+  }
+  public msgSend(){
+    return (window as any).__ElectronUtils__.msgSend();
+  }
   // === FALG LINE (DO NOT MODIFY/REMOVE) ===
 }
 

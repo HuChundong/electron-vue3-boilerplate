@@ -6,7 +6,7 @@ Bot 订阅 /msg/wxid/received topic，接收消息，并在界面上进行展示
 send: bot -> rpc
 bot处理消息之后，发送到 /msg/wxid/send topic 上
 Processor 接收消息，处理之后，调用rpc发送消息
-
+对于机器人来说，发送消息，本质上应该就是几种类型吧？算了，也处理成那个xml吧，感觉更加简单了
 
 # 指令
 多种渠道，发送指令到 commond/wxid/cmd topic
