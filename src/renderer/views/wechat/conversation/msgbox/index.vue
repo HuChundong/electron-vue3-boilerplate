@@ -14,7 +14,7 @@ const props = defineProps<{
 // 通讯录应该要缓存一份，这样在加载的时候，就可以批量去读取，而不是说动态的去查询，否则两边压力都很大
 </script>
 <template>
-  <div class="time-notify"></div>
+  <div class="time-notify" />
   <!-- 这里通过添加reverse来左右反向就行了-->
   <div class="msg-box" :class="message?.is_self ? 'self' : ''">
     <div class="msg-box-avatar">
@@ -22,26 +22,26 @@ const props = defineProps<{
         size="34px"
         shape="round"
         :image="avatar"
-      ></t-avatar>
+      />
     </div>
     <div class="msg-box-content">
       <!-- 群聊才需要显示昵称-->
-      <div class="nick-name" v-if="!message?.is_self && message?.is_group">
+      <div v-if="!message?.is_self && message?.is_group" class="nick-name">
         {{ message?.sender }}
       </div>
       <!-- 这里就要判断一下了，这里可能的消息类型，要通过不同的形式来展示，语音，图片，文本，视频 以及引用, 这里发送消息，可能还需要匹配用户名呢-->
       <div
-        class="msg-box-content-text msg-bg"
         v-if="
           message?.type === 1 ||
-          (message?.type === 49 && message?.subtype === 57)
+            (message?.type === 49 && message?.subtype === 57)
         "
+        class="msg-box-content-text msg-bg"
         v-html="parseEmoji(message?.content)"
-      ></div>
+      />
       <quotebox
         v-if="message?.extra_msg"
         :message="message?.extra_msg"
-      ></quotebox>
+      />
     </div>
   </div>
 </template>

@@ -27,13 +27,12 @@ function CreateAppTray() : Tray{
       registerAccelerator: true,
       click: () => {
         const win = appState.primaryWindow?.browserWindow;
-        if(win) {
-          if(win.isVisible()) {
-            if(win.isMinimized()) {
+        if(win){
+          if(win.isVisible()){
+            if(win.isMinimized()){
               win.restore();
             }
-          }
-          else {
+          }else{
             win.show();
           }
         }
@@ -44,13 +43,12 @@ function CreateAppTray() : Tray{
       type: "normal",
       click: () => {
         const win = appState.primaryWindow?.browserWindow;
-        if(win) {
-          if(win.isVisible()) {
-            if(win.isMinimized()) {
+        if(win){
+          if(win.isVisible()){
+            if(win.isMinimized()){
               win.restore();
             }
-          }
-          else {
+          }else{
             win.show();
           }
           win.webContents.send("show-exit-app-msgbox");

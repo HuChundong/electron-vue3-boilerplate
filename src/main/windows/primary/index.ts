@@ -19,13 +19,12 @@ class PrimaryWindow extends WindowBase{
     this._browserWindow?.on("close", (e) => {
       if(!appState.allowExitApp){
         const win = this._browserWindow;
-        if(win) {
-          if(win.isVisible()) {
-            if(win.isMinimized()) {
+        if(win){
+          if(win.isVisible()){
+            if(win.isMinimized()){
               win.restore();
             }
-          }
-          else {
+          }else{
             win.show();
           }
           win.webContents.send("show-close-primary-win-msgbox");
@@ -73,10 +72,9 @@ class PrimaryWindow extends WindowBase{
       if(!this.isIpcMainEventBelongMe(event))
         return;
 
-      if(process.platform == 'win32') {
+      if(process.platform == "win32"){
         this.browserWindow?.hide();
-      }
-      else { // macos or other
+      }else{ // macos or other
         this.browserWindow?.minimize();
       }
 

@@ -10,7 +10,7 @@
       <img src="/vite.svg" class="logo vite" alt="Vite logo">
     </a>
   </div>
-  <a-collapse v-model:activeKey="activeKey" class="collapse">
+  <a-collapse v-model:active-key="activeKey" class="collapse">
     <a-collapse-panel key="1" header="功能">
       <a-space>
         <a-button @click="onShowAppEnv">

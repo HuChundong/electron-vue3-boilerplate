@@ -8,37 +8,37 @@
     <div class="button" :class="activeTab === 1 ? 'active' : ''" @click="onContactClick">
       <font-awesome-icon :icon="activeTab === 1 ? 'fa-solid fa-address-book' : 'fa-regular fa-address-book'" />
     </div>
-    <div class="content-divider"></div>
+    <div class="content-divider" />
     <div class="button" :class="activeTab === 2 ? 'active' : ''" @click="onDebugClick">
-      <font-awesome-icon icon='fa-solid fa-terminal' />
+      <font-awesome-icon icon="fa-solid fa-terminal" />
     </div>
     <div class="button" :class="activeTab === 2 ? 'active' : ''" @click="onSettingClick">
-      <font-awesome-icon icon='fa-solid fa-bars' />
+      <font-awesome-icon icon="fa-solid fa-bars" />
     </div>
   </div>
 </template>
 <script setup lang="ts">
-import utils from '@utils/renderer'
+import utils from "@utils/renderer";
 import { useRouter } from "vue-router";
 const router = useRouter();
 import { computed, ref } from "vue";
 let activeTab = ref(0);
-//todo 从appstate中获取头像
+// todo 从appstate中获取头像
 let avatar =
   "https://wx.qlogo.cn/mmhead/ver_1/seUPq3VOPbK5yqK6Un6PxE53iae3F5pSGOIAcdJuNngsboZThYJpVOY9u7hxMbBEHw8BqYicYtuz21YjplsnyIYqtqs6r0PQ2iblbZQ6dWCVPt2OH1FndlsAQqM9VUnJ9wqGC8ukFEUAylMUUyS28D8jQ/0";
 
-function onConersationClick() {
+function onConersationClick(){
   activeTab.value = 0;
   router.push({ name: "conversation", params: { username: "eduardo" } });
 }
-function onContactClick() {
+function onContactClick(){
   activeTab.value = 1;
   router.push({ name: "contact", params: { username: "eduardo" } });
 }
-function onDebugClick() {
+function onDebugClick(){
   utils.openDevTools();
 }
-function onSettingClick() {
+function onSettingClick(){
   alert("等待开发");
 }
 </script>

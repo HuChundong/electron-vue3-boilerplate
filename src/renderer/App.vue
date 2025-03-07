@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { onMounted } from 'vue';
-import './theme.css'
+import { onMounted } from "vue";
+import "./theme.css";
+
 onMounted(() => {
   // todo 根据系统主题设置
-  //document.documentElement.setAttribute('theme-mode', 'dark');
-})
+  // document.documentElement.setAttribute('theme-mode', 'dark');
+});
 </script>
 <template>
   <router-view v-slot="{ Component }">
@@ -15,6 +16,7 @@ onMounted(() => {
 body {
   font-family: var(--global-font-family);
 }
+
 ::-webkit-scrollbar {
   width: 8px;
   /* 设置滚动条的宽度 */

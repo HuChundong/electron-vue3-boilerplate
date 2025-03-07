@@ -9,8 +9,8 @@ const routeMap: Array<RouteRecordRaw> = [
     children: [
       {
         path: "",
-        name:'default',
-        redirect: { name: 'conversation' },
+        name: "default",
+        redirect: { name: "conversation" },
       },
       {
         path: "/conversation",

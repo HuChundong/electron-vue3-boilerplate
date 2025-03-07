@@ -10,10 +10,10 @@ const props = defineProps<{
   <!--引用的消息目前就分 文本，图片，视频，还有引用的引用，从外面的extra_msg直接传进来-->
   <div class="quotebox">
     <div
-      class="msg-box-content-text msg-bg"
       v-if="message?.type === 1"
+      class="msg-box-content-text msg-bg"
       v-html="parseEmoji(message?.content || '')"
-    ></div>
+    />
   </div>
 </template>
 <style lang="less" scoped>

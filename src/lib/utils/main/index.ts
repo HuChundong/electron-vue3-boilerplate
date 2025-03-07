@@ -6,8 +6,8 @@ import path from "path";
 import * as FileUtils from "./file-util";
 import appState from "../../../main/app-state";
 
-class Utils {
-  public initialize() {
+class Utils{
+  public initialize(){
     this._preloadFilePath = path.join(__dirname, "utils-preload.js");
     // console.log("Utils preload path: " + this._preloadFilePath);
     this.setPreload(session.defaultSession);
@@ -17,24 +17,24 @@ class Utils {
     });
   }
 
-  protected setPreload(session) {
-    session.setPreloads([...session.getPreloads(), this._preloadFilePath]);
+  protected setPreload(session){
+    session.setPreloads([ ...session.getPreloads(), this._preloadFilePath ]);
   }
 
   protected _preloadFilePath: string = "";
 
-  public mqttConnect(browserWindow: BrowserWindow | null) {
-    if (browserWindow) {
+  public mqttConnect(browserWindow: BrowserWindow | null){
+    if(browserWindow){
       browserWindow.webContents.send("electron-utils-mqtt-connect");
     }
   }
-  public mqttDisconnect(browserWindow: BrowserWindow | null) {
-    if (browserWindow) {
+  public mqttDisconnect(browserWindow: BrowserWindow | null){
+    if(browserWindow){
       browserWindow.webContents.send("electron-utils-mqtt-disconnect");
     }
   }
-  public msgReceived(browserWindow: BrowserWindow | null, data: { topic: string, payload: string }) {
-    if (browserWindow) {
+  public msgReceived(browserWindow: BrowserWindow | null, data: { topic: string, payload: string }){
+    if(browserWindow){
       browserWindow.webContents.send("electron-utils-msg-received", data);
     }
   }
@@ -45,30 +45,30 @@ const utils = new Utils();
 
 ipcMain.on("electron-utils-open-dev-tools", () => {
   const win = BrowserWindow.getFocusedWindow();
-  if (win) {
+  if(win){
     win.webContents.openDevTools();
   }
 });
 
 ipcMain.on("electron-utils-open-external-url", (event, url) => {
-  if (url) {
+  if(url){
     shell.openExternal(url);
   }
 });
 
-ipcMain.handle("electron-utils-show-open-dialog", async (event, options: OpenDialogOptions) => {
+ipcMain.handle("electron-utils-show-open-dialog", async(event, options: OpenDialogOptions) => {
   return await dialog.showOpenDialog(options);
 });
 
 ipcMain.on("electron-utils-check-path-exist", (event, path) => {
   let exist = false;
-  if (path) {
+  if(path){
     exist = FileUtils.IsPathExist(path);
   }
   event.returnValue = exist;
 });
 
-ipcMain.handle("electron-utils-get-file-md5", async (event, filePath) => {
+ipcMain.handle("electron-utils-get-file-md5", async(event, filePath) => {
   return await FileUtils.GetFileMd5(filePath);
 });
 

@@ -16,9 +16,9 @@
     <div class="session-body">
       <VList
         ref="listRef"
+        v-slot="{ item, index }"
         :data="messages"
         :style="{ height: '100%' }"
-        #default="{ item, index }"
       >
         <MsxBox
           :key="index"
@@ -28,7 +28,7 @@
       </VList>
     </div>
     <div class="session-footer">
-      <div class="tools"></div>
+      <div class="tools" />
       <div class="input-container">
         <!--todo 参考实现：https://juejin.cn/post/7312848658718375971-->
         <textarea
@@ -43,17 +43,18 @@
             background-color: transparent;
           "
           @keydown.enter="onSendBtnClick"
-        ></textarea>
+        />
       </div>
       <div class="send-button">
         <t-button
           class="btn-disable-custom"
           :disabled="sendBtnDisabled"
           theme="primary"
-          @click="onSendBtnClick"
           style="padding-left: 25px; padding-right: 25px"
-          >发送(S)</t-button
+          @click="onSendBtnClick"
         >
+          发送(S)
+        </t-button>
       </div>
     </div>
   </div>
@@ -77,14 +78,14 @@ let sendText = ref("");
 watch(
   () => sendText.value,
   (newVal) => {
-    if (newVal !== "") {
+    if(newVal !== ""){
       sendBtnDisabled.value = false;
-    } else {
+    }else{
       sendBtnDisabled.value = true;
     }
   }
 );
-function onSendBtnClick() {
+function onSendBtnClick(){
   console.log(sendText.value);
   sendText.value = "";
   sendBtnDisabled.value = true;
@@ -102,7 +103,7 @@ const throttledFn = useDebounceFn((e) => {
 
 onMounted(() => {});
 
-function onRobotSettingClick() {
+function onRobotSettingClick(){
   console.log("onRobotSettingClick");
   // 这里准备打开机器人的设置菜单
 }

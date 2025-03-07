@@ -48,7 +48,7 @@
     "chokidar": "^4.0.3",
     "dayjs": "^1.11.13",
     "electron": "^35.0.0",
-    "eslint": "^9.21.0",
+    "eslint": "8.57",
     "eslint-plugin-vue": "^9.32.0",
     "less": "^4.2.2",
     "less-loader": "^12.2.0",

@@ -1,15 +1,21 @@
 <template>
   <div ref="target" class="message" :class="active ? 'active' : ''" @click="onMessageClick">
-    <t-avatar v-if="image.length>0" size="36px" shape="round" :image="image" content="wait"></t-avatar>
-    <t-avatar v-else size="36px" shape="round" content="wait"></t-avatar>
+    <t-avatar v-if="image.length>0" size="36px" shape="round" :image="image" content="wait" />
+    <t-avatar v-else size="36px" shape="round" content="wait" />
     <div class="message-content">
       <div class="contact-and-time">
-        <div class="contact">{{ message.strNickName }}</div>
+        <div class="contact">
+          {{ message.strNickName }}
+        </div>
         <!-- 这里的时间需要优化，根据微信的逻辑，距离当前时间远近不同，有不同的显示逻辑-->
-        <div class="time">{{ dayjs(message.nTime).format("HH:mm") }}</div>
+        <div class="time">
+          {{ dayjs(message.nTime).format("HH:mm") }}
+        </div>
       </div>
       <div class="content-and-status">
-        <div class="content">{{ message.strContent }}</div>
+        <div class="content">
+          {{ message.strContent }}
+        </div>
         <div class="status">
           <font-awesome-icon
             v-if="!message.nStatus"
@@ -22,8 +28,8 @@
   </div>
 </template>
 <script setup lang="ts">
-import { useElementVisibility } from '@vueuse/core'
-import { useTemplateRef, watch } from 'vue'
+import { useElementVisibility } from "@vueuse/core";
+import { useTemplateRef, watch } from "vue";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 dayjs.extend(utc);
@@ -36,17 +42,17 @@ const props = defineProps<{
   message: WxConversation;
   active: boolean;
 }>();
-function onMessageClick() {
+function onMessageClick(){
   emit("messageClick", props.message);
 }
 let image = ref("");
-const target = useTemplateRef<HTMLDivElement>('target')
-const targetIsVisible = useElementVisibility(target)
+const target = useTemplateRef<HTMLDivElement>("target");
+const targetIsVisible = useElementVisibility(target);
 watch(() => targetIsVisible.value, (newVal) => {
-  if (newVal) {
-    image.value = props.message.bigHeadImgUrl || ''
+  if(newVal){
+    image.value = props.message.bigHeadImgUrl || "";
   }
-})
+});
 </script>
 <style scoped lang="less">
 .message {

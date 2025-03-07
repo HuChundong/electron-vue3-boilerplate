@@ -20,16 +20,16 @@
       </div>
       <div class="conversation-container-list">
         <VList
+          v-slot="{ item, index }"
           :data="conversations"
           :style="{ height: '100%' }"
-          #default="{ item, index }"
         >
           <conversationItem
             :key="index"
             :message="item"
-            @message-click="onConversationClick"
             :active="item.strUsrName == currentCinversation?.strUsrName"
-          ></conversationItem>
+            @message-click="onConversationClick"
+          />
         </VList>
       </div>
     </div>
@@ -37,7 +37,7 @@
     这里还要考虑一下占位符，如果没有聊天记录的话，这里应该是空的？ 
     -->
     <div class="conversation-content">
-      <conversation :conversation="currentCinversation"></conversation>
+      <conversation :conversation="currentCinversation" />
     </div>
   </div>
 </template>
@@ -170,7 +170,7 @@ let f = [
 ];
 
 onMounted(() => {
-  for (let i = 0; i < f.length; i++) {
+  for (let i = 0;i < f.length;i++){
     conversations.value.push(f[i]);
   }
 });
@@ -180,7 +180,7 @@ const throttledFn = useDebounceFn((e) => {
   currentTop.value = e.scrollTop % 68;
   console.log(e);
 }, 200);
-function onConversationClick(message: WxConversation) {
+function onConversationClick(message: WxConversation){
   currentCinversation.value = message;
   console.log(message);
 }

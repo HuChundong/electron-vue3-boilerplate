@@ -1,6 +1,6 @@
 <template>
   <div class="titlebar">
-    <span class="title"></span>
+    <span class="title" />
     <div class="buttons">
       <div class="button" @click="onMinimizeWindow">
         <font-awesome-icon icon="fa-solid fa-minus" />
@@ -15,7 +15,7 @@
   </div>
   <t-layout class="contents">
     <t-aside width="60px">
-      <main-side></main-side>
+      <main-side />
     </t-aside>
     <t-content>
       <router-view v-slot="{ Component }">
@@ -30,24 +30,24 @@
 <script setup lang="ts">
 import utils from "@utils/renderer";
 import MainSide from "./main-side.vue";
-function getElectronApi() {
+function getElectronApi(){
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return (window as any).wechatWindowAPI;
 }
 
-function onMinimizeWindow() {
+function onMinimizeWindow(){
   getElectronApi().minimizeWindow();
 }
 
-function onRestoreWindow() {
+function onRestoreWindow(){
   getElectronApi().restoreWindow();
 }
 
-function onCloseWindow() {
+function onCloseWindow(){
   getElectronApi().closeWindow();
 }
 
-function onOpenDevTools() {
+function onOpenDevTools(){
   utils.openDevTools();
 }
 </script>
