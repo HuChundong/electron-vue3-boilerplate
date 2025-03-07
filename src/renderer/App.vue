@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { onMounted } from "vue";
-import "./theme.css";
 
 onMounted(() => {
   // todo 根据系统主题设置

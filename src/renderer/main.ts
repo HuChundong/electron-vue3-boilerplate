@@ -1,6 +1,7 @@
 import { createApp } from "vue";
+import "tdesign-vue-next/es/style/index.css";
 import "./style.css";
-
+import "./theme.css";
 // 导入 FontAwesome 图标
 import { library as fontAwesomeLibrary } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
