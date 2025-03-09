@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { WxMessage } from "@/typings/wx";
+import { WxConversation, WxMessage } from "@/typings/wx";
 
 export const useMessageStore = defineStore("message", {
   state: () => ({
@@ -7,6 +7,8 @@ export const useMessageStore = defineStore("message", {
      * 对话字典，key是用户的wx_id，value是聊天记录
      */
     conversationMap: new Map<string, WxMessage[]>(),
+    conversations: [] as WxConversation[],
+
   }),
   getters: {
     getMessagesByWxId: (state) => (wx_id: string) => {
@@ -18,6 +20,19 @@ export const useMessageStore = defineStore("message", {
       const messages = this.conversationMap.get(wx_id) || [];
       messages.push(message);
       this.conversationMap.set(wx_id, messages);
+    }, 
+    refreshConversation(conversations: WxConversation[]){
+      console.log("更新对话信息", conversations);
+      this.conversations = conversations;
+    },
+    updateConversationLatestMsg(msg: WxMessage){
+      const c = this.conversations.findIndex(item => item.strUsrName === (msg.is_group ? msg.roomid : msg.sender));
+      // todo 需要判断一下消息类型，图片，视频这种要转换一下的
+      this.conversations[c].strContent = msg.content;
+    },
+    removeConversation(wxid:string){
+      this.conversations = this.conversations.filter(item => item.strUsrName !== wxid);
     }
   },
+  
 });

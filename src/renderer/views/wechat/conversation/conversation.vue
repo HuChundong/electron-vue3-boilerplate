@@ -18,7 +18,7 @@
         <MsxBox
           :key="index"
           :message="item"
-          :avatar="item.is_self ? store.account?.small_head_url : props.conversation?.bigHeadImgUrl"
+          :avatar="item.is_self ? store.account?.small_head_url : props.conversation?.smallHeadImgUrl"
         />
       </VList>
     </div>
@@ -56,8 +56,8 @@
 </template>
 <script setup lang="ts">
 import { WxConversation, WxMessage } from "@/typings/wx";
-import { templateRef, useDebounceFn } from "@vueuse/core";
-import { onMounted, ref, watch } from "vue";
+import { templateRef } from "@vueuse/core";
+import { ref, watch } from "vue";
 import MsxBox from "./msgbox/index.vue";
 import utils from "@utils/renderer";
 /* @ts-expect-error  will fixed by author https://github.com/inokawa/virtua/issues/642*/
@@ -69,7 +69,7 @@ import { useMessageStore } from "@/stores/message";
 const store = useAccountStore();
 const messageStore = useMessageStore();
 const props = defineProps<{
-  conversation: WxConversation;
+  conversation: WxConversation|null;
 }>();
 const listRef = templateRef("listRef");
 let sendBtnDisabled = ref(true);
@@ -90,14 +90,14 @@ async function onSendBtnClick(){
   }
   let wxMsg: WxMessage = {
     "is_self": true,
-    "is_group": false,
+    "is_group": props.conversation?.strUsrName.endsWith("@chatroom") || false,
     "id": new Date().valueOf(),
     "type": 1,
     "subtype": null,
     "ts": new Date().valueOf(),
-    "roomid": null,
+    "roomid": props.conversation?.strUsrName.endsWith("@chatroom") ? props.conversation?.strUsrName : "",
     "content": sendText.value,
-    "sender": "kingme_hu",
+    "sender": props.conversation?.strUsrName || "",
     "sign": null,
     "thumb": null,
     "extra": null,
@@ -108,7 +108,9 @@ async function onSendBtnClick(){
     "audios": null,
     "extra_msg": null
   };
+  console.log("发送消息", wxMsg);
   await utils.msgSend(JSON.stringify(wxMsg));
+  messageStore.updateConversationLatestMsg(wxMsg);
   addMsgToList(wxMsg);
   // todo 消息上屏，loading动画是在上面显示的
   // 要在这里构建信息吗？
@@ -118,9 +120,12 @@ async function onSendBtnClick(){
 
 const messages = ref<WxMessage[]>([]); // 使用 ref 来存储列表数据
 
-watch(() => props.conversation, (newVal) => {
+watch(() => props.conversation, () => {
   try {
     console.log("获取消息记录");
+    if(!props.conversation){
+      return;
+    }
     const messagesOld = messageStore.getMessagesByWxId(props.conversation.strUsrName);
     if(messagesOld){
       messages.value = [ ...messagesOld ];
@@ -135,6 +140,7 @@ function onRobotSettingClick(){
   // 这里准备打开机器人的设置菜单
 }
 
+// 当前消息直接上屏，同时插入到缓存，延迟200毫秒屏幕进行滚动到底的操作
 function addMsgToList(wxMsg: WxMessage){
   messages.value.push(wxMsg);
   console.log(`插入${props.conversation.strUsrName}消息`);
@@ -144,12 +150,15 @@ function addMsgToList(wxMsg: WxMessage){
   }, 200);
 }
 
-/**
- * 这里会重复监听啊
- */
 utils.onMsgReceived((msg: { topic: string, payload: string }) => {
   let wxMsg: WxMessage = JSON.parse(msg.payload);
-  addMsgToList(wxMsg);
+  const receiver = wxMsg.is_group ? wxMsg.roomid : wxMsg.sender;
+  messageStore.updateConversationLatestMsg(wxMsg);
+  if(receiver === props.conversation.strUsrName){
+    addMsgToList(wxMsg);
+  }else{
+    messageStore.insertMessageByWxId(receiver || "", wxMsg);
+  }
 });
 </script>
 <style lang="less" scoped>

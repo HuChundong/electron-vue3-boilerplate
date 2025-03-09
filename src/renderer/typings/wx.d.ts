@@ -28,7 +28,7 @@ export interface WxMessage {
   "ts": number | null,
   "roomid": string | null,
   "content": string,
-  "sender": string | null,
+  "sender": string,
   "sign": string | null,
   "thumb": string | null,
   "extra": string | null,
@@ -40,7 +40,7 @@ export interface WxMessage {
   "extra_msg": WxMessage | null
 }
 
-export interface WxAccount{
+export interface WxAccount {
   "wxid": string,
   "name": string,
   "mobile": string,

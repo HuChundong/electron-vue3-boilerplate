@@ -44,7 +44,7 @@ onMounted(async() => {
         break;
       case CMD.SESSION:
         console.log("updateSession", data.data);
-        store.updateConversation(data.data);
+        messageStore.refreshConversation(data.data);
     }
   });
   utils.cmdSend(JSON.stringify({ cmd: CMD.ACCOUNT, data: {}, ts: Date.now() }));

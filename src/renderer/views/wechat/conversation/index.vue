@@ -27,7 +27,7 @@
           <conversationItem
             :key="index"
             :message="item"
-            :active="item.strUsrName == currentCinversation?.strUsrName"
+            :active="item.strUsrName == currentConversation?.strUsrName"
             @message-click="onConversationClick"
           />
         </VList>
@@ -37,15 +37,14 @@
     这里还要考虑一下占位符，如果没有聊天记录的话，这里应该是空的？ 
     -->
     <div class="conversation-content">
-      <conversation :conversation="currentCinversation" />
+      <conversation :conversation="currentConversation" />
     </div>
   </div>
 </template>
 <script setup lang="ts">
 // todo 这里实现拖动改变div大小的方法，第一个版本先不实现，全部写实，不要浪费时间在非核心功能上, 优化滚动条的样式,
 // 虚拟滚动要重新设置位置，目前tdesign好像不支持，后续看直接换成熟的虚拟滚动吧
-import { useDebounceFn } from "@vueuse/core";
-import { onMounted, ref, useTemplateRef, watchEffect } from "vue";
+import { onMounted, ref } from "vue";
 import conversationItem from "./conversation-item.vue";
 import conversation from "./conversation.vue";
 import dayjs from "dayjs";
@@ -53,17 +52,17 @@ import utc from "dayjs/plugin/utc";
 import { WxConversation } from "@/typings/wx";
 /* @ts-expect-error  will fixed by author https://github.com/inokawa/virtua/issues/642*/
 import { VList } from "virtua/vue";
-import { useAccountStore } from "@/stores/account";
-const store = useAccountStore();
+import { useMessageStore } from "@/stores/message";
+const messageStore = useMessageStore();
 dayjs.extend(utc);
 let conversationListWidth = ref("290");
-let currentCinversation = ref(null as WxConversation|null);
-const conversations = store.conversations; // ref<WxConversation[]>([]); // 使用 ref 来存储列表数据
+let currentConversation = ref(null as WxConversation|null);
+const conversations = messageStore.conversations; // ref<WxConversation[]>([]); // 使用 ref 来存储列表数据
 onMounted(() => {
 
 });
 function onConversationClick(message: WxConversation){
-  currentCinversation.value = message;
+  currentConversation.value = message;
   console.log(message);
 }
 </script>
