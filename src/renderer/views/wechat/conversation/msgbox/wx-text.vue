@@ -11,6 +11,6 @@ console.log(props.message?.content);
 <template>
   <div
     class="msg-box-content-text msg-bg"
-    v-html="parseEmoji(message?.content)"
+    v-html="parseEmoji(message?.content||'')"
   />
 </template>

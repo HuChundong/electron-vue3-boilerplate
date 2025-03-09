@@ -67,6 +67,12 @@ function getComponent(){
 
   .msg-box-content {
     max-width: calc(80% - 100px);
+    .nick-name{
+      line-height: 12px;
+      margin-bottom: 6px;
+      font-size: 12px;
+      color: var(--td-text-color-secondary);
+    }
   }
 
   .msg-bg {

@@ -3,7 +3,7 @@
     ref="target"
     class="message"
     :class="active ? 'active' : ''"
-    @click="onMessageClick"
+    @click="onConversationClick"
   >
     <t-avatar
       v-if="image.length > 0"
@@ -16,20 +16,20 @@
     <div class="message-content">
       <div class="contact-and-time">
         <div class="contact">
-          {{ message.strNickName }}
+          {{ conversation.strNickName }}
         </div>
         <!-- 这里的时间需要优化，根据微信的逻辑，距离当前时间远近不同，有不同的显示逻辑-->
-        <div class="time">
-          {{ dayjs(message.nTime).format("HH:mm") }}
+        <div v-if="conversation" class="time">
+          {{ dayjs.unix(conversation.nTime).format("hh:mm") }}
         </div>
       </div>
       <div class="content-and-status">
         <div class="content">
-          {{ message.strContent }}
+          {{ conversation.strContent }}
         </div>
         <div class="status">
           <font-awesome-icon
-            v-if="!message.nStatus"
+            v-if="!conversation.nStatus"
             icon="fa-regular fa-bell-slash"
             size="xs"
           />
@@ -46,14 +46,14 @@ import utc from "dayjs/plugin/utc";
 import { WxConversation } from "@/typings/wx";
 dayjs.extend(utc);
 
-const emit = defineEmits<{(e: "messageClick", message: WxConversation): void;
+const emit = defineEmits<{(e: "conversationClick", message: WxConversation): void;
 }>();
 const props = defineProps<{
-  message: WxConversation;
+  conversation: WxConversation;
   active: boolean;
 }>();
-function onMessageClick(){
-  emit("messageClick", props.message);
+function onConversationClick(){
+  emit("conversationClick", props.conversation);
 }
 let image = ref("");
 const target = useTemplateRef<HTMLDivElement>("target");
@@ -62,7 +62,7 @@ watch(
   () => targetIsVisible.value,
   (newVal) => {
     if(newVal){
-      image.value = props.message.smallHeadImgUrl || "";
+      image.value = props.conversation.smallHeadImgUrl || "";
     }
   }
 );

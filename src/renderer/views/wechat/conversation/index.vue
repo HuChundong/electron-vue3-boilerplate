@@ -25,10 +25,10 @@
           :style="{ height: '100%' }"
         >
           <conversationItem
-            :key="index"
-            :message="item"
+            :key="item.strUsrName"
+            :conversation="item"
             :active="item.strUsrName == currentConversation?.strUsrName"
-            @message-click="onConversationClick"
+            @conversation-click="onConversationClick"
           />
         </VList>
       </div>
@@ -61,9 +61,9 @@ const conversations = messageStore.conversations; // ref<WxConversation[]>([]); 
 onMounted(() => {
 
 });
-function onConversationClick(message: WxConversation){
-  currentConversation.value = message;
-  console.log(message);
+function onConversationClick(conversation: WxConversation){
+  currentConversation.value = conversation;
+  console.log(conversation);
 }
 </script>
 <style scoped lang="less">

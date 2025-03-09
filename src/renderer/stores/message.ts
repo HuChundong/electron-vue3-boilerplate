@@ -26,9 +26,10 @@ export const useMessageStore = defineStore("message", {
       this.conversations = conversations;
     },
     updateConversationLatestMsg(msg: WxMessage){
-      const c = this.conversations.findIndex(item => item.strUsrName === (msg.is_group ? msg.roomid : msg.sender));
+      const index = this.conversations.findIndex(item => item.strUsrName === (msg.is_group ? msg.roomid : msg.sender));
       // todo 需要判断一下消息类型，图片，视频这种要转换一下的
-      this.conversations[c].strContent = msg.content;
+      this.conversations[index].strContent = msg.content;
+      this.conversations[index].nTime = msg.ts;
     },
     removeConversation(wxid:string){
       this.conversations = this.conversations.filter(item => item.strUsrName !== wxid);

@@ -69,7 +69,7 @@ import { useMessageStore } from "@/stores/message";
 const store = useAccountStore();
 const messageStore = useMessageStore();
 const props = defineProps<{
-  conversation: WxConversation|null;
+  conversation: WxConversation;
 }>();
 const listRef = templateRef("listRef");
 let sendBtnDisabled = ref(true);
@@ -150,15 +150,22 @@ function addMsgToList(wxMsg: WxMessage){
   }, 200);
 }
 
-utils.onMsgReceived((msg: { topic: string, payload: string }) => {
-  let wxMsg: WxMessage = JSON.parse(msg.payload);
+function receiveMsg(wxMsg: WxMessage){
   const receiver = wxMsg.is_group ? wxMsg.roomid : wxMsg.sender;
   messageStore.updateConversationLatestMsg(wxMsg);
-  if(receiver === props.conversation.strUsrName){
+  if(props.conversation && receiver === props.conversation.strUsrName){
     addMsgToList(wxMsg);
   }else{
     messageStore.insertMessageByWxId(receiver || "", wxMsg);
   }
+}
+
+/**
+ * todo 监听消息事件，放在这里是不合理的，需要拿到外面去
+ */
+utils.onMsgReceived((msg: { topic: string, payload: string }) => {
+  let wxMsg: WxMessage = JSON.parse(msg.payload);
+  receiveMsg(wxMsg);
 });
 </script>
 <style lang="less" scoped>

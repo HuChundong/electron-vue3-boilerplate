@@ -25,7 +25,7 @@ export interface WxMessage {
   "id": number,
   "type": number,
   "subtype": number | null,
-  "ts": number | null,
+  "ts": number,
   "roomid": string | null,
   "content": string,
   "sender": string,
