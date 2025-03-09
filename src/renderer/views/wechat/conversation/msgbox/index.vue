@@ -3,10 +3,11 @@ import { WxMessage } from "@/typings/wx";
 import { configParseEmoji, getEmojis, parseEmoji } from "wechat-emoji-parser";
 import quotebox from "./quotebox.vue";
 configParseEmoji({ size: 15 }); // 设置一些参数
-const props = defineProps<{
+defineProps<{
   message: WxMessage | undefined;
   avatar: string | undefined;
 }>();
+
 // 这里是准备写消息的收发的框框，宽度有最大值，高度也有最大值，两边有箭头，同时，发送和接收是两种背景色，发送最好加一下loading效果
 // 这里还有时间的显示的问题，看起来是一段时间显示一次，而不是每次都显示，这个应该是考虑在聊天记录的上下文中自动插入的，也是作为一个消息吗？
 // 消息的设计，这里需要明确消息的类型，暂时就只处理：文本，图片，语音，视频，引用，卡片的话以后再说
@@ -18,11 +19,7 @@ const props = defineProps<{
   <!-- 这里通过添加reverse来左右反向就行了-->
   <div class="msg-box" :class="message?.is_self ? 'self' : ''">
     <div class="msg-box-avatar">
-      <t-avatar
-        size="34px"
-        shape="round"
-        :image="avatar"
-      />
+      <t-avatar size="34px" shape="round" :image="avatar" />
     </div>
     <div class="msg-box-content">
       <!-- 群聊才需要显示昵称-->
@@ -38,10 +35,7 @@ const props = defineProps<{
         class="msg-box-content-text msg-bg"
         v-html="parseEmoji(message?.content)"
       />
-      <quotebox
-        v-if="message?.extra_msg"
-        :message="message?.extra_msg"
-      />
+      <quotebox v-if="message?.extra_msg" :message="message?.extra_msg" />
     </div>
   </div>
 </template>
@@ -56,16 +50,16 @@ const props = defineProps<{
     .msg-bg {
       background-color: var(--td-brand-color-7);
       &::before {
-      content: "";
-      position: absolute;
-      top: 10px; /* 距离顶部 8px */
-      left: unset!important;
-      right: -4px!important; /* 调整小三角的位置 */
-      border-top: 4px solid transparent;
-      border-bottom: 4px solid transparent;
-      border-right: transparent; /* 移除左边框 */
-      border-left: 4px solid var(--td-brand-color-7); /* 小三角颜色 */
-    }
+        content: "";
+        position: absolute;
+        top: 10px; /* 距离顶部 8px */
+        left: unset !important;
+        right: -4px !important; /* 调整小三角的位置 */
+        border-top: 4px solid transparent;
+        border-bottom: 4px solid transparent;
+        border-right: transparent; /* 移除左边框 */
+        border-left: 4px solid var(--td-brand-color-7); /* 小三角颜色 */
+      }
     }
     .msg-box-content-text {
       color: var(--td-bg-color-page);

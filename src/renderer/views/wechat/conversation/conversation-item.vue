@@ -1,6 +1,17 @@
 <template>
-  <div ref="target" class="message" :class="active ? 'active' : ''" @click="onMessageClick">
-    <t-avatar v-if="image.length>0" size="36px" shape="round" :image="image" content="wait" />
+  <div
+    ref="target"
+    class="message"
+    :class="active ? 'active' : ''"
+    @click="onMessageClick"
+  >
+    <t-avatar
+      v-if="image.length > 0"
+      size="36px"
+      shape="round"
+      :image="image"
+      content="wait"
+    />
     <t-avatar v-else size="36px" shape="round" content="wait" />
     <div class="message-content">
       <div class="contact-and-time">
@@ -29,14 +40,13 @@
 </template>
 <script setup lang="ts">
 import { useElementVisibility } from "@vueuse/core";
-import { useTemplateRef, watch } from "vue";
+import { useTemplateRef, watch, ref } from "vue";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
-dayjs.extend(utc);
 import { WxConversation } from "@/typings/wx";
-import { ref } from "vue";
-const emit = defineEmits<{
-  (e: "messageClick", message: WxConversation): void;
+dayjs.extend(utc);
+
+const emit = defineEmits<{(e: "messageClick", message: WxConversation): void;
 }>();
 const props = defineProps<{
   message: WxConversation;
@@ -48,11 +58,14 @@ function onMessageClick(){
 let image = ref("");
 const target = useTemplateRef<HTMLDivElement>("target");
 const targetIsVisible = useElementVisibility(target);
-watch(() => targetIsVisible.value, (newVal) => {
-  if(newVal){
-    image.value = props.message.bigHeadImgUrl || "";
+watch(
+  () => targetIsVisible.value,
+  (newVal) => {
+    if(newVal){
+      image.value = props.message.bigHeadImgUrl || "";
+    }
   }
-});
+);
 </script>
 <style scoped lang="less">
 .message {

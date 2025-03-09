@@ -23,7 +23,7 @@
         <MsxBox
           :key="index"
           :message="item"
-          :avatar="props.conversation?.bigHeadImgUrl"
+          :avatar="item.is_self ? store.account?.small_head_url: props.conversation?.bigHeadImgUrl"
         />
       </VList>
     </div>
@@ -67,8 +67,10 @@ import MsxBox from "./msgbox/index.vue";
 import utils from "@utils/renderer";
 /* @ts-expect-error  will fixed by author https://github.com/inokawa/virtua/issues/642*/
 import { VList } from "virtua/vue";
+import { useAccountStore } from "../../../stores/account";
 // todo 群聊，或者单聊，都有历史记录，这个历史记录的话，考虑直接采用json存储？标题是 群聊名称+(人数)
 // 图片的话，考虑保存到本地，然后异步加载，因为服务器上只保留7天在minio上
+const store = useAccountStore();
 const props = defineProps<{
   conversation: WxConversation | undefined;
 }>();
