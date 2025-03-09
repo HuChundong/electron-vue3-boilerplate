@@ -13,10 +13,14 @@ onMounted(async() => {
       case CMD.ACCOUNT:
         console.log("updateAccount", data.data);
         store.updateAccount(data.data);
+        break;
+      case CMD.SESSION:
+        console.log("updateSession", data.data);
+        store.updateConversation(data.data);
     }
   });
-  await utils.cmdSend(JSON.stringify({ cmd: CMD.ACCOUNT, data: {}, ts: Date.now() }));
-  await utils.cmdSend(JSON.stringify({ cmd: CMD.SESSION, data: {}, ts: Date.now() }));
+  utils.cmdSend(JSON.stringify({ cmd: CMD.ACCOUNT, data: {}, ts: Date.now() }));
+  utils.cmdSend(JSON.stringify({ cmd: CMD.SESSION, data: {}, ts: Date.now() }));
 });
 </script>
 <template>

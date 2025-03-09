@@ -2,8 +2,10 @@
 import { WxMessage } from "@/typings/wx";
 import { configParseEmoji, getEmojis, parseEmoji } from "wechat-emoji-parser";
 import quotebox from "./quotebox.vue";
+import { computed, ref } from "vue";
+import { ImageEvent } from "tdesign-vue-next";
 configParseEmoji({ size: 15 }); // 设置一些参数
-defineProps<{
+let props = defineProps<{
   message: WxMessage | undefined;
   avatar: string | undefined;
 }>();
@@ -13,6 +15,25 @@ defineProps<{
 // 消息的设计，这里需要明确消息的类型，暂时就只处理：文本，图片，语音，视频，引用，卡片的话以后再说
 // 一条消息肯定要先能判断是什么消息，来自于谁，是自己还是别人，然后找到那个人，进行信息的加载
 // 通讯录应该要缓存一份，这样在加载的时候，就可以批量去读取，而不是说动态的去查询，否则两边压力都很大
+let imageUrl =
+  "http://192.168.2.12:10010/download?file_path=" + props.message?.images[0];
+let imageWidth = ref("unset");
+let imageHeight = ref("unset");
+function imageOnload(context: { e: ImageEvent }){
+  const { width, height } = context.e.target;
+  let ratio = 1;
+  let ratioWidth = 250 / width;
+  let ratioHeight = 250 / height;
+  ratio = Math.min(ratioWidth, ratioHeight);
+  if(ratio > 1){
+    ratio = 1;
+  }
+  if(ratioHeight < ratioWidth){
+    imageHeight.value = context.e.target.height * ratio + "px";
+  }else{
+    imageWidth.value = context.e.target.width * ratio + "px";
+  }
+}
 </script>
 <template>
   <div class="time-notify" />
@@ -35,6 +56,16 @@ defineProps<{
         class="msg-box-content-text msg-bg"
         v-html="parseEmoji(message?.content)"
       />
+      <div v-else-if="message?.type === 3" class="msg-box-content-image">
+        <t-image
+          v-show="imageWidth !== 'unset' || imageHeight !== 'unset'"
+          :src="imageUrl"
+          :style="{ width: imageWidth, height: imageHeight }"
+          fit="fill"
+          shape="round"
+          :on-load="imageOnload"
+        />
+      </div>
       <quotebox v-if="message?.extra_msg" :message="message?.extra_msg" />
     </div>
   </div>
@@ -45,22 +76,30 @@ defineProps<{
   display: flex;
   padding: 10px 18px;
   gap: 10px;
+
   &.self {
     flex-direction: row-reverse;
+
     .msg-bg {
       background-color: var(--td-brand-color-7);
+
       &::before {
         content: "";
         position: absolute;
-        top: 10px; /* 距离顶部 8px */
+        top: 10px;
+        /* 距离顶部 8px */
         left: unset !important;
-        right: -4px !important; /* 调整小三角的位置 */
+        right: -4px !important;
+        /* 调整小三角的位置 */
         border-top: 4px solid transparent;
         border-bottom: 4px solid transparent;
-        border-right: transparent; /* 移除左边框 */
-        border-left: 4px solid var(--td-brand-color-7); /* 小三角颜色 */
+        border-right: transparent;
+        /* 移除左边框 */
+        border-left: 4px solid var(--td-brand-color-7);
+        /* 小三角颜色 */
       }
     }
+
     .msg-box-content-text {
       color: var(--td-bg-color-page);
     }
@@ -69,20 +108,26 @@ defineProps<{
   .msg-box-content {
     max-width: calc(80% - 100px);
   }
+
   .msg-bg {
     background-color: var(--td-bg-color-secondarycomponent);
     padding: 6px 10px;
     border-radius: 4px;
     position: relative;
+
     &::before {
       content: "";
       position: absolute;
-      top: 10px; /* 距离顶部 5px */
-      left: -4px; /* 调整小三角的位置 */
+      top: 10px;
+      /* 距离顶部 5px */
+      left: -4px;
+      /* 调整小三角的位置 */
       border-top: 4px solid transparent;
       border-bottom: 4px solid transparent;
-      border-left: transparent; /* 移除左边框 */
-      border-right: 4px solid var(--td-bg-color-secondarycomponent); /* 小三角颜色 */
+      border-left: transparent;
+      /* 移除左边框 */
+      border-right: 4px solid var(--td-bg-color-secondarycomponent);
+      /* 小三角颜色 */
     }
   }
 
@@ -98,6 +143,11 @@ defineProps<{
   .msg-box-content-extra {
     margin-top: 4px;
     background-color: var(--td-bg-color-secondarycomponent);
+  }
+
+  .msg-box-content-image {
+    display: flex;
+    border-radius: 4px;
   }
 }
 </style>

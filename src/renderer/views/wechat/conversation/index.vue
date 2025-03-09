@@ -53,134 +53,15 @@ import utc from "dayjs/plugin/utc";
 import { WxConversation } from "@/typings/wx";
 /* @ts-expect-error  will fixed by author https://github.com/inokawa/virtua/issues/642*/
 import { VList } from "virtua/vue";
-
+import { useAccountStore } from "@/stores/account";
+const store = useAccountStore();
 dayjs.extend(utc);
 let conversationListWidth = ref("290");
-let currentCinversation = ref<WxConversation>();
-let currentTop = ref(0);
-const conversations = ref<WxConversation[]>([]); // 使用 ref 来存储列表数据
-let f = [
-  {
-    Reserved5: null,
-    parentRef: null,
-    strNickName: "0x5f3759df",
-    nIsSend: 1,
-    othersAtMe: 0,
-    bigHeadImgUrl:
-      "https://wx.qlogo.cn/mmhead/ver_1/5MF4XBW1I9oLrjHCQ9pibweZoIysjbJOxibl6zeBxEcxbrr2VNAI1Up33qrUZ1XI14SoViaavEe5Njj7ftx0sqGIP6lW6HQIkAbnepg3cr9mcWKpKp57v4kmqW1ucnencC4/0",
-    Reserved3: null,
-    bytesXml: "CgUIARCJFA==",
-    nOrder: 984,
-    Reserved0: 0,
-    nUnReadCount: 0,
-    nStatus: 0,
-    nMsgType: 49,
-    nMsgLocalID: 360289069701268365,
-    nMsgStatus: 1,
-    nTime: 1741223250,
-    strUsrName: "kingme_hu",
-    editContent: "",
-    smallHeadImgUrl:
-      "https://wx.qlogo.cn/mmhead/ver_1/5MF4XBW1I9oLrjHCQ9pibweZoIysjbJOxibl6zeBxEcxbrr2VNAI1Up33qrUZ1XI14SoViaavEe5Njj7ftx0sqGIP6lW6HQIkAbnepg3cr9mcWKpKp57v4kmqW1ucnencC4/132",
-    Reserved1: null,
-    Reserved2: 92,
-    strContent: "[音乐]姊妹仔",
-    Reserved4: 0,
-  },
-  {
-    strContent: "换行用\n就可以了\n @昵称随便写",
-    nIsSend: 1,
-    nStatus: 0,
-    nTime: 1737657134,
-    parentRef: null,
-    nMsgStatus: 1,
-    Reserved1: null,
-    editContent: "",
-    nUnReadCount: 0,
-    Reserved2: 0,
-    strUsrName: "filehelper",
-    smallHeadImgUrl:
-      "https://wx.qlogo.cn/mmhead/ver_1/QD8ibiaW7LhziaMsDeiaBWTkCFGHb1hnAB7fRZkC4RVcZsPUK4oNKXia5EXViafGviafa0J8CV8IEibVia2dKQXzVZor26E8AYSUN0mFL7sDPJIVbwvqu0FgKyfNIV9P9t3szesgt/132",
-    bytesXml: null,
-    othersAtMe: 0,
-    strNickName: "文件传输助手",
-    Reserved0: 0,
-    Reserved3: null,
-    nOrder: 950,
-    Reserved5: null,
-    nMsgType: 1,
-    bigHeadImgUrl:
-      "https://wx.qlogo.cn/mmhead/ver_1/QD8ibiaW7LhziaMsDeiaBWTkCFGHb1hnAB7fRZkC4RVcZsPUK4oNKXia5EXViafGviafa0J8CV8IEibVia2dKQXzVZor26E8AYSUN0mFL7sDPJIVbwvqu0FgKyfNIV9P9t3szesgt/0",
-    nMsgLocalID: 360289069701267490,
-    Reserved4: 0,
-  },
-  {
-    Reserved3: null,
-    othersAtMe: 0,
-    nStatus: 0,
-    nMsgType: 0,
-    Reserved4: 0,
-    nMsgLocalID: 0,
-    parentRef: null,
-    smallHeadImgUrl:
-      "https://wx.qlogo.cn/mmhead/ver_1/D58roxbjFysGiaiaHngUWI3BBpVD0z3zInOVmkrtJUKZtkzCUHY52WDlNnXkP1ZtJicLswqCMuYvrlUdYWuGzibMJWbibibkAJDszcmicQTOhq7B1S9XAn0srkww6TlKKb1EPu6dqiaYVYM1tvZTjuTYuJbLCw/132",
-    nIsSend: 0,
-    bigHeadImgUrl:
-      "https://wx.qlogo.cn/mmhead/ver_1/D58roxbjFysGiaiaHngUWI3BBpVD0z3zInOVmkrtJUKZtkzCUHY52WDlNnXkP1ZtJicLswqCMuYvrlUdYWuGzibMJWbibibkAJDszcmicQTOhq7B1S9XAn0srkww6TlKKb1EPu6dqiaYVYM1tvZTjuTYuJbLCw/0",
-    nMsgStatus: 0,
-    bytesXml: null,
-    editContent: "",
-    strUsrName: "wxid_jypzaftm8wxe22",
-    nOrder: 480,
-    Reserved0: 0,
-    strContent: "",
-    nTime: 1737817504,
-    strNickName: "人工智障",
-    Reserved1: null,
-    Reserved2: 0,
-    nUnReadCount: 0,
-    Reserved5: null,
-  },
-  {
-    nIsSend: 0,
-    Reserved2: 0,
-    strUsrName: "weixin",
-    strNickName: "微信团队",
-    bigHeadImgUrl:
-      "https://wx.qlogo.cn/mmhead/Q3auHgzwzM6H8bJKHKyGY2mk0ljLfodkWnrRbXLn3P11f68cg0ePxA/0",
-    nMsgLocalID: 0,
-    othersAtMe: 0,
-    smallHeadImgUrl:
-      "https://wx.qlogo.cn/mmhead/Q3auHgzwzM6H8bJKHKyGY2mk0ljLfodkWnrRbXLn3P11f68cg0ePxA/132",
-    Reserved0: 0,
-    nStatus: 0,
-    nMsgStatus: 0,
-    Reserved4: 0,
-    nMsgType: 0,
-    nUnReadCount: 0,
-    editContent: "",
-    strContent: "",
-    Reserved5: null,
-    Reserved1: null,
-    nTime: 0,
-    bytesXml: null,
-    parentRef: null,
-    Reserved3: null,
-    nOrder: 475,
-  },
-];
-
+let currentCinversation = ref(null as WxConversation|null);
+const conversations = store.conversations; // ref<WxConversation[]>([]); // 使用 ref 来存储列表数据
 onMounted(() => {
-  for (let i = 0;i < f.length;i++){
-    conversations.value.push(f[i]);
-  }
+
 });
-// 每次加载路由，需要重新设置滚动条位置？
-const throttledFn = useDebounceFn((e) => {
-  // do something, it will be called at most 1 time per second
-  currentTop.value = e.scrollTop % 68;
-  console.log(e);
-}, 200);
 function onConversationClick(message: WxConversation){
   currentCinversation.value = message;
   console.log(message);

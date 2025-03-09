@@ -62,7 +62,7 @@ watch(
   () => targetIsVisible.value,
   (newVal) => {
     if(newVal){
-      image.value = props.message.bigHeadImgUrl || "";
+      image.value = props.message.smallHeadImgUrl || "";
     }
   }
 );

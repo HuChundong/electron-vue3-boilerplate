@@ -52,6 +52,7 @@
     "eslint-plugin-vue": "^9.32.0",
     "less": "^4.2.2",
     "less-loader": "^12.2.0",
+    "minio": "^8.0.4",
     "mqtt": "^5.10.4",
     "pinia": "^3.0.1",
     "tdesign-vue-next": "^1.11.2",

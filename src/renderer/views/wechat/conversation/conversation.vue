@@ -72,7 +72,7 @@ import { useAccountStore } from "../../../stores/account";
 // 图片的话，考虑保存到本地，然后异步加载，因为服务器上只保留7天在minio上
 const store = useAccountStore();
 const props = defineProps<{
-  conversation: WxConversation | undefined;
+  conversation: WxConversation | null;
 }>();
 const listRef = templateRef("listRef");
 let sendBtnDisabled = ref(true);
@@ -138,7 +138,6 @@ function onRobotSettingClick(){
 function addMsgToList(wxMsg: WxMessage){
   messages.value.push(wxMsg);
   setTimeout(() => {
-    // list.value?.scrollTo({ key: messages.value.length - 1})
     listRef?.value?.scrollTo(Number.MAX_SAFE_INTEGER);
   }, 200);
 }
