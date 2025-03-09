@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import { WxAccount, WxConversation } from "@/typings/wx";
 
-export const useAccountStore = defineStore("counter", {
+export const useAccountStore = defineStore("account", {
   state: () => ({
     account: null as WxAccount | null,
     conversations: [] as WxConversation[],

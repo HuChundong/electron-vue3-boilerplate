@@ -14,16 +14,11 @@
       </div>
     </div>
     <div class="session-body">
-      <VList
-        ref="listRef"
-        v-slot="{ item, index }"
-        :data="messages"
-        :style="{ height: '100%' }"
-      >
+      <VList ref="listRef" v-slot="{ item, index }" :data="messages" :style="{ height: '100%' }">
         <MsxBox
           :key="index"
           :message="item"
-          :avatar="item.is_self ? store.account?.small_head_url: props.conversation?.bigHeadImgUrl"
+          :avatar="item.is_self ? store.account?.small_head_url : props.conversation?.bigHeadImgUrl"
         />
       </VList>
     </div>
@@ -67,12 +62,14 @@ import MsxBox from "./msgbox/index.vue";
 import utils from "@utils/renderer";
 /* @ts-expect-error  will fixed by author https://github.com/inokawa/virtua/issues/642*/
 import { VList } from "virtua/vue";
-import { useAccountStore } from "../../../stores/account";
+import { useAccountStore } from "@/stores/account";
+import { useMessageStore } from "@/stores/message";
 // todo 群聊，或者单聊，都有历史记录，这个历史记录的话，考虑直接采用json存储？标题是 群聊名称+(人数)
 // 图片的话，考虑保存到本地，然后异步加载，因为服务器上只保留7天在minio上
 const store = useAccountStore();
+const messageStore = useMessageStore();
 const props = defineProps<{
-  conversation: WxConversation | null;
+  conversation: WxConversation;
 }>();
 const listRef = templateRef("listRef");
 let sendBtnDisabled = ref(true);
@@ -111,7 +108,6 @@ async function onSendBtnClick(){
     "audios": null,
     "extra_msg": null
   };
-  console.log(wxMsg);
   await utils.msgSend(JSON.stringify(wxMsg));
   addMsgToList(wxMsg);
   // todo 消息上屏，loading动画是在上面显示的
@@ -122,13 +118,17 @@ async function onSendBtnClick(){
 
 const messages = ref<WxMessage[]>([]); // 使用 ref 来存储列表数据
 
-// 每次加载路由，需要重新设置滚动条位置？
-const throttledFn = useDebounceFn((e) => {
-  // do something, it will be called at most 1 time per second
-  console.log(e);
-}, 200);
-
-onMounted(() => {});
+watch(() => props.conversation, (newVal) => {
+  try {
+    console.log("获取消息记录");
+    const messagesOld = messageStore.getMessagesByWxId(props.conversation.strUsrName);
+    if(messagesOld){
+      messages.value = [ ...messagesOld ];
+    }
+  } catch (e){
+    console.error(e);
+  }
+}, { immediate: false, deep: false });
 
 function onRobotSettingClick(){
   console.log("onRobotSettingClick");
@@ -137,12 +137,17 @@ function onRobotSettingClick(){
 
 function addMsgToList(wxMsg: WxMessage){
   messages.value.push(wxMsg);
+  console.log(`插入${props.conversation.strUsrName}消息`);
+  messageStore.insertMessageByWxId(props.conversation.strUsrName, wxMsg);
   setTimeout(() => {
     listRef?.value?.scrollTo(Number.MAX_SAFE_INTEGER);
   }, 200);
 }
 
-utils.onMsgReceived((msg: {topic:string, payload:string}) => {
+/**
+ * 这里会重复监听啊
+ */
+utils.onMsgReceived((msg: { topic: string, payload: string }) => {
   let wxMsg: WxMessage = JSON.parse(msg.payload);
   addMsgToList(wxMsg);
 });

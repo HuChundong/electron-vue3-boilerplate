@@ -1,38 +1,16 @@
 <script setup lang="ts">
+import WxText from "./wx-text.vue";
+import WxImage from "./wx-image.vue";
 import { WxMessage } from "@/typings/wx";
-import { configParseEmoji, getEmojis, parseEmoji } from "wechat-emoji-parser";
-import quotebox from "./quotebox.vue";
-import { computed, ref } from "vue";
-import { ImageEvent } from "tdesign-vue-next";
-configParseEmoji({ size: 15 }); // 设置一些参数
+import WxQuote from "./wx-quote.vue";
 let props = defineProps<{
   message: WxMessage | undefined;
   avatar: string | undefined;
 }>();
 
-// 这里是准备写消息的收发的框框，宽度有最大值，高度也有最大值，两边有箭头，同时，发送和接收是两种背景色，发送最好加一下loading效果
-// 这里还有时间的显示的问题，看起来是一段时间显示一次，而不是每次都显示，这个应该是考虑在聊天记录的上下文中自动插入的，也是作为一个消息吗？
-// 消息的设计，这里需要明确消息的类型，暂时就只处理：文本，图片，语音，视频，引用，卡片的话以后再说
-// 一条消息肯定要先能判断是什么消息，来自于谁，是自己还是别人，然后找到那个人，进行信息的加载
-// 通讯录应该要缓存一份，这样在加载的时候，就可以批量去读取，而不是说动态的去查询，否则两边压力都很大
-let imageUrl =
-  "http://192.168.2.12:10010/download?file_path=" + props.message?.images[0];
-let imageWidth = ref("unset");
-let imageHeight = ref("unset");
-function imageOnload(context: { e: ImageEvent }){
-  const { width, height } = context.e.target;
-  let ratio = 1;
-  let ratioWidth = 250 / width;
-  let ratioHeight = 250 / height;
-  ratio = Math.min(ratioWidth, ratioHeight);
-  if(ratio > 1){
-    ratio = 1;
-  }
-  if(ratioHeight < ratioWidth){
-    imageHeight.value = context.e.target.height * ratio + "px";
-  }else{
-    imageWidth.value = context.e.target.width * ratio + "px";
-  }
+function getComponent(){
+  let com = props.message?.type === 1 ? WxText : WxImage;
+  return com;
 }
 </script>
 <template>
@@ -43,30 +21,12 @@ function imageOnload(context: { e: ImageEvent }){
       <t-avatar size="34px" shape="round" :image="avatar" />
     </div>
     <div class="msg-box-content">
-      <!-- 群聊才需要显示昵称-->
+      <!-- 群聊并且不是自己才需要显示昵称-->
       <div v-if="!message?.is_self && message?.is_group" class="nick-name">
         {{ message?.sender }}
       </div>
-      <!-- 这里就要判断一下了，这里可能的消息类型，要通过不同的形式来展示，语音，图片，文本，视频 以及引用, 这里发送消息，可能还需要匹配用户名呢-->
-      <div
-        v-if="
-          message?.type === 1 ||
-            (message?.type === 49 && message?.subtype === 57)
-        "
-        class="msg-box-content-text msg-bg"
-        v-html="parseEmoji(message?.content)"
-      />
-      <div v-else-if="message?.type === 3" class="msg-box-content-image">
-        <t-image
-          v-show="imageWidth !== 'unset' || imageHeight !== 'unset'"
-          :src="imageUrl"
-          :style="{ width: imageWidth, height: imageHeight }"
-          fit="fill"
-          shape="round"
-          :on-load="imageOnload"
-        />
-      </div>
-      <quotebox v-if="message?.extra_msg" :message="message?.extra_msg" />
+      <component :is="getComponent()" :message="message" :avatar="avatar" />
+      <wx-quote v-if="message?.extra_msg" :message="message?.extra_msg" />
     </div>
   </div>
 </template>
