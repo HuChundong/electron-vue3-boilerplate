@@ -27,6 +27,7 @@ export const useMessageStore = defineStore("message", {
     },
     updateConversationLatestMsg(msg: WxMessage){
       const index = this.conversations.findIndex(item => item.strUsrName === (msg.is_group ? msg.roomid : msg.sender));
+      // 如果不存在的话，说明是全新的消息，要去调用一下那个同步session的接口，或者手动插入
       // todo 需要判断一下消息类型，图片，视频这种要转换一下的
       this.conversations[index].strContent = msg.content;
       this.conversations[index].nTime = msg.ts;
