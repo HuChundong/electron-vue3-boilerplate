@@ -20,10 +20,14 @@ function initialize(){
         onMqttDisconnect: (callback) => ipcRenderer.on("electron-utils-mqtt-disconnect", (event) => {
           callback();
         }),
+        msgSend: (data: string) => ipcRenderer.invoke("electron-utils-msg-send", data),
         onMsgReceived: (callback) => ipcRenderer.on("electron-utils-msg-received", (_event, value) => {
           callback(value);
         }),
-        msgSend: () => ipcRenderer.send("electron-utils-msg-send"),
+        cmdSend: (data: string) => ipcRenderer.invoke("electron-utils-cmd-send", data),
+        onCmdS2r: (callback) => ipcRenderer.on("electron-utils-cmd-s2r", (_event, value) => {
+          callback(value);
+        }),
         // === FALG LINE (DO NOT MODIFY/REMOVE) ===
       });
     } catch {

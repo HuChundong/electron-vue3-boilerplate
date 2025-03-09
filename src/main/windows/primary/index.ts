@@ -40,7 +40,6 @@ class PrimaryWindow extends WindowBase{
     ipcMain.on("message", (event, message) => {
       if(!this.isIpcMainEventBelongMe(event))
         return;
-
       console.log(message);
     });
   

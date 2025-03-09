@@ -5,6 +5,7 @@
  */
 
 import { OpenDialogOptions, OpenDialogReturnValue } from "electron";
+import { Packet } from "mqtt/*";
 
 class Utils{
   public openDevTools(){
@@ -37,11 +38,33 @@ class Utils{
   public onMqttDisconnect(callback){
     (window as any).__ElectronUtils__.onMqttDisconnect(callback);
   }
+  /**
+   * 收到消息
+   * @param callback 
+   */
   public onMsgReceived(callback){
     (window as any).__ElectronUtils__.onMsgReceived(callback);
   }
-  public msgSend(){
-    return (window as any).__ElectronUtils__.msgSend();
+  /**
+   * 发送消息
+   * @returns 
+   */
+  public async msgSend(msg:string):Promise<Packet | undefined>{
+    return (window as any).__ElectronUtils__.msgSend(msg);
+  }
+  /**
+   * 收到指令返回数据
+   * @param callback 
+   */
+  public onCmdS2r(callback){
+    (window as any).__ElectronUtils__.onCmdS2r(callback);
+  }
+  /**
+   * 发送控制指令
+   * @returns 
+   */
+  public async cmdSend(data:string):Promise<Packet | undefined>{
+    return (window as any).__ElectronUtils__.cmdSend(data);
   }
   // === FALG LINE (DO NOT MODIFY/REMOVE) ===
 }

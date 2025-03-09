@@ -1,9 +1,22 @@
 <script setup lang="ts">
+import utils from "@utils/renderer";
 import { onMounted } from "vue";
-
-onMounted(() => {
+import { useAccountStore } from "./stores/account";
+import { CMD } from "./constants";
+const store = useAccountStore();
+onMounted(async() => {
   // todo 根据系统主题设置
   // document.documentElement.setAttribute('theme-mode', 'dark');
+  utils.onCmdS2r((msg: { payload: string }) => {
+    let data = JSON.parse(msg.payload);
+    switch (data.cmd){
+      case CMD.ACCOUNT:
+        console.log("updateAccount", data.data);
+        store.updateAccount(data.data);
+    }
+  });
+  await utils.cmdSend(JSON.stringify({ cmd: CMD.ACCOUNT, data: {}, ts: Date.now() }));
+  await utils.cmdSend(JSON.stringify({ cmd: CMD.SESSION, data: {}, ts: Date.now() }));
 });
 </script>
 <template>

@@ -1,7 +1,7 @@
 <template>
   <div class="main-side">
     <!-- 微信侧边栏，增加 头像，会话，通讯录，设置 4个功能模块-->
-    <t-avatar size="38px" shape="round" :image="avatar" />
+    <t-avatar size="38px" shape="round" :image="store.account?.small_head_url" />
     <div class="button" :class="activeTab === 0 ? 'active' : ''" @click="onConersationClick">
       <font-awesome-icon :icon="activeTab === 0 ? 'fa-solid fa-message' : 'fa-regular fa-message'" />
     </div>
@@ -20,13 +20,13 @@
 <script setup lang="ts">
 import utils from "@utils/renderer";
 import { useRouter } from "vue-router";
+import { ref } from "vue";
+import { useAccountStore } from "@/stores/account";
 const router = useRouter();
-import { computed, ref } from "vue";
+const store = useAccountStore();
+
 let activeTab = ref(0);
 // todo 从appstate中获取头像
-let avatar =
-  "https://wx.qlogo.cn/mmhead/ver_1/seUPq3VOPbK5yqK6Un6PxE53iae3F5pSGOIAcdJuNngsboZThYJpVOY9u7hxMbBEHw8BqYicYtuz21YjplsnyIYqtqs6r0PQ2iblbZQ6dWCVPt2OH1FndlsAQqM9VUnJ9wqGC8ukFEUAylMUUyS28D8jQ/0";
-
 function onConersationClick(){
   activeTab.value = 0;
   router.push({ name: "conversation", params: { username: "eduardo" } });

@@ -39,3 +39,12 @@ export interface WxMessage {
   "audios": string[] | null,
   "extra_msg": WxMessage | null
 }
+
+export interface WxAccount{
+  "wxid": string,
+  "name": string,
+  "mobile": string,
+  "home": string,
+  "small_head_url": string,
+  "big_head_url": string
+}

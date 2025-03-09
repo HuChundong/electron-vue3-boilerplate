@@ -33,9 +33,24 @@ class Utils{
       browserWindow.webContents.send("electron-utils-mqtt-disconnect");
     }
   }
+  /**
+   * 收到消息，转发给应用层
+   * @param browserWindow 
+   * @param data 
+   */
   public msgReceived(browserWindow: BrowserWindow | null, data: { topic: string, payload: string }){
     if(browserWindow){
       browserWindow.webContents.send("electron-utils-msg-received", data);
+    }
+  }
+  /**
+   * 从服务端收到控制指令返回的数据
+   * @param browserWindow 
+   * @param data 控制指令返回数据，包含了具体的指令和返回数据
+   */
+  public cmdS2r(browserWindow: BrowserWindow | null, data: { topic: string, payload: string }){
+    if(browserWindow){
+      browserWindow.webContents.send("electron-utils-cmd-s2r", data);
     }
   }
   // === PUBLIC METHOD FALG LINE (DO NOT MODIFY/REMOVE) ===
@@ -76,7 +91,12 @@ ipcMain.on("electron-utils-get-app-version", (event) => {
   event.returnValue = appState.appVersion;
 });
 
-ipcMain.on("electron-utils-msg-send", (event) => {
+ipcMain.handle("electron-utils-msg-send", async(event, data) => {
+  return await appState.mqttClient?.publishAsync("msg/wxid_jypzaftm8wxe22/send", data);
+});
+
+ipcMain.handle("electron-utils-cmd-send", async(event, data) => {
+  return await appState.mqttClient?.publishAsync("cmd/wxid_jypzaftm8wxe22/received", data);
 });
 // === FALG LINE (DO NOT MODIFY/REMOVE) ===
 

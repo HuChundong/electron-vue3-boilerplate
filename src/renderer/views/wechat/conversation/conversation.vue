@@ -8,7 +8,7 @@
         <div class="button" @click="onRobotSettingClick">
           <font-awesome-icon icon="fa-solid fa-robot" size="lg" />
         </div>
-        <div class="button" @click="">
+        <div class="button">
           <font-awesome-icon icon="fa-solid fa-ellipsis" size="lg" />
         </div>
       </div>
@@ -65,8 +65,8 @@ import { templateRef, useDebounceFn } from "@vueuse/core";
 import { onMounted, ref, watch } from "vue";
 import MsxBox from "./msgbox/index.vue";
 import utils from "@utils/renderer";
+/* @ts-expect-error  will fixed by author https://github.com/inokawa/virtua/issues/642*/
 import { VList } from "virtua/vue";
-import { ipcRenderer } from "electron";
 // todo 群聊，或者单聊，都有历史记录，这个历史记录的话，考虑直接采用json存储？标题是 群聊名称+(人数)
 // 图片的话，考虑保存到本地，然后异步加载，因为服务器上只保留7天在minio上
 const props = defineProps<{
@@ -85,12 +85,37 @@ watch(
     }
   }
 );
-function onSendBtnClick(){
-  console.log(sendText.value);
-  sendText.value = "";
-  sendBtnDisabled.value = true;
+async function onSendBtnClick(){
+  if(sendText.value === ""){
+    return;
+  }
+  let wxMsg: WxMessage = {
+    "is_self": true,
+    "is_group": false,
+    "id": new Date().valueOf(),
+    "type": 1,
+    "subtype": null,
+    "ts": new Date().valueOf(),
+    "roomid": null,
+    "content": sendText.value,
+    "sender": "kingme_hu",
+    "sign": null,
+    "thumb": null,
+    "extra": null,
+    "xml": null,
+    "images": null,
+    "files": null,
+    "videos": null,
+    "audios": null,
+    "extra_msg": null
+  };
+  console.log(wxMsg);
+  await utils.msgSend(JSON.stringify(wxMsg));
+  addMsgToList(wxMsg);
   // todo 消息上屏，loading动画是在上面显示的
   // 要在这里构建信息吗？
+  sendText.value = "";
+  sendBtnDisabled.value = true;
 }
 
 const messages = ref<WxMessage[]>([]); // 使用 ref 来存储列表数据
@@ -108,13 +133,17 @@ function onRobotSettingClick(){
   // 这里准备打开机器人的设置菜单
 }
 
-utils.onMsgReceived((msg: any) => {
-  let wxMsg: WxMessage = JSON.parse(msg.payload);
+function addMsgToList(wxMsg: WxMessage){
   messages.value.push(wxMsg);
   setTimeout(() => {
     // list.value?.scrollTo({ key: messages.value.length - 1})
     listRef?.value?.scrollTo(Number.MAX_SAFE_INTEGER);
   }, 200);
+}
+
+utils.onMsgReceived((msg: {topic:string, payload:string}) => {
+  let wxMsg: WxMessage = JSON.parse(msg.payload);
+  addMsgToList(wxMsg);
 });
 </script>
 <style lang="less" scoped>

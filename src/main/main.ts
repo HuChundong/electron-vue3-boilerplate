@@ -5,7 +5,6 @@ import { CreateAppTray } from "./tray";
 import appState from "./app-state";
 import mqtt from "mqtt";
 import utils from "../lib/utils/main";
-
 let mqttClient: mqtt.MqttClient;
 // 禁用沙盒
 // 在某些系统环境上，不禁用沙盒会导致界面花屏
@@ -20,7 +19,9 @@ const gotLock = app.requestSingleInstanceLock();
 if(!gotLock && appState.onlyAllowSingleInstance){
   app.quit();
 }else{
-  app.whenReady().then(() => {
+  app.whenReady().then(async() => {
+    // todo 正式版的时候要移除
+    await session.defaultSession.loadExtension("C:\\Users\\hucd\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Extensions\\nhdogjmejiglipccpnnnanhbledajbpd\\7.7.0_0");
     if(!appState.initialize()){
       dialog.showErrorBox("App initialization failed", "The program will exit after click the OK button.",);
       app.exit();
@@ -57,18 +58,34 @@ if(!gotLock && appState.onlyAllowSingleInstance){
     mqttClient = mqtt.connect(mqttOptions);
 
     mqttClient.on("connect", () => {
+      appState.mqttClient = mqttClient;
       log.info("Connected to MQTT Broker");
       utils.mqttConnect(primaryWindow.browserWindow);
       // todo 这里应该要根据当前的微信实际id来监听，这个id动态传进来，方法这里的链接应该封装一个方法，让渲染进程来调用，比较合理哦
-      mqttClient.subscribe("msg/+/received", (err) => {
+      mqttClient.subscribe("msg/wxid_jypzaftm8wxe22/received", (err) => {
         if(!err){
-          log.info("Subscribed to topic: robot/+/status");
+          log.info("Subscribed to topic: msg/+/received");
+        }
+      });
+      mqttClient.subscribe("cmd/wxid_jypzaftm8wxe22/send", (err) => {
+        if(!err){
+          log.info("Subscribed to topic: cmd/+/send");
         }
       });
       mqttClient.on("message", (topic, message) => {
         log.info(`Received message: ${message.toString()} on topic: ${topic}`);
         const payload = message.toString();
-        utils.msgReceived(primaryWindow.browserWindow, { topic, payload });
+        switch (topic){
+          case "msg/wxid_jypzaftm8wxe22/received": {
+            utils.msgReceived(primaryWindow.browserWindow, { topic, payload });
+            break;
+          }
+          case "cmd/wxid_jypzaftm8wxe22/send": {
+            const payload = message.toString();
+            utils.cmdS2r(primaryWindow.browserWindow, { topic, payload });
+            break;
+          }
+        }
       });
     });
   });

@@ -51,6 +51,7 @@ import conversation from "./conversation.vue";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import { WxConversation } from "@/typings/wx";
+/* @ts-expect-error  will fixed by author https://github.com/inokawa/virtua/issues/642*/
 import { VList } from "virtua/vue";
 
 dayjs.extend(utc);

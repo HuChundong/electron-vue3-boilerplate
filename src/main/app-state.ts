@@ -5,11 +5,11 @@
 import path from "path";
 import { Tray, app, dialog } from "electron";
 import WechatWindow from "./windows/wechat";
-import PrimaryWindow from "./windows/primary";
 import log from "electron-log/main";
 import { Singleton } from "../lib/utils/shared";
 import fd from "../lib/file-download/main";
 import utils from "../lib/utils/main";
+import { MqttClient } from "mqtt/*";
 
 // 应用环境（开发环境、测试环境、生产环境）
 enum AppEnv {
@@ -88,6 +88,8 @@ class AppState extends Singleton{
   public get mainStaticPath(){
     return this._mainStaticPath;
   }
+
+  public mqttClient: null | MqttClient = null;
 
   // 应用程序的环境（默认为生产环境）
   public readonly appEnv: AppEnv = AppEnv.Production;
