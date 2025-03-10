@@ -8,11 +8,11 @@ let sendText = ref("");
 
 function formatFileSize(sizeInKB: number): string {
   if (sizeInKB < 1024) {
-    return sizeInKB.toFixed(1) + " KB";
+    return sizeInKB.toFixed(1) + "K";
   } else if (sizeInKB < 1024 * 1024) {
-    return (sizeInKB / 1024).toFixed(1) + " MB";
+    return (sizeInKB / 1024).toFixed(1) + "M";
   } else {
-    return (sizeInKB / (1024 * 1024)).toFixed(1) + " GB";
+    return (sizeInKB / (1024 * 1024)).toFixed(1) + "G";
   }
 }
 
@@ -34,8 +34,8 @@ const wxEditor = templateRef("wxEditor");
     extension = fileName.pop() || "未知文件";
   }
   // https://www.jyshare.com/more/svgeditor/#move_back 使用这个编辑，替换里面的图标，文字动态拼接，颜色根据神色浅色动态匹配，暂时先只做神色
-  const bgColor = "#242424";
-  const textPrimaryColor = "rgba(255,255,255,0.9)";
+  const bgColor = "#4b4b4b";
+  const textPrimaryColor = "rgba(255,255,255,1)";
   const textSecondaryColor = "rgba(255,255,255,0.35)";
   // 根据文件大小，动态调整单位，保留一位小数
   const fileSizeText =formatFileSize(size) // size.toFixed(1) + "k"; 
@@ -44,13 +44,13 @@ const wxEditor = templateRef("wxEditor");
   const templte = `
 <g>
   <title>Layer 1</title>
-  <rect stroke="null" rx="5" id="svg_7" height="70" width="280" y="0" x="0" fill-opacity="0.95" fill="${bgColor}"/>
+  <rect stroke="null" rx="4" id="svg_7" height="70" width="280" y="0" x="0" fill-opacity="0.9" fill="${bgColor}"/>
   <g id="svg_4" stroke="null">
    <path id="svg_1" p-id="1328" fill="#576A95" d="m228.77876,11.79431l24.26756,0l11.55105,11.68054l0,33.43588c0,0.71518 -0.57978,1.29496 -1.29496,1.29496l-34.52364,0c-0.71518,0 -1.29496,-0.57978 -1.29496,-1.29496l0,-43.82146c0,-0.71518 0.57978,-1.29496 1.29496,-1.29496l-0.00001,0z" stroke="null"/>
    <path id="svg_2" p-id="1329" fill="#BBC3D4" d="m253.04632,11.79431l0,10.38558c0,0.71518 0.57978,1.29496 1.29496,1.29496l10.25608,0l-11.55105,-11.68054l0.00001,0.00001l0,-0.00001z" stroke="null"/>
    <path id="svg_3" p-id="1330" fill="#FFFFFF" d="m249.1977,40.31436l0,6.30273a1.57421,1.57421 0 0 1 -0.46267,1.11414a1.58026,1.58026 0 0 1 -1.1162,0.46152l-3.22383,0a1.58088,1.58088 0 0 1 -1.1162,-0.46126a1.57426,1.57426 0 0 1 -0.46267,-1.11465l0,-6.30247l6.38157,0l0.00001,0l-0.00001,-0.00001zm-1.57882,3.61087l-3.22393,0l0,3.16468l3.22393,0l0,-3.16468zm1.52598,-9.91349l0,3.16468l-3.17073,0l0,-3.16473l3.17079,0l-0.00005,0.00005l0,-0.00001l-0.00001,0.00001zm-3.13122,-22.21743l0,3.19078l3.18404,0l0,3.19078l-3.18447,0l0,2.95438l3.18447,0l0,3.19078l-3.1841,0l0,3.15162l3.1841,0l0,3.15162l-3.1841,0l0,3.15137l-3.19747,0l0,-3.15162l3.1841,0l0,-3.15162l-3.1841,0l0,-3.15137l3.1841,0l0,-3.19078l-3.1841,0l0,-3.19078l3.1841,0l0,-2.95438l-3.1841,0l0,-3.19078l3.19747,0l0.00005,0l0.00001,0z" stroke="null"/>
   </g>
-  <text stroke="null" font-weight="normal" font-style="normal" xml:space="preserve" text-anchor="start" font-family="'Helvetica Neue',Helvetica,'PingFang SC','Hiragino Sans GB','Microsoft YaHei','微软雅黑',Arial,sans-serif" font-size="18" stroke-width="0" id="svg_8" y="27.73091" x="11.16022" fill-opacity="0.8" fill="${textPrimaryColor}">${fileNameText}</text>
+  <text stroke="null" font-weight="normal" font-style="normal" xml:space="preserve" text-anchor="start" font-family="'Helvetica Neue',Helvetica,'PingFang SC','Hiragino Sans GB','Microsoft YaHei','微软雅黑',Arial,sans-serif" font-size="18" stroke-width="0" id="svg_8" y="27.73091" x="11.16022" fill="${textPrimaryColor}">${fileNameText}</text>
   <text fill="${textSecondaryColor}" stroke="null" fill-opacity="0.8" x="13.14534" y="55.05053" id="svg_5" stroke-width="0" font-size="12" font-family="'Helvetica Neue',Helvetica,'PingFang SC','Hiragino Sans GB','Microsoft YaHei','微软雅黑',Arial,sans-serif" text-anchor="start" xml:space="preserve">${fileSizeText}</text>
  </g>
 `;
