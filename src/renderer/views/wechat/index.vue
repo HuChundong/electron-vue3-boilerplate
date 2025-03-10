@@ -6,7 +6,8 @@
         <font-awesome-icon icon="fa-solid fa-minus" />
       </div>
       <div class="button" @click="onRestoreWindow">
-        <font-awesome-icon icon="fa-solid fa-window-restore" />
+        <!-- fa-clone-->
+        <font-awesome-icon icon="fa-regular fa-square" />
       </div>
       <div class="button close" @click="onCloseWindow">
         <font-awesome-icon icon="fa-solid fa-xmark" />

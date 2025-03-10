@@ -21,7 +21,7 @@ if(!gotLock && appState.onlyAllowSingleInstance){
 }else{
   app.whenReady().then(async() => {
     // todo 正式版的时候要移除
-    await session.defaultSession.loadExtension("C:\\Users\\hucd\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Extensions\\nhdogjmejiglipccpnnnanhbledajbpd\\7.7.0_0");
+    await session.defaultSession.loadExtension("C:\\Users\\hucd\\AppData\\Local\\Microsoft\\Edge\\User Data\\Default\\Extensions\\nhdogjmejiglipccpnnnanhbledajbpd\\7.7.0_0");
     if(!appState.initialize()){
       dialog.showErrorBox("App initialization failed", "The program will exit after click the OK button.",);
       app.exit();

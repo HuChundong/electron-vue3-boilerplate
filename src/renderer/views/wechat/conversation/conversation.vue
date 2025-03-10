@@ -15,42 +15,12 @@
     </div>
     <div class="session-body">
       <VList ref="listRef" v-slot="{ item, index }" :data="messages" :style="{ height: '100%' }">
-        <MsxBox
-          :key="index"
-          :message="item"
-          :avatar="item.is_self ? store.account?.small_head_url : props.conversation?.smallHeadImgUrl"
-        />
+        <MsxBox :key="index" :message="item"
+          :avatar="item.is_self ? store.account?.small_head_url : props.conversation?.smallHeadImgUrl" />
       </VList>
     </div>
     <div class="session-footer">
-      <div class="tools" />
-      <div class="input-container">
-        <!--todo 参考实现：https://juejin.cn/post/7312848658718375971-->
-        <textarea
-          v-model="sendText"
-          placeholder=""
-          style="
-            height: 100%;
-            width: 100%;
-            outline: none;
-            border: none;
-            resize: none;
-            background-color: transparent;
-          "
-          @keydown.enter="onSendBtnClick"
-        />
-      </div>
-      <div class="send-button">
-        <t-button
-          class="btn-disable-custom"
-          :disabled="sendBtnDisabled"
-          theme="primary"
-          style="padding-left: 25px; padding-right: 25px"
-          @click="onSendBtnClick"
-        >
-          发送(S)
-        </t-button>
-      </div>
+      <ConversationInputBox></ConversationInputBox>
     </div>
   </div>
 </template>
@@ -64,6 +34,7 @@ import utils from "@utils/renderer";
 import { VList } from "virtua/vue";
 import { useAccountStore } from "@/stores/account";
 import { useMessageStore } from "@/stores/message";
+import ConversationInputBox from "./conversation-input-box.vue";
 // todo 群聊，或者单聊，都有历史记录，这个历史记录的话，考虑直接采用json存储？标题是 群聊名称+(人数)
 // 图片的话，考虑保存到本地，然后异步加载，因为服务器上只保留7天在minio上
 const store = useAccountStore();
@@ -72,20 +43,21 @@ const props = defineProps<{
   conversation: WxConversation;
 }>();
 const listRef = templateRef("listRef");
+const inputRef = templateRef("inputRef");
 let sendBtnDisabled = ref(true);
 let sendText = ref("");
 watch(
   () => sendText.value,
   (newVal) => {
-    if(newVal !== ""){
+    if (newVal !== "") {
       sendBtnDisabled.value = false;
-    }else{
+    } else {
       sendBtnDisabled.value = true;
     }
   }
 );
-async function onSendBtnClick(){
-  if(sendText.value === ""){
+async function onSendBtnClick() {
+  if (sendText.value === "") {
     return;
   }
   let wxMsg: WxMessage = {
@@ -123,25 +95,27 @@ const messages = ref<WxMessage[]>([]); // 使用 ref 来存储列表数据
 watch(() => props.conversation, () => {
   try {
     console.log("获取消息记录");
-    if(!props.conversation){
+    if (!props.conversation) {
       return;
     }
     const messagesOld = messageStore.getMessagesByWxId(props.conversation.strUsrName);
-    if(messagesOld){
-      messages.value = [ ...messagesOld ];
+    if (messagesOld) {
+      messages.value = [...messagesOld];
     }
-  } catch (e){
+    // 输入框聚焦到inputRef
+    inputRef.value.focus();
+  } catch (e) {
     console.error(e);
   }
 }, { immediate: false, deep: false });
 
-function onRobotSettingClick(){
+function onRobotSettingClick() {
   console.log("onRobotSettingClick");
   // 这里准备打开机器人的设置菜单
 }
 
 // 当前消息直接上屏，同时插入到缓存，延迟200毫秒屏幕进行滚动到底的操作
-function addMsgToList(wxMsg: WxMessage){
+function addMsgToList(wxMsg: WxMessage) {
   messages.value.push(wxMsg);
   console.log(`插入${props.conversation.strUsrName}消息`);
   messageStore.insertMessageByWxId(props.conversation.strUsrName, wxMsg);
@@ -150,12 +124,12 @@ function addMsgToList(wxMsg: WxMessage){
   }, 200);
 }
 
-function receiveMsg(wxMsg: WxMessage){
+function receiveMsg(wxMsg: WxMessage) {
   const receiver = wxMsg.is_group ? wxMsg.roomid : wxMsg.sender;
   messageStore.updateConversationLatestMsg(wxMsg);
-  if(props.conversation && receiver === props.conversation.strUsrName){
+  if (props.conversation && receiver === props.conversation.strUsrName) {
     addMsgToList(wxMsg);
-  }else{
+  } else {
     messageStore.insertMessageByWxId(receiver || "", wxMsg);
   }
 }
@@ -212,64 +186,22 @@ utils.onMsgReceived((msg: { topic: string, payload: string }) => {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-
-    .tools {
-      display: flex;
-      flex-direction: row;
-      justify-content: center;
-      align-items: center;
-      height: 30px;
-      width: 100%;
-      padding-left: 16px;
-      padding-right: 16px;
-      color: var(--td-text-color-secondary);
-    }
-
-    .input-container {
-      flex: 1;
-      width: 100%;
-      padding-left: 16px;
-      padding-right: 16px;
-
-      textarea {
-        caret-color: var(--td-brand-color);
-        color: var(--td-text-color-primary);
-        font-size: 16px;
-      }
-    }
-
-    .send-button {
-      width: 100%;
-      text-align: right;
-      padding-right: 16px;
-      padding-bottom: 16px;
-      color: var(--td-text-color-anti);
-    }
   }
-}
 
-.button {
-  margin-left: 6px;
-  margin-bottom: 2px;
-  width: 40px;
-  padding: 10px;
-  display: flex;
-  border-radius: 4px;
-  justify-content: center;
-  align-items: center;
-  color: var(--td-text-color-secondary);
+  .button {
+    margin-left: 6px;
+    margin-bottom: 2px;
+    width: 40px;
+    padding: 10px;
+    display: flex;
+    border-radius: 4px;
+    justify-content: center;
+    align-items: center;
+    color: var(--td-text-color-secondary);
 
-  &:hover {
-    background-color: var(--td-bg-color-secondarycontainer-hover);
-  }
-}
-
-.btn-disable-custom {
-  &.t-is-disabled {
-    background-color: var(--td-bg-color-component-disabled) !important;
-    border-color: var(--td-bg-color-component-disabled) !important;
-    color: var(--td-text-color-disabled) !important;
-    cursor: unset !important;
+    &:hover {
+      background-color: var(--td-bg-color-secondarycontainer-hover);
+    }
   }
 }
 </style>
