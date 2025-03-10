@@ -43,12 +43,14 @@ function createFileDom(file: File) {
         break;
       case "ppt":
       case "pptx":
+      case "wpt":
         typeTemplate = pptType;
         break;
       case "xls":
       case "xlsx":
         typeTemplate = excelType;
         break;
+      case "wps":
       case "doc":
       case "docx":
         typeTemplate = wordType;
