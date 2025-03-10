@@ -5,6 +5,17 @@ import { templateRef } from "@vueuse/core";
 import { onMounted, ref } from "vue";
 let sendBtnDisabled = ref(true);
 let sendText = ref("");
+
+function formatFileSize(sizeInKB: number): string {
+  if (sizeInKB < 1024) {
+    return sizeInKB.toFixed(1) + " KB";
+  } else if (sizeInKB < 1024 * 1024) {
+    return (sizeInKB / 1024).toFixed(1) + " MB";
+  } else {
+    return (sizeInKB / (1024 * 1024)).toFixed(1) + " GB";
+  }
+}
+
 async function onSendBtnClick() {
 
 }
@@ -26,8 +37,10 @@ const wxEditor = templateRef("wxEditor");
   const bgColor = "#242424";
   const textPrimaryColor = "rgba(255,255,255,0.9)";
   const textSecondaryColor = "rgba(255,255,255,0.35)";
-  const fileSizeText = size.toFixed(1) + "k";
+  // 根据文件大小，动态调整单位，保留一位小数
+  const fileSizeText =formatFileSize(size) // size.toFixed(1) + "k"; 
   const fileNameText = file.name;
+  // svg字体设置为：font-family: "Helvetica Neue",Helvetica,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif !important;
   const templte = `
 <g>
   <title>Layer 1</title>
@@ -37,8 +50,8 @@ const wxEditor = templateRef("wxEditor");
    <path id="svg_2" p-id="1329" fill="#BBC3D4" d="m253.04632,11.79431l0,10.38558c0,0.71518 0.57978,1.29496 1.29496,1.29496l10.25608,0l-11.55105,-11.68054l0.00001,0.00001l0,-0.00001z" stroke="null"/>
    <path id="svg_3" p-id="1330" fill="#FFFFFF" d="m249.1977,40.31436l0,6.30273a1.57421,1.57421 0 0 1 -0.46267,1.11414a1.58026,1.58026 0 0 1 -1.1162,0.46152l-3.22383,0a1.58088,1.58088 0 0 1 -1.1162,-0.46126a1.57426,1.57426 0 0 1 -0.46267,-1.11465l0,-6.30247l6.38157,0l0.00001,0l-0.00001,-0.00001zm-1.57882,3.61087l-3.22393,0l0,3.16468l3.22393,0l0,-3.16468zm1.52598,-9.91349l0,3.16468l-3.17073,0l0,-3.16473l3.17079,0l-0.00005,0.00005l0,-0.00001l-0.00001,0.00001zm-3.13122,-22.21743l0,3.19078l3.18404,0l0,3.19078l-3.18447,0l0,2.95438l3.18447,0l0,3.19078l-3.1841,0l0,3.15162l3.1841,0l0,3.15162l-3.1841,0l0,3.15137l-3.19747,0l0,-3.15162l3.1841,0l0,-3.15162l-3.1841,0l0,-3.15137l3.1841,0l0,-3.19078l-3.1841,0l0,-3.19078l3.1841,0l0,-2.95438l-3.1841,0l0,-3.19078l3.19747,0l0.00005,0l0.00001,0z" stroke="null"/>
   </g>
-  <text stroke="null" font-weight="normal" font-style="normal" xml:space="preserve" text-anchor="start" font-family="Noto Sans JP" font-size="18" stroke-width="0" id="svg_8" y="27.73091" x="11.16022" fill-opacity="0.8" fill="${textPrimaryColor}">【精品】XX...库.docx</text>
-  <text fill="${textSecondaryColor}" stroke="null" fill-opacity="0.8" x="13.14534" y="55.05053" id="svg_5" stroke-width="0" font-size="12" font-family="Noto Sans JP" text-anchor="start" xml:space="preserve">369.0k</text>
+  <text stroke="null" font-weight="normal" font-style="normal" xml:space="preserve" text-anchor="start" font-family="'Helvetica Neue',Helvetica,'PingFang SC','Hiragino Sans GB','Microsoft YaHei','微软雅黑',Arial,sans-serif" font-size="18" stroke-width="0" id="svg_8" y="27.73091" x="11.16022" fill-opacity="0.8" fill="${textPrimaryColor}">${fileNameText}</text>
+  <text fill="${textSecondaryColor}" stroke="null" fill-opacity="0.8" x="13.14534" y="55.05053" id="svg_5" stroke-width="0" font-size="12" font-family="'Helvetica Neue',Helvetica,'PingFang SC','Hiragino Sans GB','Microsoft YaHei','微软雅黑',Arial,sans-serif" text-anchor="start" xml:space="preserve">${fileSizeText}</text>
  </g>
 `;
   const dom = document.createElementNS("http://www.w3.org/2000/svg", "svg");
@@ -114,6 +127,7 @@ onMounted(() => {
         handleImage(imageFile);
       }else{
         const fileDom = createFileDom(item.getAsFile() || new File([], ""));
+        fileDom.classList.add("wx-input-file");
         insertNode(fileDom);
       }
     }
@@ -219,5 +233,11 @@ onMounted(() => {
 .wx-input-img {
   max-width: 150px;
   max-height: 150px;
+}
+
+.wx-input-file {
+  width: 284px;
+  height: 74px;
+  padding: 2px;
 }
 </style>
