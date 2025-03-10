@@ -180,7 +180,7 @@ utils.onMsgReceived((msg: { topic: string, payload: string }) => {
   }
 
   .session-footer {
-    height: 180px;
+    height: 250px;
     border-top: 1px solid var(--td-bg-color-component);
     display: flex;
     flex-direction: column;

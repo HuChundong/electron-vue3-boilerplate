@@ -7,7 +7,7 @@ import { WxMessage } from "@/typings/wx";
 import utils from "@utils/renderer";
 import { templateRef } from "@vueuse/core";
 import { onMounted, ref } from "vue";
-import { zipType, pptType, excelType, wordType, pdfType, unknownType } from "./file-type-svg";
+import { zipType, pptType, excelType, wordType, pdfType, videoType, unknownType } from "./file-type-svg";
 let sendBtnDisabled = ref(true);
 let sendText = ref("");
 
@@ -56,6 +56,15 @@ function createFileDom(file: File) {
       case "pdf":
         typeTemplate = pdfType;
         break;
+      case "mp4":
+      case "avi":
+      case "rmvb":
+      case "rm":
+      case "flv":
+      case "mov":
+      case "mkv":
+        typeTemplate = videoType;
+        break;
       default:
         typeTemplate = unknownType;
     }
@@ -93,7 +102,7 @@ ${typeTemplate}
 }
 
 /**
- *  将指定节点插入到光标位置
+ *  将指定节点插入到光标位置,插入之后如果出现滚动条，应该要主动滚动一下
  * @param {DOM} fileDom dom节点
  */
 function insertNode(dom: Node) {
@@ -110,6 +119,8 @@ function insertNode(dom: Node) {
   range.insertNode(dom);
   // 将光标移到选中范围的最后面
   selection.collapseToEnd();
+  // 滚动到底部
+  wxEditor.value.scrollTop = wxEditor.value.scrollHeight;
 }
 
 /**
@@ -255,8 +266,8 @@ onMounted(() => {
 <style lang="less">
 // 这里的样式专门给输入框用，不能添加scoped，注意其他地方不要互相干扰，这里class全部加前缀wx-input-
 .wx-input-img {
-  max-width: 150px;
-  max-height: 150px;
+  max-width: 250px;
+  max-height: 250px;
 }
 
 .wx-input-file {
