@@ -50,6 +50,7 @@
     "electron": "^35.0.0",
     "eslint": "8.57",
     "eslint-plugin-vue": "^9.32.0",
+    "file-type": "^20.4.0",
     "less": "^4.2.2",
     "less-loader": "^12.2.0",
     "minio": "^8.0.4",

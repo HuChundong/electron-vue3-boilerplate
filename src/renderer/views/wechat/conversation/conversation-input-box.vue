@@ -8,6 +8,7 @@ import utils from "@utils/renderer";
 import { templateRef } from "@vueuse/core";
 import { onMounted, ref, watch } from "vue";
 import { zipType, pptType, excelType, wordType, pdfType, videoType, unknownType } from "./file-type-svg";
+import { fileTypeFromBuffer } from 'file-type';
 let sendBtnDisabled = ref(true);
 
 function formatFileSize(sizeInKB: number): string {
@@ -146,6 +147,7 @@ function handleImage(imageFile: File) {
 }
 
 function handleFile(file: File) {
+  console.log(file.path);
   const fileDom = createFileDom(file);
   fileDom.classList.add("wx-input-file");
   insertNode(fileDom);
@@ -174,6 +176,7 @@ function onDragOver(event: DragEvent) {
 }
 
 async function rpcChooseFile() {
+  wxEditor.value.focus();
   // 打开文件选择对话框
   const result = await utils.showOpenDialog({
     properties: ["openFile"],
@@ -181,15 +184,20 @@ async function rpcChooseFile() {
       { name: "All Files", extensions: ["*"] }
     ]
   });
-  wxEditor.value.focus();
-
   if (result.filePaths.length > 0) {
-    // 计算文件MD5
-    console.log(result.filePaths[0]);
-    // 读取文件，从文件获取文件名
-    let fileName = result.filePaths[0].split("\\").pop() || "未知文件";
-    const file = new File([result.filePaths[0]], fileName);
-    handleFile(file);
+    const buffer = await utils.getfile(result.filePaths[0]);
+    if (buffer) {
+      const fileType = await fileTypeFromBuffer(buffer);
+      let fileName = result.filePaths[0].split("\\").pop() || "unknown";
+      const file = new File([buffer], fileName, { type: fileType?.mime });
+      if (file.type.indexOf("image") !== -1) {
+        handleImage(file);
+      } else {
+        handleFile(file);
+      }
+    } else {
+      console.error("Failed to get file buffer.");
+    }
   }
 }
 

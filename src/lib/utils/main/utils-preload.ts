@@ -28,6 +28,7 @@ function initialize(){
         onCmdS2r: (callback) => ipcRenderer.on("electron-utils-cmd-s2r", (_event, value) => {
           callback(value);
         }),
+        getfile: (path:string) => ipcRenderer.invoke("electron-utils-getfile", path),
         // === FALG LINE (DO NOT MODIFY/REMOVE) ===
       });
     } catch {

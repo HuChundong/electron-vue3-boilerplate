@@ -66,6 +66,9 @@ class Utils{
   public async cmdSend(data:string):Promise<Packet | undefined>{
     return (window as any).__ElectronUtils__.cmdSend(data);
   }
+  public async getfile(path:string):Promise<Buffer | undefined>{
+    return await (window as any).__ElectronUtils__.getfile(path);
+  }
   // === FALG LINE (DO NOT MODIFY/REMOVE) ===
 }
 
