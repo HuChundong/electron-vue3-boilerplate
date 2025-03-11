@@ -10,7 +10,7 @@ import { onMounted, ref, watch } from "vue";
 import { zipType, pptType, excelType, wordType, pdfType, videoType, unknownType } from "./file-type-svg";
 import { fileTypeFromBuffer } from 'file-type';
 let sendBtnDisabled = ref(true);
-
+let cursorPosition = ref(0);
 function formatFileSize(sizeInKB: number): string {
   if (sizeInKB < 1024) {
     return sizeInKB.toFixed(1) + "K";
@@ -111,18 +111,18 @@ function insertNode(dom: Node) {
   // 获取光标
   const selection = window.getSelection();
   // 获取选中的内容
-  if (!selection) {
-    return;
+  if (selection) {
+    const range = selection.getRangeAt(0);
+    // 删除选中的内容
+    range.deleteContents();
+    // 将节点插入范围最前面添加节点
+    range.insertNode(dom);
+    // 将光标移到选中范围的最后面
+    selection.collapseToEnd();
   }
-  const range = selection.getRangeAt(0);
-  // 删除选中的内容
-  range.deleteContents();
-  // 将节点插入范围最前面添加节点
-  range.insertNode(dom);
-  // 将光标移到选中范围的最后面
-  selection.collapseToEnd();
   // 滚动到底部
   wxEditor.value.scrollTop = wxEditor.value.scrollHeight;
+  cursorPosition.value = getCursorPosition();
 }
 
 /**
@@ -177,7 +177,9 @@ function onDragOver(event: DragEvent) {
 
 async function rpcChooseFile() {
   // 点击的时候会离开输入框，那么输入框在失去焦点的时候应该要记住位置？
+  setCursorPosition(cursorPosition.value);
   wxEditor.value.focus();
+
   // 打开文件选择对话框
   const result = await utils.showOpenDialog({
     properties: ["openFile"],
@@ -202,6 +204,32 @@ async function rpcChooseFile() {
   }
 }
 
+function onPaste(e: ClipboardEvent) {
+  e.preventDefault();
+  const files = e.clipboardData?.files || [];
+  // 如果有文件，就插入文件
+  if (files.length > 0) {
+    for (let i = 0; i < files.length; i++) {
+      const item = files[i];
+      console.log(item);
+      if (item.type.indexOf("image") !== -1) {
+        handleImage(item);
+      } else {
+        handleFile(item);
+      }
+    }
+  }
+  // 没有文件的情况下，全部处理成文本，护理样式，只保留换行和缩进
+  if (e.clipboardData?.items) {
+    let txtAppend = e.clipboardData.getData("text/plain");
+    if (txtAppend) {
+      // insertNode(document.createTextNode(txtAppend));
+      document.execCommand('insertText', false, txtAppend);
+    }
+  }
+  cursorPosition.value = getCursorPosition();
+}
+
 onMounted(() => {
   /**
    * 发送消息之前，要对这个内容进行分割，如果文本之间被附件切割了，要分成多个消息进行发送，一个附件就是一条消息
@@ -213,36 +241,43 @@ onMounted(() => {
       sendBtnDisabled.value = true;
     }
   })
-  // 监听粘贴事件
-  wxEditor.value.addEventListener("paste", (e) => {
-    e.preventDefault();
-    const files = e.clipboardData?.files || [];
-    // 如果有文件，就插入文件
-    if (files.length > 0) {
-      for (let i = 0; i < files.length; i++) {
-        const item = files[i];
-        console.log(item);
-        if (item.type.indexOf("image") !== -1) {
-          handleImage(item);
-        } else {
-          handleFile(item);
-        }
-      }
-      return;
-    }
-    // 没有文件的情况下，全部处理成文本，护理样式，只保留换行和缩进
-    if (e.clipboardData?.items) {
-      let txtAppend = e.clipboardData.getData("text/plain");
-      if (txtAppend) {
-        // insertNode(document.createTextNode(txtAppend));
-        document.execCommand('insertText', false, txtAppend);
-      }
-      return;
-    }
-  });
 });
 
+function getCursorPosition() {
+  const selection = window.getSelection();
+  if (!selection || selection.rangeCount === 0) return 0;
+  const range = selection.getRangeAt(0); // 获取当前选区的范围
+  const preCaretRange = range.cloneRange(); // 克隆范围
+  preCaretRange.selectNodeContents(wxEditor.value); // 选择整个 contenteditable 的内容
+  preCaretRange.setEnd(range.endContainer, range.endOffset); // 设置范围结束点为光标位置
+  return preCaretRange.toString().length; // 返回光标位置（字符偏移量）
+}
+
+// 辅助函数：设置光标位置
+function setCursorPosition(position:number) {
+  const selection = window.getSelection();
+  const range = document.createRange();
+
+  let charIndex = 0;
+  const walker = document.createTreeWalker(wxEditor.value, NodeFilter.SHOW_TEXT, null);
+
+  while (walker.nextNode()) {
+    const node = walker.currentNode;
+    const textLength = node.textContent.length;
+
+    if (charIndex + textLength >= position) {
+      range.setStart(node, position - charIndex);
+      range.collapse(true);
+      selection.removeAllRanges();
+      selection.addRange(range);
+      break;
+    }
+    charIndex += textLength;
+  }
+}
+
 function onInputChange(e: Event) {
+  cursorPosition.value = getCursorPosition();
   let inputEvent = e as InputEvent;
   console.log(inputEvent.data);
   if (inputEvent.inputType === "insertText" && inputEvent.data === "@") {
@@ -252,6 +287,20 @@ function onInputChange(e: Event) {
   }
 }
 
+function onBlur(e: FocusEvent) {
+  console.log("失去焦点");
+  console.log(e);
+}
+
+function onFocus(e: FocusEvent) {
+  // cursorPosition.value = getCursorPosition();
+  console.log("获取焦点");
+}
+
+function onClick(e: MouseEvent) {
+  console.log("点击");
+  console.log(e);
+}
 </script>
 <template>
   <div class="tools">
@@ -270,7 +319,8 @@ function onInputChange(e: Event) {
   </div>
   <div class="input-container" @drop="onDrop" @dragover="onDragOver">
     <!--todo 参考实现：https://juejin.cn/post/7312848658718375971-->
-    <div contenteditable spellcheck="false" class="wx-input-edit" ref="wxEditor" @input="onInputChange"></div>
+    <div contenteditable spellcheck="false" class="wx-input-edit" ref="wxEditor" @input="onInputChange" @paste="onPaste"
+      @blur="onBlur" @focus="onFocus" @click="onClick"></div>
   </div>
   <div class="send-button">
     <t-button class="btn-disable-custom" :disabled="sendBtnDisabled" theme="primary"
