@@ -8,7 +8,6 @@ import utils from "@utils/renderer";
 import { templateRef } from "@vueuse/core";
 import { onMounted, ref, watch } from "vue";
 import { zipType, pptType, excelType, wordType, pdfType, videoType, unknownType } from "./file-type-svg";
-import { text } from "@fortawesome/fontawesome-svg-core";
 let sendBtnDisabled = ref(true);
 
 function formatFileSize(sizeInKB: number): string {
@@ -152,6 +151,48 @@ function handleFile(file: File) {
   insertNode(fileDom);
 }
 
+function onDrop(event: DragEvent) {
+  wxEditor.value.focus();
+  event.preventDefault();
+  event.stopPropagation();
+  const files = event.dataTransfer?.files;
+  if (files && files.length > 0) {
+    for (let i = 0; i < files.length; i++) {
+      const item = files[i];
+      if (item.type.indexOf("image") !== -1) {
+        handleImage(item);
+      } else {
+        handleFile(item);
+      }
+    }
+  }
+}
+
+function onDragOver(event: DragEvent) {
+  event.preventDefault();
+  event.stopPropagation();
+}
+
+async function rpcChooseFile() {
+  // 打开文件选择对话框
+  const result = await utils.showOpenDialog({
+    properties: ["openFile"],
+    filters: [
+      { name: "All Files", extensions: ["*"] }
+    ]
+  });
+  wxEditor.value.focus();
+
+  if (result.filePaths.length > 0) {
+    // 计算文件MD5
+    console.log(result.filePaths[0]);
+    // 读取文件，从文件获取文件名
+    let fileName = result.filePaths[0].split("\\").pop() || "未知文件";
+    const file = new File([result.filePaths[0]], fileName);
+    handleFile(file);
+  }
+}
+
 onMounted(() => {
   /**
    * 发送消息之前，要对这个内容进行分割，如果文本之间被附件切割了，要分成多个消息进行发送，一个附件就是一条消息
@@ -167,6 +208,7 @@ onMounted(() => {
   wxEditor.value.addEventListener("paste", (e) => {
     e.preventDefault();
     const files = e.clipboardData?.files || [];
+    // 如果有文件，就插入文件
     if (files.length > 0) {
       for (let i = 0; i < files.length; i++) {
         const item = files[i];
@@ -179,9 +221,9 @@ onMounted(() => {
       }
       return;
     }
+    // 没有文件的情况下，全部处理成文本，护理样式，只保留换行和缩进
     if (e.clipboardData?.items) {
-      console.log()
-      let txtAppend = e.clipboardData?.getData('text/plain');
+      let txtAppend = e.clipboardData.getData("text/plain");
       if (txtAppend) {
         // insertNode(document.createTextNode(txtAppend));
         document.execCommand('insertText', false, txtAppend);
@@ -192,7 +234,13 @@ onMounted(() => {
 });
 
 function onInputChange(e: Event) {
-  console.log(e);
+  let inputEvent = e as InputEvent;
+  console.log(inputEvent.data);
+  if (inputEvent.inputType === "insertText" && inputEvent.data === "@") {
+    console.log("输入了@");
+    // 记录当前的位置，然后弹出一个群成员选择框，选择之后，插入到当前的位置
+    // 选择具体的群成员，获取它的nickname和username，然后插入到输入框中，用和插入文件一样的方法，先手动生成一个svg，但是这个svg的宽度需要根据文本的长度来生成
+  }
 }
 
 </script>
@@ -201,7 +249,7 @@ function onInputChange(e: Event) {
     <div class="button">
       <font-awesome-icon icon="fa-regular fa-face-laugh" />
     </div>
-    <div class="button">
+    <div class="button" @click="rpcChooseFile">
       <font-awesome-icon icon="fa-regular fa-folder-closed" />
     </div>
     <div class="button">
@@ -211,9 +259,9 @@ function onInputChange(e: Event) {
       <font-awesome-icon icon="fa-regular fa-comment-dots" />
     </div>
   </div>
-  <div class="input-container">
+  <div class="input-container" @drop="onDrop" @dragover="onDragOver">
     <!--todo 参考实现：https://juejin.cn/post/7312848658718375971-->
-    <div contenteditable class="wx-input-edit" ref="wxEditor" @change="onInputChange"></div>
+    <div contenteditable spellcheck="false" class="wx-input-edit" ref="wxEditor" @input="onInputChange"></div>
   </div>
   <div class="send-button">
     <t-button class="btn-disable-custom" :disabled="sendBtnDisabled" theme="primary"
