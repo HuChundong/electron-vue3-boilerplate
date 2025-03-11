@@ -81,7 +81,7 @@ function onOpenDevTools(){
   height: 100%;
 
   .button {
-    width: 55px;
+    width: 46px;
     height: var(--drag-bar-height);
     display: flex;
     justify-content: center;

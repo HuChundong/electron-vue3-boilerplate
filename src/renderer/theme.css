@@ -1,7 +1,7 @@
 :root,
 :root[theme-mode="light"] {
   --wechat-side-width: 60px;
-  --drag-bar-height: 36px;
+  --drag-bar-height: 30px;
   --brand-main: var(--td-brand-color-4);
   --td-brand-color-light: var(--td-brand-color-1);
   --td-brand-color-focus: var(--td-brand-color-2);

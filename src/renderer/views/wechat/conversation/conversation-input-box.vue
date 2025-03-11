@@ -176,6 +176,7 @@ function onDragOver(event: DragEvent) {
 }
 
 async function rpcChooseFile() {
+  // 点击的时候会离开输入框，那么输入框在失去焦点的时候应该要记住位置？
   wxEditor.value.focus();
   // 打开文件选择对话框
   const result = await utils.showOpenDialog({
