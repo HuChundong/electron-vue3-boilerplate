@@ -43,7 +43,6 @@ const props = defineProps<{
   conversation: WxConversation;
 }>();
 const listRef = templateRef("listRef");
-const inputRef = templateRef("inputRef");
 let sendBtnDisabled = ref(true);
 let sendText = ref("");
 watch(
@@ -92,6 +91,7 @@ async function onSendBtnClick() {
 
 const messages = ref<WxMessage[]>([]); // 使用 ref 来存储列表数据
 
+// 这里要清理副作用
 watch(() => props.conversation, () => {
   try {
     console.log("获取消息记录");
@@ -103,7 +103,6 @@ watch(() => props.conversation, () => {
       messages.value = [...messagesOld];
     }
     // 输入框聚焦到inputRef
-    inputRef.value.focus();
   } catch (e) {
     console.error(e);
   }

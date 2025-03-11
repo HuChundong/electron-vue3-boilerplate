@@ -135,9 +135,9 @@ class FileDownload{
             return true;
           }
         } catch (e){
-          (e);
+          console.error(e);
         }
-      }
+      } 
     }
   
     return false;

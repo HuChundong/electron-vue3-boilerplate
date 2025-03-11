@@ -6,10 +6,10 @@
 import { WxMessage } from "@/typings/wx";
 import utils from "@utils/renderer";
 import { templateRef } from "@vueuse/core";
-import { onMounted, ref } from "vue";
+import { onMounted, ref, watch } from "vue";
 import { zipType, pptType, excelType, wordType, pdfType, videoType, unknownType } from "./file-type-svg";
+import { text } from "@fortawesome/fontawesome-svg-core";
 let sendBtnDisabled = ref(true);
-let sendText = ref("");
 
 function formatFileSize(sizeInKB: number): string {
   if (sizeInKB < 1024) {
@@ -37,7 +37,7 @@ function createFileDom(file: File) {
   if (file.name.indexOf(".") >= 0) {
     const fileName = file.name.split(".");
     let extension = fileName.pop() || "未知文件";
-    switch(extension.toLowerCase()){
+    switch (extension.toLowerCase()) {
       case "zip":
         typeTemplate = zipType;
         break;
@@ -146,30 +146,54 @@ function handleImage(imageFile: File) {
   reader.readAsDataURL(imageFile);
 }
 
+function handleFile(file: File) {
+  const fileDom = createFileDom(file);
+  fileDom.classList.add("wx-input-file");
+  insertNode(fileDom);
+}
+
 onMounted(() => {
+  /**
+   * 发送消息之前，要对这个内容进行分割，如果文本之间被附件切割了，要分成多个消息进行发送，一个附件就是一条消息
+   */
+  watch(() => wxEditor.value.innerHTML, (newVal) => {
+    if (newVal !== "") {
+      sendBtnDisabled.value = false;
+    } else {
+      sendBtnDisabled.value = true;
+    }
+  })
   // 监听粘贴事件
   wxEditor.value.addEventListener("paste", (e) => {
-    const items = e.clipboardData?.items;
-    if (!items) {
+    e.preventDefault();
+    const files = e.clipboardData?.files || [];
+    if (files.length > 0) {
+      for (let i = 0; i < files.length; i++) {
+        const item = files[i];
+        console.log(item);
+        if (item.type.indexOf("image") !== -1) {
+          handleImage(item);
+        } else {
+          handleFile(item);
+        }
+      }
       return;
     }
-    e.preventDefault();
-    for (let i = 0; i < items.length; i++) {
-      const item = items[i];
-      if (item.kind === "file" && item.type.indexOf("image") !== -1) {
-        const imageFile = item.getAsFile();
-        if (imageFile === null) {
-          continue;
-        }
-        handleImage(imageFile);
-      } else {
-        const fileDom = createFileDom(item.getAsFile() || new File([], ""));
-        fileDom.classList.add("wx-input-file");
-        insertNode(fileDom);
+    if (e.clipboardData?.items) {
+      console.log()
+      let txtAppend = e.clipboardData?.getData('text/plain');
+      if (txtAppend) {
+        // insertNode(document.createTextNode(txtAppend));
+        document.execCommand('insertText', false, txtAppend);
       }
+      return;
     }
   });
 });
+
+function onInputChange(e: Event) {
+  console.log(e);
+}
 
 </script>
 <template>
@@ -189,7 +213,7 @@ onMounted(() => {
   </div>
   <div class="input-container">
     <!--todo 参考实现：https://juejin.cn/post/7312848658718375971-->
-    <div contenteditable class="edit-container" ref="wxEditor"></div>
+    <div contenteditable class="wx-input-edit" ref="wxEditor" @change="onInputChange"></div>
   </div>
   <div class="send-button">
     <t-button class="btn-disable-custom" :disabled="sendBtnDisabled" theme="primary"
@@ -216,20 +240,6 @@ onMounted(() => {
   height: 0;
   padding-left: 16px;
   padding-right: 16px;
-
-  .edit-container {
-    caret-color: var(--td-brand-color);
-    color: var(--td-text-color-primary);
-    font-size: 16px;
-    height: 100%;
-    width: 100%;
-    max-height: 100%;
-    overflow-y: auto;
-
-    &:focus {
-      outline: none;
-    }
-  }
 }
 
 .send-button {
@@ -276,5 +286,24 @@ onMounted(() => {
   width: 256px;
   height: 67px;
   padding: 2px;
+}
+
+.wx-input-edit {
+  caret-color: var(--td-brand-color);
+  color: var(--td-text-color-primary);
+  font-size: 16px;
+  height: 100%;
+  width: 100%;
+  max-height: 100%;
+  overflow-y: auto;
+
+  &:focus {
+    outline: none;
+  }
+
+  &::selection {
+    background-color: var(--td-brand-color-focus);
+    color: var(--td-text-color-primary);
+  }
 }
 </style>

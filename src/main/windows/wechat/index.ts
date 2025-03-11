@@ -16,7 +16,7 @@ class WechatWindow extends WindowBase{
       // 设置父窗口
       parent: appState.primaryWindow?.browserWindow as BrowserWindow,
       // todo 这个颜色需要增加一个opc，用户切换配置的时候要更改，并且要考虑从文本读取配置
-      backgroundColor: 'black',
+      backgroundColor: "black",
     });
 
     this.openRouter("/wechat");
