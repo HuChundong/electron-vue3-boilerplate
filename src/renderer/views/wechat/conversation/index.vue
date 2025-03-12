@@ -99,6 +99,7 @@ function onConversationClick(conversation: WxConversation){
   .conversation-content {
     flex: 1;
     height: 100%;
+    background-size: cover;
     background-color: var(--td-bg-color-page);
   }
 }

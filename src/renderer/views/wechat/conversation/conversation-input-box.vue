@@ -12,6 +12,9 @@ import { fileTypeFromBuffer } from "file-type";
 import { htmlToText } from "html-to-text";
 import { MinIOService } from "@/service/minio-service";
 import wxService from "@/service/wx-service";
+import { v4 } from "uuid";
+//所有的文件都在这个Map中进行记录，这样可以方便的查找，删除，上传等操作
+const filesMap = new Map<string, File>();
 const props = defineProps<{
   conversation: WxConversation;
 }>();
@@ -34,38 +37,73 @@ async function onSendBtnClick() {
   if (content === "" || content === "<br>") {
     return;
   }
-  const msgText = htmlToText(content)
-  let wxMsg: WxMessage = {
-    "is_self": true,
-    "is_group": props.conversation?.strUsrName.endsWith("@chatroom") || false,
-    "id": new Date().valueOf(),
-    "type": 1,
-    "subtype": null,
-    "ts": new Date().valueOf(),
-    "roomid": props.conversation?.strUsrName.endsWith("@chatroom") ? props.conversation?.strUsrName : "",
-    "content": msgText,
-    "sender": props.conversation?.strUsrName || "",
-    "sign": null,
-    "thumb": null,
-    "extra": null,
-    "xml": null,
-    "images": null,
-    "files": null,
-    "videos": null,
-    "audios": null,
-    "extra_msg": null
-  };
-  console.log("发送消息", wxMsg);
-  wxService.sendMessage(wxMsg);
 
-  // 分割内容，如果内容中有附件，就分割成多个消息
-  const messages: WxMessage[] = [];
-  // 1. 分割内容
-  // 2. 生成消息对象
-  // 3. 发送消息
-  // 4. 清空输入框
-  // 5. 滚动到底部
-  console.log(content);
+  Array.from(wxEditor.value.childNodes).forEach(async (item) => {
+    console.log(item);
+    if (item.nodeType === 3 && (item as Text).data === '') {
+      console.log("删除空的文本节点");
+    } else {
+      console.log("不是空的文本节点");
+      // 这里非空的文本节点，直接生成一条文本消息对象，图片需要根据类型，手动生成别的消息，然后再发送，可以一次发送多个消息
+      if (item.nodeType === 3) {
+        console.log("图片");
+        const msgText = htmlToText((item as Text).data)
+        let txtMsg: WxMessage = {
+          "is_self": true,
+          "is_group": props.conversation?.strUsrName.endsWith("@chatroom") || false,
+          "id": new Date().valueOf(),
+          "type": 1,
+          "subtype": null,
+          "ts": new Date().valueOf(),
+          "roomid": props.conversation?.strUsrName.endsWith("@chatroom") ? props.conversation?.strUsrName : "",
+          "content": msgText,
+          "sender": props.conversation?.strUsrName || "",
+          "sign": null,
+          "thumb": null,
+          "extra": null,
+          "xml": null,
+          "images": null,
+          "files": null,
+          "videos": null,
+          "audios": null,
+          "extra_msg": null,
+          "aters": ""
+        };
+        wxService.sendMessage(txtMsg);
+      } else if (item instanceof Image) {
+        console.log("图片");
+        const fileId = item.id;
+        const file = filesMap.get(fileId);
+        if (file) {
+          let pUrl = await MinIOService.generatePresignedUrl("wechat", file?.name || fileId);
+          let uploadRes = await MinIOService.uploadFile(pUrl, file);
+          let downloadUrl = await MinIOService.getPresignedFileUrl("wechat", file?.name || fileId)
+          let imgMsg: WxMessage = {
+            "is_self": true,
+            "is_group": props.conversation?.strUsrName.endsWith("@chatroom") || false,
+            "id": new Date().valueOf(),
+            "type": 3,
+            "subtype": null,
+            "ts": new Date().valueOf(),
+            "roomid": props.conversation?.strUsrName.endsWith("@chatroom") ? props.conversation?.strUsrName : "",
+            "content": '',
+            "sender": props.conversation?.strUsrName || "",
+            "sign": null,
+            "thumb": null,
+            "extra": null,
+            "xml": null,
+            "images": [downloadUrl],
+            "files": null,
+            "videos": null,
+            "audios": null,
+            "extra_msg": null,
+            "aters": null
+          };
+          wxService.sendMessage(imgMsg);
+        }
+      }
+    }
+  });
   wxEditor.value.innerHTML = "";
   sendBtnDisabled.value = true;
   cursorPosition.value = 0;
@@ -154,7 +192,9 @@ ${typeTemplate}
  *  将指定节点插入到光标位置,插入之后如果出现滚动条，应该要主动滚动一下
  * @param {DOM} fileDom dom节点
  */
-function insertNode(dom: Node) {
+function insertNode(fileId: string, type: string, dom: Node) {
+  if (!dom) return;
+  (dom as HTMLElement).id = fileId;
   // 获取光标
   const selection = window.getSelection();
   // 获取选中的内容
@@ -174,16 +214,11 @@ function insertNode(dom: Node) {
 
 /**
  * 处理粘贴图片
- * @param {File} imageFile 图片文件
+ * @param {File} file 图片文件
  */
-async function handleImage(imageFile: File) {
-  // 理论上，这里都应该在发送的时候处理，发送的时候，缩略图先上屏，然后再上传，上传成功之后，再替换成真实的图片
-  console.time("上传图片");
-  let u1 = await MinIOService.generatePresignedUrl("wechat", "test.png");
-  let u2 = await MinIOService.uploadFile(u1, imageFile);
-  let u3 = await MinIOService.getPresignedFileUrl("wechat", "test.png");
-  console.timeEnd("上传图片");
-  console.log(u3);
+async function handleImage(file: File) {
+  const fileId = "wx-" + v4();
+  filesMap.set(fileId, file);
   // 创建文件读取器
   const reader = new FileReader();
   // 读取完成
@@ -195,16 +230,18 @@ async function handleImage(imageFile: File) {
       img.src = e.target?.result as string;
     }
     // wxEditor.value.appendChild(img);
-    insertNode(img);
+    insertNode(fileId, 'img', img);
   };
-  reader.readAsDataURL(imageFile);
+  reader.readAsDataURL(file);
 }
 
 function handleFile(file: File) {
-  console.log(file.path);
+  const fileId = "wx-" + v4();
+  filesMap.set(fileId, file);
+  console.log(file);
   const fileDom = createFileDom(file);
   fileDom.classList.add("wx-input-file");
-  insertNode(fileDom);
+  insertNode(fileId, 'file', fileDom);
 }
 
 function onDrop(event: DragEvent) {
@@ -282,6 +319,7 @@ function onPaste(e: ClipboardEvent) {
     }
   }
   cursorPosition.value = getCursorPosition();
+  sendBtnDisabled.value = false;
 }
 
 onMounted(() => {
@@ -333,6 +371,19 @@ function onInputChange(e: Event) {
     // 记录当前的位置，然后弹出一个群成员选择框，选择之后，插入到当前的位置
     // 选择具体的群成员，获取它的nickname和username，然后插入到输入框中，用和插入文件一样的方法，先手动生成一个svg，但是这个svg的宽度需要根据文本的长度来生成
   }
+  // 把wxEditor.value.children 中的子元素，存在id并且id开头是 wx-的保存为一个字典，然后删除不在这个字典中的的filesMap中的文件
+  // Array.from(wxEditor.value.children) 转换为Set
+  let set = new Set<string>();
+  Array.from(wxEditor.value.children).forEach((item) => {
+    if (item.id && item.id.startsWith("wx-")) {
+      set.add(item.id);
+    }
+  });
+  filesMap.forEach((value, key) => {
+    if (!set.has(key)) {
+      filesMap.delete(key);
+    }
+  });
 }
 
 function onBlur(e: FocusEvent) {

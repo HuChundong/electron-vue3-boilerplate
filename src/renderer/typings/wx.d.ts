@@ -38,6 +38,7 @@ export interface WxMessage {
   "videos": string[] | null,
   "audios": string[] | null,
   "extra_msg": WxMessage | null
+  "aters": string | null
 }
 
 export interface WxAccount {
