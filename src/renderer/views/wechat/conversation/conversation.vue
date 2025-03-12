@@ -15,16 +15,20 @@
     </div>
     <div class="session-body">
       <VList ref="listRef" v-slot="{ item, index }" :data="messages" :style="{ height: '100%' }">
-        <MsxBox :key="index" :message="item"
-          :avatar="item.is_self ? store.account?.small_head_url : props.conversation?.smallHeadImgUrl" />
+        <MsxBox
+          :key="item.id"
+          :message="item"
+          :avatar="item.is_self ? store.account?.small_head_url : props.conversation?.smallHeadImgUrl"
+        />
       </VList>
     </div>
     <div class="session-footer">
-      <ConversationInputBox></ConversationInputBox>
+      <ConversationInputBox />
     </div>
   </div>
 </template>
 <script setup lang="ts">
+import { storeToRefs } from "pinia";
 import { WxConversation, WxMessage } from "@/typings/wx";
 import { templateRef } from "@vueuse/core";
 import { ref, watch } from "vue";
@@ -39,6 +43,7 @@ import ConversationInputBox from "./conversation-input-box.vue";
 // 图片的话，考虑保存到本地，然后异步加载，因为服务器上只保留7天在minio上
 const store = useAccountStore();
 const messageStore = useMessageStore();
+const { getMessagesByWxId } = storeToRefs(messageStore);
 const props = defineProps<{
   conversation: WxConversation;
 }>();
@@ -48,15 +53,16 @@ let sendText = ref("");
 watch(
   () => sendText.value,
   (newVal) => {
-    if (newVal !== "") {
+    if(newVal !== ""){
       sendBtnDisabled.value = false;
-    } else {
+    }else{
       sendBtnDisabled.value = true;
     }
   }
 );
-async function onSendBtnClick() {
-  if (sendText.value === "") {
+
+async function onSendBtnClick(){
+  if(sendText.value === ""){
     return;
   }
   let wxMsg: WxMessage = {
@@ -95,26 +101,24 @@ const messages = ref<WxMessage[]>([]); // 使用 ref 来存储列表数据
 watch(() => props.conversation, () => {
   try {
     console.log("获取消息记录");
-    if (!props.conversation) {
+    if(!props.conversation){
       return;
     }
-    const messagesOld = messageStore.getMessagesByWxId(props.conversation.strUsrName);
-    if (messagesOld) {
-      messages.value = [...messagesOld];
-    }
+    console.log("获取消息记录", props.conversation.strUsrName);
+    messages.value = getMessagesByWxId.value(props.conversation.strUsrName);
     // 输入框聚焦到inputRef
-  } catch (e) {
+  } catch (e){
     console.error(e);
   }
-}, { immediate: false, deep: false });
+}, { immediate: true, deep: false });
 
-function onRobotSettingClick() {
+function onRobotSettingClick(){
   console.log("onRobotSettingClick");
   // 这里准备打开机器人的设置菜单
 }
 
 // 当前消息直接上屏，同时插入到缓存，延迟200毫秒屏幕进行滚动到底的操作
-function addMsgToList(wxMsg: WxMessage) {
+function addMsgToList(wxMsg: WxMessage){
   messages.value.push(wxMsg);
   console.log(`插入${props.conversation.strUsrName}消息`);
   messageStore.insertMessageByWxId(props.conversation.strUsrName, wxMsg);
@@ -123,23 +127,15 @@ function addMsgToList(wxMsg: WxMessage) {
   }, 200);
 }
 
-function receiveMsg(wxMsg: WxMessage) {
+function receiveMsg(wxMsg: WxMessage){
   const receiver = wxMsg.is_group ? wxMsg.roomid : wxMsg.sender;
   messageStore.updateConversationLatestMsg(wxMsg);
-  if (props.conversation && receiver === props.conversation.strUsrName) {
+  if(props.conversation && receiver === props.conversation.strUsrName){
     addMsgToList(wxMsg);
-  } else {
+  }else{
     messageStore.insertMessageByWxId(receiver || "", wxMsg);
   }
 }
-
-/**
- * todo 监听消息事件，放在这里是不合理的，需要拿到外面去
- */
-utils.onMsgReceived((msg: { topic: string, payload: string }) => {
-  let wxMsg: WxMessage = JSON.parse(msg.payload);
-  receiveMsg(wxMsg);
-});
 </script>
 <style lang="less" scoped>
 .session {

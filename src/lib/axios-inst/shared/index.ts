@@ -6,7 +6,6 @@ function PrepareAxios(axiosInst: AxiosInstance){
 
   axiosInst.interceptors.request.use(
     config => {
-      config.headers["repo"] = "https://github.com/winsoft666/electron-vue3-template";
       return config;
     },
     error => {

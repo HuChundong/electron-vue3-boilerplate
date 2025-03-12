@@ -48,3 +48,10 @@ export interface WxAccount {
   "small_head_url": string,
   "big_head_url": string
 }
+
+// 定义API响应类型（根据OpenAPI规范）
+export interface PresignedUrlResponse {
+  success: boolean;
+  data?: string; // 预签名URL
+  msg?: string;
+}

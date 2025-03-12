@@ -1,11 +1,11 @@
 import { contextBridge, ipcRenderer, OpenDialogOptions } from "electron";
 
-function initialize(){
-  if(!ipcRenderer){
+function initialize() {
+  if (!ipcRenderer) {
     return;
   }
 
-  if(contextBridge && process.contextIsolated){
+  if (contextBridge && process.contextIsolated) {
     try {
       contextBridge.exposeInMainWorld("__ElectronUtils__", {
         openDevTools: () => ipcRenderer.send("electron-utils-open-dev-tools"),
@@ -28,7 +28,7 @@ function initialize(){
         onCmdS2r: (callback) => ipcRenderer.on("electron-utils-cmd-s2r", (_event, value) => {
           callback(value);
         }),
-        getfile: (path:string) => ipcRenderer.invoke("electron-utils-getfile", path),
+        getfile: (path: string) => ipcRenderer.invoke("electron-utils-getfile", path),
         // === FALG LINE (DO NOT MODIFY/REMOVE) ===
       });
     } catch {

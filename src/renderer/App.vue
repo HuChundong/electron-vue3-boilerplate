@@ -5,9 +5,10 @@ import { useAccountStore } from "./stores/account";
 import { useMessageStore } from "./stores/message";
 import { CMD } from "./constants";
 import { useDebounceFn } from "@vueuse/core";
+import wxService from "./service/wx-service";
+
 const store = useAccountStore();
 const messageStore = useMessageStore();
-
 const persistMessage = useDebounceFn((state) => {
   console.log("持久化消息");
   localStorage.setItem("message", JSON.stringify(state));
@@ -33,22 +34,12 @@ onUnmounted(() => {
 });
 
 onMounted(async() => {
-  // todo 根据系统主题设置
-  // document.documentElement.setAttribute('theme-mode', 'dark');
-  utils.onCmdS2r((msg: { payload: string }) => {
-    let data = JSON.parse(msg.payload);
-    switch (data.cmd){
-      case CMD.ACCOUNT:
-        console.log("updateAccount", data.data);
-        store.updateAccount(data.data);
-        break;
-      case CMD.SESSION:
-        console.log("updateSession", data.data);
-        messageStore.refreshConversation(data.data);
-    }
-  });
-  utils.cmdSend(JSON.stringify({ cmd: CMD.ACCOUNT, data: {}, ts: Date.now() }));
-  utils.cmdSend(JSON.stringify({ cmd: CMD.SESSION, data: {}, ts: Date.now() }));
+  if(wxService){
+    console.log("wxService", wxService);
+    wxService.init();
+  }
+  wxService.sendCMD(CMD.ACCOUNT,{})
+  wxService.sendCMD(CMD.SESSION,{})
 });
 </script>
 <template>

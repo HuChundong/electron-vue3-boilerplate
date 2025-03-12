@@ -8,21 +8,36 @@ import utils from "@utils/renderer";
 import { templateRef } from "@vueuse/core";
 import { onMounted, ref, watch } from "vue";
 import { zipType, pptType, excelType, wordType, pdfType, videoType, unknownType } from "./file-type-svg";
-import { fileTypeFromBuffer } from 'file-type';
-let sendBtnDisabled = ref(true);
+import { fileTypeFromBuffer } from "file-type";
+import { MinIOService } from "@/service/minio-service";
+
+let sendBtnDisabled = ref(false);
 let cursorPosition = ref(0);
-function formatFileSize(sizeInKB: number): string {
-  if (sizeInKB < 1024) {
+function formatFileSize(sizeInKB: number): string{
+  if(sizeInKB < 1024){
     return sizeInKB.toFixed(1) + "K";
-  } else if (sizeInKB < 1024 * 1024) {
+  }else if(sizeInKB < 1024 * 1024){
     return (sizeInKB / 1024).toFixed(1) + "M";
-  } else {
-    return (sizeInKB / (1024 * 1024)).toFixed(1) + "G";
-  }
+  } 
+  return (sizeInKB / (1024 * 1024)).toFixed(1) + "G";
 }
 
-async function onSendBtnClick() {
 
+async function onSendBtnClick(){
+  // 获取wxEditor的内容
+  const content = wxEditor.value.innerHTML;
+  // 分割内容，如果内容中有附件，就分割成多个消息
+  const messages: WxMessage[] = [];
+  // 1. 分割内容
+  // 2. 生成消息对象
+  // 3. 发送消息
+  // 4. 清空输入框
+  // 5. 滚动到底部
+  console.log(content);
+  wxEditor.value.innerHTML = "";
+  sendBtnDisabled.value = true;
+  cursorPosition.value = 0;
+  wxEditor.value.focus();
 }
 
 const wxEditor = templateRef("wxEditor");
@@ -31,13 +46,13 @@ const wxEditor = templateRef("wxEditor");
  * @param {File} file 文件
  * @returns 返回dom结构
  */
-function createFileDom(file: File) {
+function createFileDom(file: File){
   const size = file.size / 1024;
-  let typeTemplate = unknownType
-  if (file.name.indexOf(".") >= 0) {
+  let typeTemplate = unknownType;
+  if(file.name.indexOf(".") >= 0){
     const fileName = file.name.split(".");
     let extension = fileName.pop() || "未知文件";
-    switch (extension.toLowerCase()) {
+    switch (extension.toLowerCase()){
       case "zip":
         typeTemplate = zipType;
         break;
@@ -76,7 +91,7 @@ function createFileDom(file: File) {
   const textPrimaryColor = "rgba(255,255,255,1)";
   const textSecondaryColor = "rgba(255,255,255,0.35)";
   // 根据文件大小，动态调整单位，保留一位小数
-  const fileSizeText = formatFileSize(size) // size.toFixed(1) + "k"; 
+  const fileSizeText = formatFileSize(size); // size.toFixed(1) + "k"; 
   // 超过8个字符的情况下，中间4个字符用...显示
   const fileNameText = file.name.length > 13 ? file.name.slice(0, 7) + "..." + file.name.slice(-6) : file.name;
   // svg字体设置为：font-family: "Helvetica Neue",Helvetica,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif !important;
@@ -94,7 +109,7 @@ ${typeTemplate}
   dom.setAttribute("height", "70");
   dom.innerHTML = templte;
   const svg = new XMLSerializer().serializeToString(dom);
-  const blob = new Blob([svg], {
+  const blob = new Blob([ svg ], {
     type: "image/svg+xml;charset=utf-8",
   });
   const imageUrl = URL.createObjectURL(blob);
@@ -107,11 +122,11 @@ ${typeTemplate}
  *  将指定节点插入到光标位置,插入之后如果出现滚动条，应该要主动滚动一下
  * @param {DOM} fileDom dom节点
  */
-function insertNode(dom: Node) {
+function insertNode(dom: Node){
   // 获取光标
   const selection = window.getSelection();
   // 获取选中的内容
-  if (selection) {
+  if(selection){
     const range = selection.getRangeAt(0);
     // 删除选中的内容
     range.deleteContents();
@@ -129,14 +144,21 @@ function insertNode(dom: Node) {
  * 处理粘贴图片
  * @param {File} imageFile 图片文件
  */
-function handleImage(imageFile: File) {
+async function handleImage(imageFile: File){
+  // 理论上，这里都应该在发送的时候处理，发送的时候，缩略图先上屏，然后再上传，上传成功之后，再替换成真实的图片
+  console.time("上传图片");
+  let u1 = await MinIOService.generatePresignedUrl("wechat", "test.png");
+  let u2 = await MinIOService.uploadFile(u1, imageFile);
+  let u3 = await MinIOService.getPresignedFileUrl("wechat", "test.png");
+  console.timeEnd("上传图片");
+  console.log(u3);
   // 创建文件读取器
   const reader = new FileReader();
   // 读取完成
   reader.onload = (e) => {
     // 创建img标签
     const img = new Image();
-    if (e.target?.result !== null) {
+    if(e.target?.result !== null){
       img.classList.add("wx-input-img");
       img.src = e.target?.result as string;
     }
@@ -146,106 +168,99 @@ function handleImage(imageFile: File) {
   reader.readAsDataURL(imageFile);
 }
 
-function handleFile(file: File) {
+function handleFile(file: File){
   console.log(file.path);
   const fileDom = createFileDom(file);
   fileDom.classList.add("wx-input-file");
   insertNode(fileDom);
 }
 
-function onDrop(event: DragEvent) {
+function onDrop(event: DragEvent){
   wxEditor.value.focus();
   event.preventDefault();
   event.stopPropagation();
   const files = event.dataTransfer?.files;
-  if (files && files.length > 0) {
-    for (let i = 0; i < files.length; i++) {
+  if(files && files.length > 0){
+    for (let i = 0;i < files.length;i++){
       const item = files[i];
-      if (item.type.indexOf("image") !== -1) {
+      if(item.type.indexOf("image") !== -1){
         handleImage(item);
-      } else {
+      }else{
         handleFile(item);
       }
     }
   }
 }
 
-function onDragOver(event: DragEvent) {
+function onDragOver(event: DragEvent){
   event.preventDefault();
   event.stopPropagation();
 }
 
-async function rpcChooseFile() {
+async function rpcChooseFile(){
   // 点击的时候会离开输入框，那么输入框在失去焦点的时候应该要记住位置？
   setCursorPosition(cursorPosition.value);
   wxEditor.value.focus();
 
   // 打开文件选择对话框
   const result = await utils.showOpenDialog({
-    properties: ["openFile"],
+    properties: [ "openFile" ],
     filters: [
-      { name: "All Files", extensions: ["*"] }
+      { name: "All Files", extensions: [ "*" ] }
     ]
   });
-  if (result.filePaths.length > 0) {
+  if(result.filePaths.length > 0){
     const buffer = await utils.getfile(result.filePaths[0]);
-    if (buffer) {
+    if(buffer){
       const fileType = await fileTypeFromBuffer(buffer);
       let fileName = result.filePaths[0].split("\\").pop() || "unknown";
-      const file = new File([buffer], fileName, { type: fileType?.mime });
-      if (file.type.indexOf("image") !== -1) {
+      const file = new File([ buffer ], fileName, { type: fileType?.mime });
+      if(file.type.indexOf("image") !== -1){
         handleImage(file);
-      } else {
+      }else{
         handleFile(file);
       }
-    } else {
+    }else{
       console.error("Failed to get file buffer.");
     }
   }
 }
 
-function onPaste(e: ClipboardEvent) {
+function onPaste(e: ClipboardEvent){
   e.preventDefault();
   const files = e.clipboardData?.files || [];
   // 如果有文件，就插入文件
-  if (files.length > 0) {
-    for (let i = 0; i < files.length; i++) {
+  if(files.length > 0){
+    for (let i = 0;i < files.length;i++){
       const item = files[i];
       console.log(item);
-      if (item.type.indexOf("image") !== -1) {
+      if(item.type.indexOf("image") !== -1){
         handleImage(item);
-      } else {
+      }else{
         handleFile(item);
       }
     }
   }
   // 没有文件的情况下，全部处理成文本，护理样式，只保留换行和缩进
-  if (e.clipboardData?.items) {
+  if(e.clipboardData?.items){
     let txtAppend = e.clipboardData.getData("text/plain");
-    if (txtAppend) {
+    if(txtAppend){
       // insertNode(document.createTextNode(txtAppend));
-      document.execCommand('insertText', false, txtAppend);
+      document.execCommand("insertText", false, txtAppend);
     }
   }
   cursorPosition.value = getCursorPosition();
 }
 
 onMounted(() => {
-  /**
-   * 发送消息之前，要对这个内容进行分割，如果文本之间被附件切割了，要分成多个消息进行发送，一个附件就是一条消息
-   */
-  watch(() => wxEditor.value.innerHTML, (newVal) => {
-    if (newVal !== "") {
-      sendBtnDisabled.value = false;
-    } else {
-      sendBtnDisabled.value = true;
-    }
-  })
+  // 这里还有个草稿的逻辑没做
+  sendBtnDisabled.value=true;
+  wxEditor.value.focus();
 });
 
-function getCursorPosition() {
+function getCursorPosition(){
   const selection = window.getSelection();
-  if (!selection || selection.rangeCount === 0) return 0;
+  if(!selection || selection.rangeCount === 0) return 0;
   const range = selection.getRangeAt(0); // 获取当前选区的范围
   const preCaretRange = range.cloneRange(); // 克隆范围
   preCaretRange.selectNodeContents(wxEditor.value); // 选择整个 contenteditable 的内容
@@ -254,18 +269,18 @@ function getCursorPosition() {
 }
 
 // 辅助函数：设置光标位置
-function setCursorPosition(position:number) {
+function setCursorPosition(position: number){
   const selection = window.getSelection();
   const range = document.createRange();
 
   let charIndex = 0;
   const walker = document.createTreeWalker(wxEditor.value, NodeFilter.SHOW_TEXT, null);
 
-  while (walker.nextNode()) {
+  while (walker.nextNode()){
     const node = walker.currentNode;
     const textLength = node.textContent.length;
 
-    if (charIndex + textLength >= position) {
+    if(charIndex + textLength >= position){
       range.setStart(node, position - charIndex);
       range.collapse(true);
       selection.removeAllRanges();
@@ -276,30 +291,37 @@ function setCursorPosition(position:number) {
   }
 }
 
-function onInputChange(e: Event) {
+function onInputChange(e: Event){
+  sendBtnDisabled.value = (wxEditor.value.innerHTML === "" || wxEditor.value.innerHTML === "<br>");
   cursorPosition.value = getCursorPosition();
   let inputEvent = e as InputEvent;
   console.log(inputEvent.data);
-  if (inputEvent.inputType === "insertText" && inputEvent.data === "@") {
+  if(inputEvent.inputType === "insertText" && inputEvent.data === "@"){
     console.log("输入了@");
     // 记录当前的位置，然后弹出一个群成员选择框，选择之后，插入到当前的位置
     // 选择具体的群成员，获取它的nickname和username，然后插入到输入框中，用和插入文件一样的方法，先手动生成一个svg，但是这个svg的宽度需要根据文本的长度来生成
   }
 }
 
-function onBlur(e: FocusEvent) {
+function onBlur(e: FocusEvent){
   console.log("失去焦点");
   console.log(e);
 }
 
-function onFocus(e: FocusEvent) {
+function onFocus(e: FocusEvent){
   // cursorPosition.value = getCursorPosition();
   console.log("获取焦点");
 }
 
-function onClick(e: MouseEvent) {
+function onClick(e: MouseEvent){
   console.log("点击");
   console.log(e);
+}
+
+function onLineBreak(e: KeyboardEvent){
+  if(e.key === "Enter" && e.ctrlKey){
+    document.execCommand("insertHTML", false, "<br>");
+  }
 }
 </script>
 <template>
@@ -319,12 +341,29 @@ function onClick(e: MouseEvent) {
   </div>
   <div class="input-container" @drop="onDrop" @dragover="onDragOver">
     <!--todo 参考实现：https://juejin.cn/post/7312848658718375971-->
-    <div contenteditable spellcheck="false" class="wx-input-edit" ref="wxEditor" @input="onInputChange" @paste="onPaste"
-      @blur="onBlur" @focus="onFocus" @click="onClick"></div>
+    <div
+      ref="wxEditor"
+      contenteditable
+      spellcheck="false"
+      class="wx-input-edit"
+      @input="onInputChange"
+      @paste="onPaste"
+      @blur="onBlur"
+      @focus="onFocus"
+      @click="onClick"
+      @keydown.shift.enter.prevent
+      @keyup.ctrl.enter.prevent="onLineBreak"
+      @keydown.enter.exact.prevent="onSendBtnClick"
+    />
   </div>
   <div class="send-button">
-    <t-button class="btn-disable-custom" :disabled="sendBtnDisabled" theme="primary"
-      style="padding-left: 25px; padding-right: 25px" @click="onSendBtnClick">
+    <t-button
+      class="btn-disable-custom"
+      :disabled="sendBtnDisabled"
+      theme="primary"
+      style="padding-left: 25px; padding-right: 25px"
+      @click="onSendBtnClick"
+    >
       发送(S)
     </t-button>
   </div>

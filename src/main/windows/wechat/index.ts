@@ -9,6 +9,8 @@ class WechatWindow extends WindowBase{
     super({
       width: 1080,
       height: 720,
+      minHeight: 720,
+      minWidth: 960,
       frame: false,
       webPreferences: {
         preload: path.join(__dirname, "preload.js"),

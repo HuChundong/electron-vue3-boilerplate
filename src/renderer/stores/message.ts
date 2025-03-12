@@ -8,11 +8,15 @@ export const useMessageStore = defineStore("message", {
      */
     conversationMap: new Map<string, WxMessage[]>(),
     conversations: [] as WxConversation[],
-
   }),
   getters: {
-    getMessagesByWxId: (state) => (wx_id: string) => {
-      return state.conversationMap.get(wx_id) || [];
+    getMessagesByWxId: (state) => {
+      return (wx_id: string) => {
+        if(!state.conversationMap.has(wx_id)){
+          state.conversationMap.set(wx_id, []);
+        }
+        return state.conversationMap.get(wx_id) || [];
+      }
     }
   },
   actions: {
