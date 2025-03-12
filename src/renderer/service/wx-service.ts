@@ -92,8 +92,10 @@ class WxService extends Singleton {
     return [];
   }
   // 发送消息
-  sendMessage() {
-    return {};
+  async sendMessage(wxMsg: WxMessage) {
+    await utils.msgSend(JSON.stringify(wxMsg));
+    this.messageStore.updateConversationLatestMsg(wxMsg);
+    this.messageStore.insertMessageByWxId(wxMsg.is_group ? wxMsg.roomid : wxMsg.sender, wxMsg);
   }
 }
 

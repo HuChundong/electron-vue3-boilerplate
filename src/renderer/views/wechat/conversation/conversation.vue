@@ -23,7 +23,7 @@
       </VList>
     </div>
     <div class="session-footer">
-      <ConversationInputBox />
+      <ConversationInputBox :conversation="conversation" />
     </div>
   </div>
 </template>
@@ -48,53 +48,6 @@ const props = defineProps<{
   conversation: WxConversation;
 }>();
 const listRef = templateRef("listRef");
-let sendBtnDisabled = ref(true);
-let sendText = ref("");
-watch(
-  () => sendText.value,
-  (newVal) => {
-    if(newVal !== ""){
-      sendBtnDisabled.value = false;
-    }else{
-      sendBtnDisabled.value = true;
-    }
-  }
-);
-
-async function onSendBtnClick(){
-  if(sendText.value === ""){
-    return;
-  }
-  let wxMsg: WxMessage = {
-    "is_self": true,
-    "is_group": props.conversation?.strUsrName.endsWith("@chatroom") || false,
-    "id": new Date().valueOf(),
-    "type": 1,
-    "subtype": null,
-    "ts": new Date().valueOf(),
-    "roomid": props.conversation?.strUsrName.endsWith("@chatroom") ? props.conversation?.strUsrName : "",
-    "content": sendText.value,
-    "sender": props.conversation?.strUsrName || "",
-    "sign": null,
-    "thumb": null,
-    "extra": null,
-    "xml": null,
-    "images": null,
-    "files": null,
-    "videos": null,
-    "audios": null,
-    "extra_msg": null
-  };
-  console.log("发送消息", wxMsg);
-  await utils.msgSend(JSON.stringify(wxMsg));
-  messageStore.updateConversationLatestMsg(wxMsg);
-  addMsgToList(wxMsg);
-  // todo 消息上屏，loading动画是在上面显示的
-  // 要在这里构建信息吗？
-  sendText.value = "";
-  sendBtnDisabled.value = true;
-}
-
 const messages = ref<WxMessage[]>([]); // 使用 ref 来存储列表数据
 
 // 这里要清理副作用
@@ -115,26 +68,6 @@ watch(() => props.conversation, () => {
 function onRobotSettingClick(){
   console.log("onRobotSettingClick");
   // 这里准备打开机器人的设置菜单
-}
-
-// 当前消息直接上屏，同时插入到缓存，延迟200毫秒屏幕进行滚动到底的操作
-function addMsgToList(wxMsg: WxMessage){
-  messages.value.push(wxMsg);
-  console.log(`插入${props.conversation.strUsrName}消息`);
-  messageStore.insertMessageByWxId(props.conversation.strUsrName, wxMsg);
-  setTimeout(() => {
-    listRef?.value?.scrollTo(Number.MAX_SAFE_INTEGER);
-  }, 200);
-}
-
-function receiveMsg(wxMsg: WxMessage){
-  const receiver = wxMsg.is_group ? wxMsg.roomid : wxMsg.sender;
-  messageStore.updateConversationLatestMsg(wxMsg);
-  if(props.conversation && receiver === props.conversation.strUsrName){
-    addMsgToList(wxMsg);
-  }else{
-    messageStore.insertMessageByWxId(receiver || "", wxMsg);
-  }
 }
 </script>
 <style lang="less" scoped>

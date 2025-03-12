@@ -36,10 +36,11 @@ function getComponent(){
   display: flex;
   padding: 10px 18px;
   gap: 10px;
+  color: var(--td-text-color-primary);
 
   &.self {
     flex-direction: row-reverse;
-
+    color: var(--td-bg-color-page);
     .msg-bg {
       background-color: var(--td-brand-color-7);
 
@@ -59,14 +60,11 @@ function getComponent(){
         /* 小三角颜色 */
       }
     }
-
-    .msg-box-content-text {
-      color: var(--td-bg-color-page);
-    }
   }
 
   .msg-box-content {
     max-width: calc(80% - 100px);
+    overflow: hidden;
     .nick-name{
       line-height: 12px;
       margin-bottom: 6px;
@@ -95,20 +93,6 @@ function getComponent(){
       border-right: 4px solid var(--td-bg-color-secondarycomponent);
       /* 小三角颜色 */
     }
-  }
-
-  .msg-box-content-text {
-    font-size: 14px;
-    color: var(--td-text-color-primary);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: fit-content;
-  }
-
-  .msg-box-content-extra {
-    margin-top: 4px;
-    background-color: var(--td-bg-color-secondarycomponent);
   }
 
   .msg-box-content-image {
