@@ -295,11 +295,9 @@ function onDragOver(event: DragEvent) {
 }
 
 async function rpcChooseFile() {
-  // 点击的时候会离开输入框，那么输入框在失去焦点的时候应该要记住位置？
+  // todo 这里目前处理有问题，光标会出现在开头
   setCursorPosition(cursorPosition.value);
   wxEditor.value.focus();
-
-  // 打开文件选择对话框
   const result = await utils.showOpenDialog({
     properties: ["openFile"],
     filters: [
@@ -317,6 +315,7 @@ async function rpcChooseFile() {
       } else {
         handleFile(file);
       }
+      sendBtnDisabled.value = false;
     } else {
       console.error("Failed to get file buffer.");
     }

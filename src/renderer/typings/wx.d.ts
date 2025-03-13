@@ -19,6 +19,59 @@ export interface WxConversation {
   nOrder: number,
 }
 
+/**
+ * 微信文件结构
+ */
+export interface WxFile {
+  name: string;
+  url: string;
+  size?: number;
+  md5?: string;
+  ext?: string;
+  send_device?: string;
+}
+
+/**
+ * 微信文件结构
+ */
+export interface WxImageFile {
+  name: string;
+  url: string;
+  size?: number;
+  md5?: string;
+  ext?: string;
+  width?: number;
+  height?: number;
+  thumb?: WxImageFile;
+}
+
+/**
+ * 微信文件结构
+ */
+export interface WxAudioFile {
+  name: string;
+  url: string;
+  size?: number;
+  md5?: string;
+  ext?: string;
+  length?: number;
+}
+
+/**
+ * 微信文件结构
+ */
+export interface WxVideoFile {
+  name: string;
+  url: string;
+  size?: number;
+  md5?: string;
+  ext?: string;
+  thumb?: WxImageFile;
+  width?: number;
+  height?: number;
+  length?: number;
+}
+
 export interface WxMessage {
   "is_self": boolean,
   "is_group": boolean,
@@ -33,10 +86,10 @@ export interface WxMessage {
   "thumb": string | null,
   "extra": string | null,
   "xml": string | null,
-  "images": string[] | null,
-  "files": string[] | null,
-  "videos": string[] | null,
-  "audios": string[] | null,
+  "images": WxImageFile[] | null,
+  "files": WxFile[] | null,
+  "videos": WxVideoFile[] | null,
+  "audios": WxAudioFile[] | null,
   "extra_msg": WxMessage | null
   "aters": string | null
 }

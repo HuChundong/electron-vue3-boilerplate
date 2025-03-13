@@ -3,8 +3,8 @@ import { WxMessage } from "@/typings/wx";
 import { ImageEvent, ImageProps } from "tdesign-vue-next";
 import { ref } from "vue";
 let props = defineProps<{
-  message: WxMessage | undefined;
-  avatar: string | undefined;
+  message: WxMessage;
+  avatar: string;
 }>();
 
 // 这里是准备写消息的收发的框框，宽度有最大值，高度也有最大值，两边有箭头，同时，发送和接收是两种背景色，发送最好加一下loading效果
@@ -12,10 +12,7 @@ let props = defineProps<{
 // 消息的设计，这里需要明确消息的类型，暂时就只处理：文本，图片，语音，视频，引用，卡片的话以后再说
 // 一条消息肯定要先能判断是什么消息，来自于谁，是自己还是别人，然后找到那个人，进行信息的加载
 // 通讯录应该要缓存一份，这样在加载的时候，就可以批量去读取，而不是说动态的去查询，否则两边压力都很大
-let imageUrl = props.message && props.message.images ? props.message.images[0] || "" : ""
-/* props.message && props.message.images
-    ? "http://192.168.2.12:10010/download?file_path=" + props.message.images[0]
-    : ""; */
+let imageUrl = props.message.videos[0].thumb.url
 let imageWidth = ref("unset");
 let imageHeight = ref("unset");
 let success = ref(true)
@@ -45,9 +42,10 @@ function imageOnError() {
       :style="{ width: imageWidth, height: imageHeight }" fit="fill" shape="round" :on-load="imageOnload"
       :on-error="imageOnError">
       <template #overlayContent>
-        <div shape="mark" theme="primary" variant="light" style="width: 100%;height: 100%;text-align: center; padding-top: 55%;">
+        <div shape="mark" theme="primary" variant="light"
+          style="width: 100%;height: 100%;text-align: center; padding-top: 55%;">
           <!-- 先用这个把，素材后期统一替换 -->
-          <font-awesome-icon icon="fa-regular fa-circle-play" style="font-size: 40px;"/>
+          <font-awesome-icon icon="fa-regular fa-circle-play" style="font-size: 40px;" />
         </div>
       </template>
     </t-image>

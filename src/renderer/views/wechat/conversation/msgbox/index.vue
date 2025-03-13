@@ -5,8 +5,8 @@ import WxVideo from "./wx-video.vue";
 import { WxMessage } from "@/typings/wx";
 import WxQuote from "./wx-quote.vue";
 let props = defineProps<{
-  message: WxMessage | undefined;
-  avatar: string | undefined;
+  message: WxMessage;
+  avatar: string;
 }>();
 
 function getComponent() {

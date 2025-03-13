@@ -1,12 +1,15 @@
 import { PresignedUrlResponse } from "@/typings/wx";
 import axios, { AxiosResponse } from "axios";
+// 这个也要搞一个单例模式？用baseurl来实例化？感觉没必要哦，静态就行了
+
+const BASE_URL = "http://192.168.2.12:8000";
 export class MinIOService {
     static async generatePresignedUrl(
         bucket: string,
         objectKey: string
     ): Promise<string> {
         const { data } = await axios.get<PresignedUrlResponse>(
-            `http://192.168.2.202:8000/presigned_url?bucket_name=${bucket}&object_name=${objectKey}`
+            `${BASE_URL}/presigned_url?bucket_name=${bucket}&object_name=${objectKey}`
         );
 
         if (!data.success || !data.data) throw new Error("获取签名失败");
@@ -18,7 +21,7 @@ export class MinIOService {
         objectKey: string
     ): Promise<string> {
         const { data } = await axios.get<PresignedUrlResponse>(
-            `http://192.168.2.202:8000/presigned_file?bucket_name=${bucket}&object_name=${objectKey}`
+            `${BASE_URL}/presigned_file?bucket_name=${bucket}&object_name=${objectKey}`
         );
 
         if (!data.success || !data.data) throw new Error("获取签名失败");
