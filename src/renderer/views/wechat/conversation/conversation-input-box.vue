@@ -30,7 +30,9 @@ function formatFileSize(sizeInKB: number): string {
   return (sizeInKB / (1024 * 1024)).toFixed(1) + "G";
 }
 
-
+/**
+ * 发送消息，转换输入框内容为微信消息结构
+ */
 async function onSendBtnClick() {
   // 获取wxEditor的内容
   const content = wxEditor.value.innerHTML;
@@ -96,13 +98,14 @@ async function onSendBtnClick() {
               "thumb": null,
               "extra": null,
               "xml": null,
-              "images": [downloadUrl],
+              "images": [{ name: file.name, url: downloadUrl, size: file.size, type: file.type }],
               "files": null,
               "videos": null,
               "audios": null,
               "extra_msg": null,
               "aters": null
             };
+
             wxService.sendMessage(imgMsg);
           } else if (file.type.indexOf('video') > -1) {
             let videoMsg: WxMessage = {
@@ -121,7 +124,7 @@ async function onSendBtnClick() {
               "xml": null,
               "images": null,
               "files": null,
-              "videos": [downloadUrl],
+              "videos": [{ name: file.name, url: downloadUrl, size: file.size, type: file.type }],
               "audios": null,
               "extra_msg": null,
               "aters": null
