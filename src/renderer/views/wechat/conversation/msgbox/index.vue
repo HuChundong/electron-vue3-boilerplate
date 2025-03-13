@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import WxText from "./wx-text.vue";
 import WxImage from "./wx-image.vue";
+import WxVideo from "./wx-video.vue";
 import { WxMessage } from "@/typings/wx";
 import WxQuote from "./wx-quote.vue";
 let props = defineProps<{
@@ -8,9 +9,14 @@ let props = defineProps<{
   avatar: string | undefined;
 }>();
 
-function getComponent(){
-  let com = props.message?.type === 1 ? WxText : WxImage;
-  return com;
+function getComponent() {
+  if(props.message?.type===1){
+    return WxText
+  }else if(props.message?.type ===3){
+    return WxImage
+  }else if(props.message?.type ===43){
+    return WxVideo
+  }
 }
 </script>
 <template>
@@ -41,6 +47,7 @@ function getComponent(){
   &.self {
     flex-direction: row-reverse;
     color: var(--td-bg-color-page);
+
     .msg-bg {
       background-color: var(--td-brand-color-7);
 
@@ -64,8 +71,8 @@ function getComponent(){
 
   .msg-box-content {
     max-width: calc(80% - 100px);
-    overflow: hidden;
-    .nick-name{
+
+    .nick-name {
       line-height: 12px;
       margin-bottom: 6px;
       font-size: 12px;

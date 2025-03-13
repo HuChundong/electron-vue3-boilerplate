@@ -24,7 +24,6 @@ if (props.message) {
   font-size: 14px;
   max-width: 100%;
   overflow-wrap: anywhere;
-  overflow: hidden;
   display: flex;
   justify-content: center;
   align-items: center;

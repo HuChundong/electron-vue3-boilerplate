@@ -46,60 +46,88 @@ async function onSendBtnClick() {
       console.log("不是空的文本节点");
       // 这里非空的文本节点，直接生成一条文本消息对象，图片需要根据类型，手动生成别的消息，然后再发送，可以一次发送多个消息
       if (item.nodeType === 3) {
-        console.log("图片");
         const msgText = htmlToText((item as Text).data)
-        let txtMsg: WxMessage = {
-          "is_self": true,
-          "is_group": props.conversation?.strUsrName.endsWith("@chatroom") || false,
-          "id": new Date().valueOf(),
-          "type": 1,
-          "subtype": null,
-          "ts": new Date().valueOf(),
-          "roomid": props.conversation?.strUsrName.endsWith("@chatroom") ? props.conversation?.strUsrName : "",
-          "content": msgText,
-          "sender": props.conversation?.strUsrName || "",
-          "sign": null,
-          "thumb": null,
-          "extra": null,
-          "xml": null,
-          "images": null,
-          "files": null,
-          "videos": null,
-          "audios": null,
-          "extra_msg": null,
-          "aters": ""
-        };
-        wxService.sendMessage(txtMsg);
-      } else if (item instanceof Image) {
-        console.log("图片");
-        const fileId = item.id;
-        const file = filesMap.get(fileId);
-        if (file) {
-          let pUrl = await MinIOService.generatePresignedUrl("wechat", file?.name || fileId);
-          let uploadRes = await MinIOService.uploadFile(pUrl, file);
-          let downloadUrl = await MinIOService.getPresignedFileUrl("wechat", file?.name || fileId)
-          let imgMsg: WxMessage = {
+        if (msgText.trim() !== '') {
+          let txtMsg: WxMessage = {
             "is_self": true,
             "is_group": props.conversation?.strUsrName.endsWith("@chatroom") || false,
             "id": new Date().valueOf(),
-            "type": 3,
+            "type": 1,
             "subtype": null,
             "ts": new Date().valueOf(),
             "roomid": props.conversation?.strUsrName.endsWith("@chatroom") ? props.conversation?.strUsrName : "",
-            "content": '',
+            "content": msgText,
             "sender": props.conversation?.strUsrName || "",
             "sign": null,
             "thumb": null,
             "extra": null,
             "xml": null,
-            "images": [downloadUrl],
+            "images": null,
             "files": null,
             "videos": null,
             "audios": null,
             "extra_msg": null,
-            "aters": null
+            "aters": ""
           };
-          wxService.sendMessage(imgMsg);
+          wxService.sendMessage(txtMsg);
+        }
+      } else if (item instanceof Image) {
+        // 这里有几种情况，所有的情况都转换成了img节点，只有原生的图片节点比较特殊要判断的
+        console.log("图片");
+        const fileId = item.id;
+        const file = filesMap.get(fileId);
+        if (file) {
+          console.log(file.type)
+          let pUrl = await MinIOService.generatePresignedUrl("wechat", file?.name || fileId);
+          let uploadRes = await MinIOService.uploadFile(pUrl, file);
+          let downloadUrl = await MinIOService.getPresignedFileUrl("wechat", file?.name || fileId)
+          if (file.type.indexOf('image/') > -1) {
+            let imgMsg: WxMessage = {
+              "is_self": true,
+              "is_group": props.conversation?.strUsrName.endsWith("@chatroom") || false,
+              "id": new Date().valueOf(),
+              "type": 3,
+              "subtype": null,
+              "ts": new Date().valueOf(),
+              "roomid": props.conversation?.strUsrName.endsWith("@chatroom") ? props.conversation?.strUsrName : "",
+              "content": '',
+              "sender": props.conversation?.strUsrName || "",
+              "sign": null,
+              "thumb": null,
+              "extra": null,
+              "xml": null,
+              "images": [downloadUrl],
+              "files": null,
+              "videos": null,
+              "audios": null,
+              "extra_msg": null,
+              "aters": null
+            };
+            wxService.sendMessage(imgMsg);
+          } else if (file.type.indexOf('video') > -1) {
+            let videoMsg: WxMessage = {
+              "is_self": true,
+              "is_group": props.conversation?.strUsrName.endsWith("@chatroom") || false,
+              "id": new Date().valueOf(),
+              "type": 43,
+              "subtype": null,
+              "ts": new Date().valueOf(),
+              "roomid": props.conversation?.strUsrName.endsWith("@chatroom") ? props.conversation?.strUsrName : "",
+              "content": '',
+              "sender": props.conversation?.strUsrName || "",
+              "sign": null,
+              "thumb": null,
+              "extra": null,
+              "xml": null,
+              "images": null,
+              "files": null,
+              "videos": [downloadUrl],
+              "audios": null,
+              "extra_msg": null,
+              "aters": null
+            };
+            wxService.sendMessage(videoMsg);
+          }
         }
       }
     }
