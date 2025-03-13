@@ -1,14 +1,14 @@
 /**
  * @file 当前目录的代码只能被主进程所使用
  */
-import { app, session, BrowserWindow, ipcMain, shell, dialog, OpenDialogOptions } from "electron";
+import { app, session, BrowserWindow, ipcMain, shell, dialog, OpenDialogOptions, clipboard } from "electron";
 import path from "path";
-import fs from 'fs/promises'
+import fs from "fs/promises";
 import * as FileUtils from "./file-util";
 import appState from "../../../main/app-state";
-
-class Utils {
-  public initialize() {
+import ffmpeg from "./ffmpeg";
+class Utils{
+  public initialize(){
     this._preloadFilePath = path.join(__dirname, "utils-preload.js");
     // console.log("Utils preload path: " + this._preloadFilePath);
     this.setPreload(session.defaultSession);
@@ -18,19 +18,19 @@ class Utils {
     });
   }
 
-  protected setPreload(session) {
-    session.setPreloads([...session.getPreloads(), this._preloadFilePath]);
+  protected setPreload(session){
+    session.setPreloads([ ...session.getPreloads(), this._preloadFilePath ]);
   }
 
   protected _preloadFilePath: string = "";
 
-  public mqttConnect(browserWindow: BrowserWindow | null) {
-    if (browserWindow) {
+  public mqttConnect(browserWindow: BrowserWindow | null){
+    if(browserWindow){
       browserWindow.webContents.send("electron-utils-mqtt-connect");
     }
   }
-  public mqttDisconnect(browserWindow: BrowserWindow | null) {
-    if (browserWindow) {
+  public mqttDisconnect(browserWindow: BrowserWindow | null){
+    if(browserWindow){
       browserWindow.webContents.send("electron-utils-mqtt-disconnect");
     }
   }
@@ -39,8 +39,8 @@ class Utils {
    * @param browserWindow 
    * @param data 
    */
-  public msgReceived(browserWindow: BrowserWindow | null, data: { topic: string, payload: string }) {
-    if (browserWindow) {
+  public msgReceived(browserWindow: BrowserWindow | null, data: { topic: string, payload: string }){
+    if(browserWindow){
       browserWindow.webContents.send("electron-utils-msg-received", data);
     }
   }
@@ -49,8 +49,8 @@ class Utils {
    * @param browserWindow 
    * @param data 控制指令返回数据，包含了具体的指令和返回数据
    */
-  public cmdS2r(browserWindow: BrowserWindow | null, data: { topic: string, payload: string }) {
-    if (browserWindow) {
+  public cmdS2r(browserWindow: BrowserWindow | null, data: { topic: string, payload: string }){
+    if(browserWindow){
       browserWindow.webContents.send("electron-utils-cmd-s2r", data);
     }
   }
@@ -61,30 +61,30 @@ const utils = new Utils();
 
 ipcMain.on("electron-utils-open-dev-tools", () => {
   const win = BrowserWindow.getFocusedWindow();
-  if (win) {
+  if(win){
     win.webContents.openDevTools();
   }
 });
 
 ipcMain.on("electron-utils-open-external-url", (event, url) => {
-  if (url) {
+  if(url){
     shell.openExternal(url);
   }
 });
 
-ipcMain.handle("electron-utils-show-open-dialog", async (event, options: OpenDialogOptions) => {
+ipcMain.handle("electron-utils-show-open-dialog", async(event, options: OpenDialogOptions) => {
   return await dialog.showOpenDialog(options);
 });
 
-ipcMain.on("electron-utils-check-path-exist", (event, path) => {
+ipcMain.on("electron-utils-check-path-exist", (event, filePath) => {
   let exist = false;
-  if (path) {
-    exist = FileUtils.IsPathExist(path);
+  if(filePath){
+    exist = FileUtils.IsPathExist(filePath);
   }
   event.returnValue = exist;
 });
 
-ipcMain.handle("electron-utils-get-file-md5", async (event, filePath) => {
+ipcMain.handle("electron-utils-get-file-md5", async(event, filePath) => {
   return await FileUtils.GetFileMd5(filePath);
 });
 
@@ -92,15 +92,52 @@ ipcMain.on("electron-utils-get-app-version", (event) => {
   event.returnValue = appState.appVersion;
 });
 
-ipcMain.handle("electron-utils-msg-send", async (event, data) => {
+ipcMain.handle("electron-utils-msg-send", async(event, data) => {
   return await appState.mqttClient?.publishAsync("msg/wxid_jypzaftm8wxe22/send", data);
 });
 
-ipcMain.handle("electron-utils-cmd-send", async (event, data) => {
+ipcMain.handle("electron-utils-cmd-send", async(event, data) => {
   return await appState.mqttClient?.publishAsync("cmd/wxid_jypzaftm8wxe22/received", data);
 });
-ipcMain.handle("electron-utils-getfile", async (event, path) => {
-  return await fs.readFile(path);
+ipcMain.handle("electron-utils-getfile", async(event, filePath) => {
+  return await fs.readFile(filePath);
+});
+ipcMain.handle("electron-utils-create-video-thumb", async(event, filePath: string) => {
+  return new Promise((resolve, reject) => {
+    const tempFolder = app.getPath("temp"); // 获取临时目录
+    const filenames: string[] = [];
+    ffmpeg(filePath)
+      .on("filenames", (generatedFilenames: string[]) => {
+        console.log("Screenshots are: " + generatedFilenames.join(", "));
+        filenames.push(...generatedFilenames); // 保存生成的文件名
+      })
+      .on("end", () => {
+        console.log("Screenshots were saved");
+        resolve(filenames.map(p => {
+          return path.join(tempFolder, p); 
+        })); // 成功时返回文件名数组
+      })
+      .on("error", (err) => {
+        console.error("An error happened: " + err.message);
+        reject(err); // 失败时抛出错误
+      })
+      .thumbnail({
+        count: 1, // 只生成一张缩略图
+        timemarks: [ "00:00:01.000" ], // 在第 1 秒生成缩略图
+        folder: tempFolder, // 保存到临时目录
+        filename: "thumbnail-%f.png", // 文件命名格式
+      });
+  });
+});
+ipcMain.handle("electron-utils-get-clipboard-file-path", async(event) => {
+  let text = "";
+  if(process.platform === "darwin"){ // MacOS
+    text = clipboard.read("public.file-url");
+  }else{ // Windows
+    text = clipboard.readBuffer("FileNameW").toString("ucs2").replace(RegExp(String.fromCharCode(0), "g"), "");
+  } // TODO: Linux
+  console.log(text);
+  return text;
 });
 // === FALG LINE (DO NOT MODIFY/REMOVE) ===
 

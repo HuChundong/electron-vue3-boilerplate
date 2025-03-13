@@ -5,6 +5,7 @@ import { CreateAppTray } from "./tray";
 import appState from "./app-state";
 import mqtt from "mqtt";
 import utils from "../lib/utils/main";
+import ffmpeg from "../lib/utils/main/ffmpeg";
 let mqttClient: mqtt.MqttClient;
 // 禁用沙盒
 // 在某些系统环境上，不禁用沙盒会导致界面花屏

@@ -13,6 +13,10 @@ import { htmlToText } from "html-to-text";
 import { MinIOService } from "@/service/minio-service";
 import wxService from "@/service/wx-service";
 import { v4 } from "uuid";
+function getElectronApi() {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return (window as any).wechatWindowAPI;
+}
 //所有的文件都在这个Map中进行记录，这样可以方便的查找，删除，上传等操作
 const filesMap = new Map<string, File>();
 const props = defineProps<{
@@ -325,11 +329,14 @@ async function rpcChooseFile() {
   }
 }
 
-function onPaste(e: ClipboardEvent) {
+async function onPaste(e: ClipboardEvent) {
   e.preventDefault();
   const files = e.clipboardData?.files || [];
   // 如果有文件，就插入文件
   if (files.length > 0) {
+    let p = await utils.getClipboardFilePath()
+    let thumbFiles = await utils.createVideoThumb(p)
+    console.log(thumbFiles)
     for (let i = 0; i < files.length; i++) {
       const item = files[i];
       console.log(item);
