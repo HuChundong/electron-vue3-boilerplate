@@ -2,6 +2,8 @@
 /**
  * 组件需要返回封装好的消息对象吗？因为这里的文件需要单独处理，该上传的上传，该转换的转换，该显示的显示
  * 上传的话，需要上传到服务器，然后返回一个url，然后显示在聊天框中
+ * 图片和视频需要缩略图，目前考虑在客户端生成，上传到minio，因为客户端需要直接上屏，如果等到服务端生成，速度太慢，这里可以测试一下客户端生成需要多久，如果是本地的超大文件
+ * 可以使用ffmpeg，问题不大
  */
 import { WxConversation, WxMessage, WxSendFile } from "@/typings/wx";
 import utils from "@utils/renderer";
@@ -13,10 +15,6 @@ import { htmlToText } from "html-to-text";
 import { MinIOService } from "@/service/minio-service";
 import wxService from "@/service/wx-service";
 import { v4 } from "uuid";
-function getElectronApi() {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return (window as any).wechatWindowAPI;
-}
 
 const filesMap = new Map<string, WxSendFile>();
 const props = defineProps<{
@@ -33,6 +31,59 @@ function formatFileSize(sizeInKB: number): string {
   }
   return (sizeInKB / (1024 * 1024)).toFixed(1) + "G";
 }
+
+/** 生成视频封面开始 */
+
+async function blobToFile(blob: Blob, filename: string, type?: string): Promise<File> {
+  return new File([blob], filename, { type });
+}
+
+async function captureFrame(vdo: HTMLVideoElement, time: number = 0): Promise<{ blob: Blob, url: string }> {
+  return new Promise((resolve, reject) => {
+    vdo.currentTime = time;
+    vdo.muted = true;
+    vdo.autoplay = true;
+    vdo.oncanplay = async () => {
+      let frame = await drawVideo(vdo);
+      resolve(frame);
+    };
+  });
+}
+
+async function getThumb(file: File): Promise<{ blob: Blob, url: string }> {
+  return new Promise((resolve, reject) => {
+    let vdo = document.createElement('video');
+    vdo.src = URL.createObjectURL(file);
+    let frame = captureFrame(vdo, 0);
+    resolve(frame);
+  })
+}
+
+async function drawVideo(vdo: HTMLVideoElement): Promise<{ blob: Blob, url: string }> {
+  return new Promise((resolve, reject) => {
+    let cvs = document.createElement('canvas');
+    let ctx = cvs.getContext('2d');
+    cvs.width = vdo.videoWidth;
+    cvs.height = vdo.videoHeight;
+    if (!ctx) {
+      reject("无法获取canvas上下文");
+      return;
+    }
+    // todo 这里直接根据微信的消息分辨率，进行缩放，降低内存占用
+    ctx.drawImage(vdo, 0, 0, cvs.width, cvs.height);
+    cvs.toBlob((blob) => {
+      if (!blob) {
+        reject("无法生成blob");
+        return;
+      }
+      resolve({
+        blob,
+        url: URL.createObjectURL(blob),
+      });
+    });
+  });
+}
+/** 生成视频封面结束 */
 
 /**
  * 发送消息，转换输入框内容为微信消息结构
@@ -79,15 +130,21 @@ async function onSendBtnClick() {
         }
       } else if (item instanceof Image) {
         // 这里有几种情况，所有的情况都转换成了img节点，只有原生的图片节点比较特殊要判断的
-        console.log("图片");
         const fileId = item.id;
-        const file = filesMap.get(fileId);
-        if (file) {
-          console.log(file.type)
-          let pUrl = await MinIOService.generatePresignedUrl("wechat", file?.name || fileId);
-          let uploadRes = await MinIOService.uploadFile(pUrl, file);
-          let downloadUrl = await MinIOService.getPresignedFileUrl("wechat", file?.name || fileId)
-          if (file.type.indexOf('image/') > -1) {
+        const wxSendFile = filesMap.get(fileId);
+        if (wxSendFile) {
+
+          let pUrl = await MinIOService.generatePresignedUrl("wechat", wxSendFile.file?.name || fileId);
+          let uploadRes = await MinIOService.uploadFile(pUrl, wxSendFile.file);
+          let downloadUrl = await MinIOService.getPresignedFileUrl("wechat", wxSendFile.file?.name || fileId)
+          let thumbImage
+          if (wxSendFile.thumbFile) {
+            let pThumbUrl = await MinIOService.generatePresignedUrl("wechat", fileId + ".png");
+            let thumbUploadRes = await MinIOService.uploadFile(pThumbUrl, wxSendFile.thumbFile);
+            let thumbDownloadUrl = await MinIOService.getPresignedFileUrl("wechat", fileId + ".png")
+            thumbImage = { name: fileId + ".png", url: thumbDownloadUrl, size: wxSendFile.thumbFile.size, ext: wxSendFile.thumbFile.type }
+          }
+          if (wxSendFile.file.type.indexOf('image/') > -1) {
             let imgMsg: WxMessage = {
               "is_self": true,
               "is_group": props.conversation?.strUsrName.endsWith("@chatroom") || false,
@@ -102,7 +159,7 @@ async function onSendBtnClick() {
               "thumb": null,
               "extra": null,
               "xml": null,
-              "images": [{ name: file.name, url: downloadUrl, size: file.size, ext: file.type }],
+              "images": [{ name: wxSendFile.file.name, url: downloadUrl, size: wxSendFile.file.size, ext: wxSendFile.file.type, thumb: thumbImage }],
               "files": null,
               "videos": null,
               "audios": null,
@@ -111,7 +168,7 @@ async function onSendBtnClick() {
             };
 
             wxService.sendMessage(imgMsg);
-          } else if (file.type.indexOf('video') > -1) {
+          } else if (wxSendFile.file.type.indexOf('video') > -1) {
             let videoMsg: WxMessage = {
               "is_self": true,
               "is_group": props.conversation?.strUsrName.endsWith("@chatroom") || false,
@@ -128,7 +185,7 @@ async function onSendBtnClick() {
               "xml": null,
               "images": null,
               "files": null,
-              "videos": [{ name: file.name, url: downloadUrl, size: file.size, ext: file.type }],
+              "videos": [{ name: wxSendFile.file.name, url: downloadUrl, size: wxSendFile.file.size, ext: wxSendFile.file.type, thumb: thumbImage }],
               "audios": null,
               "extra_msg": null,
               "aters": null
@@ -253,7 +310,6 @@ function insertNode(fileId: string, type: string, dom: Node) {
  */
 async function handleImage(file: File) {
   const fileId = "wx-" + v4();
-  filesMap.set(fileId, file);
   // 创建文件读取器
   const reader = new FileReader();
   // 读取完成
@@ -264,8 +320,26 @@ async function handleImage(file: File) {
       img.classList.add("wx-input-img");
       img.src = e.target?.result as string;
     }
-    // wxEditor.value.appendChild(img);
+    // todo 图片根据大小生成缩略图，图片暂时就直接先用自己作为缩略图
     insertNode(fileId, 'img', img);
+    let wxSendFile: WxSendFile = {
+      id: fileId,
+      file: file,
+      filePath: file.path,
+      thumbFile: file,
+      thumbPath: file.path
+    }
+    filesMap.set(fileId, wxSendFile);
+  };
+  reader.readAsDataURL(file);
+}
+
+/**
+ * 处理粘贴视频
+ * @param {File
+    }
+    filesMap.set(fileId, wxSendFile);
+
   };
   reader.readAsDataURL(file);
 }
@@ -276,17 +350,29 @@ async function handleImage(file: File) {
  */
 function handleFile(file: File) {
   const fileId = "wx-" + v4();
-  filesMap.set(fileId, file);
-  console.log(file);
+  let wxSendFile: WxSendFile = {
+    id: fileId,
+    file: file,
+    filePath: file.path,
+  }
+  filesMap.set(fileId, wxSendFile);
   const fileDom = createFileDom(file);
   fileDom.classList.add("wx-input-file");
   insertNode(fileId, 'file', fileDom);
 }
 
-function handleVideo(file: File) {
+async function handleVideo(file: File) {
+  let frame = await getThumb(file)
   const fileId = "wx-" + v4();
-  filesMap.set(fileId, file);
-  console.log(file);
+  const thumbFile = await blobToFile(frame.blob, fileId + ".png", "image/png");
+  let wxSendFile: WxSendFile = {
+    id: fileId,
+    file: file,
+    filePath: file.path,
+    thumbFile: thumbFile,
+    thumbPath: thumbFile.path
+  }
+  filesMap.set(fileId, wxSendFile);
   const fileDom = createFileDom(file);
   fileDom.classList.add("wx-input-file");
   insertNode(fileId, 'file', fileDom);
@@ -299,11 +385,13 @@ function onDrop(event: DragEvent) {
   const files = event.dataTransfer?.files;
   if (files && files.length > 0) {
     for (let i = 0; i < files.length; i++) {
-      const item = files[i];
-      if (item.type.indexOf("image") !== -1) {
-        handleImage(item);
+      const file = files[i];
+      if (file.type.indexOf("image") !== -1) {
+        handleImage(file);
+      } else if (file.type.indexOf("video") !== -1) {
+        handleVideo(file);
       } else {
-        handleFile(item);
+        handleFile(file);
       }
     }
   }
@@ -332,6 +420,8 @@ async function rpcChooseFile() {
       const file = new File([buffer], fileName, { type: fileType?.mime });
       if (file.type.indexOf("image") !== -1) {
         handleImage(file);
+      } else if (file.type.indexOf("video") !== -1) {
+        handleVideo(file);
       } else {
         handleFile(file);
       }
@@ -352,23 +442,23 @@ async function onPaste(e: ClipboardEvent) {
   e.preventDefault();
   const files = e.clipboardData?.files || [];
   if (files.length > 0) {
-    console.log(files.length);
+    /* console.log(files.length);
     let p = await utils.getClipboardFilePath()
     if (p && p.length > 0) {
       p.forEach(async (z) => {
         let thumbFiles = await utils.createVideoThumb(z)
         console.log(thumbFiles)
       })
-    }
+    } */
     for (let i = 0; i < files.length; i++) {
-      const item = files[i];
-      console.log(item);
-      if (item.type.indexOf("image") !== -1) {
-        handleImage(item);
-      } else if (item.type.indexOf("video") !== -1) {
-        handleVideo(item);
-      }else{
-        handleFile(item);
+      const file = files[i];
+      console.log(file);
+      if (file.type.indexOf("image") !== -1) {
+        handleImage(file);
+      } else if (file.type.indexOf("video") !== -1) {
+        handleVideo(file);
+      } else {
+        handleFile(file);
       }
     }
   }

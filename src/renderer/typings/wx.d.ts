@@ -111,8 +111,9 @@ export interface PresignedUrlResponse {
 }
 
 interface WxSendFile {
+  id: string,
   file: File,
-  path: string,
-  thumb: string,
+  filePath: string,
   thumbFile?: File,
+  thumbPath?: string,
 }
