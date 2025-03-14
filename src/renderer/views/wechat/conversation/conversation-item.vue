@@ -20,7 +20,7 @@
         </div>
         <!-- 这里的时间需要优化，根据微信的逻辑，距离当前时间远近不同，有不同的显示逻辑-->
         <div v-if="conversation" class="time">
-          {{ dayjs.unix(conversation.nTime).format("hh:mm") }}
+          {{ dayjs.unix(conversation.nTime).format("HH:mm") }}
         </div>
       </div>
       <div class="content-and-status">

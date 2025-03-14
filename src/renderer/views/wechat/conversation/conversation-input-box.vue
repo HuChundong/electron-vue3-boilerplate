@@ -94,7 +94,10 @@ async function onSendBtnClick() {
   if (content === "" || content === "<br>") {
     return;
   }
-
+  /**
+   * 感觉这里要把各种文本给他拼接起来，如果没有遇到需要断开的节点的话，就是把拼接的内容给他全部合并
+   */
+  let textMsgContent = "";
   Array.from(wxEditor.value.childNodes).forEach(async (item) => {
     console.log(item);
     if (item.nodeType === 3 && (item as Text).data === '') {
@@ -102,9 +105,27 @@ async function onSendBtnClick() {
     } else {
       console.log("不是空的文本节点");
       // 这里非空的文本节点，直接生成一条文本消息对象，图片需要根据类型，手动生成别的消息，然后再发送，可以一次发送多个消息
-      if (item.nodeType === 3) {
-        const msgText = htmlToText((item as Text).data)
-        if (msgText.trim() !== '') {
+      if (!(item instanceof Image)) {
+        if (item instanceof HTMLDivElement) {
+          const msgText = (item as HTMLDivElement).innerText // htmlToText((item as HTMLDivElement).innerHTML)
+          if (msgText.trim() !== '') {
+            textMsgContent += msgText;
+          }
+        } else if (item instanceof Text) {
+          const msgText = (item as Text).data;
+          if (msgText.trim() !== '') {
+            textMsgContent += msgText;
+          }
+        } else if (item instanceof HTMLSpanElement) {
+          const msgText = (item as HTMLSpanElement).innerText //htmlToText((item as HTMLSpanElement).innerHTML)
+          if (msgText.trim() !== '') {
+            textMsgContent += msgText;
+          }
+        } else {
+          console.log("未知节点", item);
+        }
+      } else if (item instanceof Image) {
+        if (textMsgContent != '') {
           let txtMsg: WxMessage = {
             "is_self": true,
             "is_group": props.conversation?.strUsrName.endsWith("@chatroom") || false,
@@ -113,7 +134,7 @@ async function onSendBtnClick() {
             "subtype": null,
             "ts": new Date().valueOf(),
             "roomid": props.conversation?.strUsrName.endsWith("@chatroom") ? props.conversation?.strUsrName : "",
-            "content": msgText,
+            "content": textMsgContent,
             "sender": props.conversation?.strUsrName || "",
             "sign": null,
             "thumb": null,
@@ -127,8 +148,8 @@ async function onSendBtnClick() {
             "aters": ""
           };
           wxService.sendMessage(txtMsg);
+          textMsgContent = "";
         }
-      } else if (item instanceof Image) {
         // 这里有几种情况，所有的情况都转换成了img节点，只有原生的图片节点比较特殊要判断的
         const fileId = item.id;
         const wxSendFile = filesMap.get(fileId);
@@ -196,6 +217,31 @@ async function onSendBtnClick() {
       }
     }
   });
+  if (textMsgContent != '') {
+    let txtMsg: WxMessage = {
+      "is_self": true,
+      "is_group": props.conversation?.strUsrName.endsWith("@chatroom") || false,
+      "id": new Date().valueOf(),
+      "type": 1,
+      "subtype": null,
+      "ts": new Date().valueOf(),
+      "roomid": props.conversation?.strUsrName.endsWith("@chatroom") ? props.conversation?.strUsrName : "",
+      "content": textMsgContent,
+      "sender": props.conversation?.strUsrName || "",
+      "sign": null,
+      "thumb": null,
+      "extra": null,
+      "xml": null,
+      "images": null,
+      "files": null,
+      "videos": null,
+      "audios": null,
+      "extra_msg": null,
+      "aters": ""
+    };
+    wxService.sendMessage(txtMsg);
+    textMsgContent = "";
+  }
   wxEditor.value.innerHTML = "";
   sendBtnDisabled.value = true;
   cursorPosition.value = 0;

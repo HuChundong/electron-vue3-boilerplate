@@ -1,4 +1,7 @@
 <script setup lang="ts">
+/**
+  微信居中提示的文字
+*/
 import { WxMessage } from "@/typings/wx";
 import { configParseEmoji, parseEmoji } from "wechat-emoji-parser";
 import DOMPurify from 'dompurify';
