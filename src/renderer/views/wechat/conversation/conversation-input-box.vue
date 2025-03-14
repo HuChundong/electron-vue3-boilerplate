@@ -102,7 +102,7 @@ async function onSendBtnClick() {
               "thumb": null,
               "extra": null,
               "xml": null,
-              "images": [{ name: file.name, url: downloadUrl, size: file.size, type: file.type }],
+              "images": [{ name: file.name, url: downloadUrl, size: file.size, ext: file.type }],
               "files": null,
               "videos": null,
               "audios": null,
@@ -128,7 +128,7 @@ async function onSendBtnClick() {
               "xml": null,
               "images": null,
               "files": null,
-              "videos": [{ name: file.name, url: downloadUrl, size: file.size, type: file.type }],
+              "videos": [{ name: file.name, url: downloadUrl, size: file.size, ext: file.type }],
               "audios": null,
               "extra_msg": null,
               "aters": null
@@ -335,8 +335,10 @@ async function onPaste(e: ClipboardEvent) {
   // 如果有文件，就插入文件
   if (files.length > 0) {
     let p = await utils.getClipboardFilePath()
-    let thumbFiles = await utils.createVideoThumb(p)
-    console.log(thumbFiles)
+    if (p && p.length > 0) {
+      let thumbFiles = await utils.createVideoThumb(p)
+      console.log(thumbFiles)
+    }
     for (let i = 0; i < files.length; i++) {
       const item = files[i];
       console.log(item);
