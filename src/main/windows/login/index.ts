@@ -15,7 +15,7 @@ class LoginWindow extends WindowBase{
         preload: path.join(__dirname, "preload.js"),
       },
       resizable: false,
-      backgroundColor: "#fff",
+      backgroundColor: "#2c2c2c",
     });
 
     this.openWindow("login");
@@ -23,6 +23,9 @@ class LoginWindow extends WindowBase{
 
   protected registerIpcMainHandler(): void{  
     ipcMain.on("exit-login-window", (event) => {
+      if (appState.primaryWindow) {
+        appState.primaryWindow.browserWindow?.close();
+      }
       this.browserWindow?.close();
     });
     ipcMain.on("login-in-window", (event) => {

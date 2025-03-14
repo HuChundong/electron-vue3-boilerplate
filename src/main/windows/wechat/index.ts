@@ -16,7 +16,7 @@ class WechatWindow extends WindowBase{
       webPreferences: {
         preload: path.join(__dirname, "preload.js"),
       },
-      backgroundColor: "black",
+      backgroundColor: "#2c2c2c",
     });
 
     this.openRouter("/wechat");
