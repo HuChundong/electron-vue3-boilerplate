@@ -34,6 +34,22 @@ abstract class WindowBase{
     }
   }
 
+  public openWorker(page : string){
+    let url = "";
+    if(app.isPackaged){
+      url = `file://${app.getAppPath()}/build/renderer/${page}`;
+    }else{
+      const rendererPort = process.argv[2];
+      url = `http://localhost:${rendererPort}/${page}`;
+    }
+
+    console.log(`Load URL: ${url}`);
+
+    if(this._browserWindow){
+      this._browserWindow.loadURL(url);
+    }
+  }
+
   public get valid(){
     return this.browserWindow != null;
   }

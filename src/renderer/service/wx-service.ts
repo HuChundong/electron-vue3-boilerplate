@@ -44,6 +44,9 @@ class WxService extends Singleton{
       const data = JSON.parse(msg.payload);
       this.receiveCmdResponse(data);
     });
+      // todo 如果这里还没有连接，那肯定就不能接收了
+    wxService.sendCMD(CMD.ACCOUNT, {})
+    wxService.sendCMD(CMD.SESSION, {})
   }
 
   /**

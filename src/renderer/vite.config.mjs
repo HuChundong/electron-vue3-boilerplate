@@ -20,6 +20,12 @@ export default defineConfig({
     // outDir 的位置与 src/tsconfig.json 中的 outDir 息息相关
     outDir: path.join(__dirname, "../../build/renderer"),
     emptyOutDir: true,
+    rollupOptions: {
+      input: {
+        index: path.resolve(__dirname, './index.html'),
+        nested: path.resolve(__dirname, './worker.html'),
+      }
+    }
   },
   resolve: {
     alias: {

@@ -33,13 +33,11 @@ onUnmounted(() => {
   accountSubscription(); // 调用取消订阅函数
 });
 
-onMounted(async() => {
-  if(wxService){
+onMounted(async () => {
+  if (wxService) {
     console.log("wxService", wxService);
     wxService.init();
   }
-  wxService.sendCMD(CMD.ACCOUNT,{})
-  wxService.sendCMD(CMD.SESSION,{})
 });
 </script>
 <template>
@@ -60,7 +58,7 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: rgba(0, 0, 0, 0.4);
+  background-color: rgba(59, 59, 59, 0.8);
   /* 设置滚动条滑块的颜色，透明度为 0.1 */
   border-radius: 4px;
   /* 设置滚动条滑块的圆角 */
@@ -73,13 +71,14 @@ body {
 
 /* 鼠标悬停在滚动条滑块上时的样式 */
 ::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(0, 0, 0, 0.4);
+  background-color: rgb(59, 59, 59);
+  cursor: default;
   /* 悬停时，滑块颜色稍微加深 */
 }
 
 /* 滚动条滑块被激活（点击并拖动）时的样式 */
 ::-webkit-scrollbar-thumb:active {
-  background-color: rgba(0, 0, 0, 0.3);
+  background-color: rgb(59, 59, 59);
   /* 激活时，滑块颜色更深 */
 }
 </style>
