@@ -37,6 +37,7 @@ if (!gotLock && appState.onlyAllowSingleInstance) {
     const primaryWindow = new WechatWindow();
     // const workerWindow = new WorkerWindow();
     appState.primaryWindow = primaryWindow;
+    // todo 这个应该要登录以后再创建
     appState.tray = CreateAppTray();
 
     session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
