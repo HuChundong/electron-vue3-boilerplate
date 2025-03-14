@@ -16,6 +16,8 @@ function getComponent() {
     return WxImage
   } else if (props.message?.type === 43) {
     return WxVideo
+  } else if (props.message?.type === 49 && props.message?.subtype === 57) {
+    return WxText
   }
 }
 </script>
