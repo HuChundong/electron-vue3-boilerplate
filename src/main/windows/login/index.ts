@@ -23,12 +23,17 @@ class LoginWindow extends WindowBase{
 
   protected registerIpcMainHandler(): void{  
     ipcMain.on("exit-login-window", (event) => {
+      if(!this.isIpcMainEventBelongMe(event))
+        return;
       if (appState.primaryWindow) {
+        appState.allowExitApp = true;
         appState.primaryWindow.browserWindow?.close();
       }
       this.browserWindow?.close();
     });
     ipcMain.on("login-in-window", (event) => {
+      if(!this.isIpcMainEventBelongMe(event))
+        return;
       appState.primaryWindow?.browserWindow?.show();
       this.browserWindow?.close();
     });

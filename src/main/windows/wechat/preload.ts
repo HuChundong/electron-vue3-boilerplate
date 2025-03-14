@@ -5,5 +5,8 @@ import { contextBridge, ipcRenderer } from "electron";
 contextBridge.exposeInMainWorld("wechatWindowAPI", {
   minimizeWindow: () => ipcRenderer.send("minimize-window"),
   restoreWindow: () => ipcRenderer.send("restore-window"),
-  closeWindow: () => ipcRenderer.send("close-window"),
+  closeWindow: () => ipcRenderer.send("min-to-tray"),
+  asyncExitApp: () => ipcRenderer.invoke("async-exit-app"),
+  minToTray: () => ipcRenderer.send("min-to-tray"),
+  
 });

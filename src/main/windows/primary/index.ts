@@ -86,8 +86,6 @@ class PrimaryWindow extends WindowBase{
     });
     
     ipcMain.handle("async-exit-app", async(event) => {
-      // 暂停1500毫秒，模拟退出程序时的清理操作
-      await delay(1500);
       appState.allowExitApp = true;
       app.quit();
     });

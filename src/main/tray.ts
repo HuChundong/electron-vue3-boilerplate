@@ -7,9 +7,9 @@ import { Menu, MenuItem, Tray } from "electron";
 import appState, { AppEnv } from "./app-state";
 
 // 创建系统托盘
-function CreateAppTray() : Tray{
-  const iconPath = process.platform === "win32" ? 
-    path.join(appState.mainStaticPath, "tray.ico") : 
+function CreateAppTray(): Tray {
+  const iconPath = process.platform === "win32" ?
+    path.join(appState.mainStaticPath, "tray.ico") :
     path.join(appState.mainStaticPath, "tray.png");
 
   const tray = new Tray(iconPath);
@@ -27,12 +27,12 @@ function CreateAppTray() : Tray{
       registerAccelerator: true,
       click: () => {
         const win = appState.primaryWindow?.browserWindow;
-        if(win){
-          if(win.isVisible()){
-            if(win.isMinimized()){
+        if (win) {
+          if (win.isVisible()) {
+            if (win.isMinimized()) {
               win.restore();
             }
-          }else{
+          } else {
             win.show();
           }
         }
@@ -43,22 +43,16 @@ function CreateAppTray() : Tray{
       type: "normal",
       click: () => {
         const win = appState.primaryWindow?.browserWindow;
-        if(win){
-          if(win.isVisible()){
-            if(win.isMinimized()){
-              win.restore();
-            }
-          }else{
-            win.show();
-          }
-          win.webContents.send("show-exit-app-msgbox");
+        if (win) {
+          appState.allowExitApp = true;
+          win.close();
         }
       },
     },
   ]);
 
   // 在非生产环境添加一个打开调试工具菜单，方便调试
-  if(appState.appEnv != AppEnv.Production){
+  if (appState.appEnv != AppEnv.Production) {
     contextMenu.insert(
       0,
       new MenuItem({
@@ -74,8 +68,8 @@ function CreateAppTray() : Tray{
   }
 
   tray.setContextMenu(contextMenu);
-  tray.setToolTip("A Electron + Vue3 boilerplate");
-  tray.setTitle("electron-vue3-boilerplate");
+  tray.setToolTip("让你的微信智能起来");
+  tray.setTitle("微信+");
 
   return tray;
 }
