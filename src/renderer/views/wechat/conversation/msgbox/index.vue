@@ -6,15 +6,15 @@ import { WxMessage } from "@/typings/wx";
 import WxQuote from "./wx-quote.vue";
 let props = defineProps<{
   message: WxMessage;
-  avatar: string;
+  avatar: string | undefined;
 }>();
 
 function getComponent() {
-  if(props.message?.type===1){
+  if (props.message?.type === 1) {
     return WxText
-  }else if(props.message?.type ===3){
+  } else if (props.message?.type === 3) {
     return WxImage
-  }else if(props.message?.type ===43){
+  } else if (props.message?.type === 43) {
     return WxVideo
   }
 }
@@ -31,7 +31,7 @@ function getComponent() {
       <div v-if="!message?.is_self && message?.is_group" class="nick-name">
         {{ message?.sender }}
       </div>
-      <component :is="getComponent()" :message="message" :avatar="avatar" />
+      <component :is="getComponent()" :message="message" :avatar="avatar || 'UNKNOW'" />
       <wx-quote v-if="message?.extra_msg" :message="message?.extra_msg" />
     </div>
   </div>

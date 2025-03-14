@@ -7,6 +7,8 @@ import fs from "fs/promises";
 import * as FileUtils from "./file-util";
 import appState from "../../../main/app-state";
 import ffmpeg from "./ffmpeg";
+import clipboardEx from 'electron-clipboard-ex'
+import log from "electron-log/main";
 class Utils {
   public initialize() {
     this._preloadFilePath = path.join(__dirname, "utils-preload.js");
@@ -129,16 +131,15 @@ ipcMain.handle("electron-utils-create-video-thumb", async (event, filePath: stri
       });
   });
 });
+/**
+ * 方法的局限性，不能获取从非本系统复制的文件路径，比如从浏览器上复制的文件，无法获取路径
+ */
 ipcMain.handle("electron-utils-get-clipboard-file-path", async (event) => {
-  return new Promise<string>((resolve, reject) => {
-    let text = "";
-    if (process.platform === "darwin") { // MacOS
-      text = clipboard.read("public.file-url");
-    } else { // Windows
-      text = clipboard.readBuffer("FileNameW").toString("ucs2").replace(RegExp(String.fromCharCode(0), "g"), "");
-    } // TODO: Linux
-    console.log(text);
-    resolve(text);
+  return new Promise<string[]>((resolve, reject) => {
+    console.log('剪切板是否有图片', clipboardEx.hasImage())
+    const filePaths = clipboardEx.readFilePaths();
+    log.debug("electron-utils-get-clipboard-file-path", filePaths);
+    resolve(filePaths);
   })
 });
 // === FALG LINE (DO NOT MODIFY/REMOVE) ===

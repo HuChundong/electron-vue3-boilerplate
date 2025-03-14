@@ -109,3 +109,10 @@ export interface PresignedUrlResponse {
   data?: string; // 预签名URL
   msg?: string;
 }
+
+interface WxSendFile {
+  file: File,
+  path: string,
+  thumb: string,
+  thumbFile?: File,
+}

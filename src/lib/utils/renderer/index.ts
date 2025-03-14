@@ -72,7 +72,7 @@ class Utils{
   public async createVideoThumb(path: string): Promise<Buffer | undefined>{
     return await (window as any).__ElectronUtils__.createVideoThumb(path);
   }
-  public async getClipboardFilePath(): Promise<string | undefined>{
+  public async getClipboardFilePath(): Promise<string[] | []>{
     return await (window as any).__ElectronUtils__.getClipboardFilePath();
   }
   // === FALG LINE (DO NOT MODIFY/REMOVE) ===

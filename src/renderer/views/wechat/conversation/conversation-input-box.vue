@@ -3,7 +3,7 @@
  * 组件需要返回封装好的消息对象吗？因为这里的文件需要单独处理，该上传的上传，该转换的转换，该显示的显示
  * 上传的话，需要上传到服务器，然后返回一个url，然后显示在聊天框中
  */
-import { WxConversation, WxMessage } from "@/typings/wx";
+import { WxConversation, WxMessage, WxSendFile } from "@/typings/wx";
 import utils from "@utils/renderer";
 import { templateRef } from "@vueuse/core";
 import { onMounted, ref, watch } from "vue";
@@ -17,8 +17,8 @@ function getElectronApi() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return (window as any).wechatWindowAPI;
 }
-//所有的文件都在这个Map中进行记录，这样可以方便的查找，删除，上传等操作
-const filesMap = new Map<string, File>();
+
+const filesMap = new Map<string, WxSendFile>();
 const props = defineProps<{
   conversation: WxConversation;
 }>();
@@ -270,7 +270,20 @@ async function handleImage(file: File) {
   reader.readAsDataURL(file);
 }
 
+/**
+ * 处理文件
+ * @param {file} file 普通文件，word，ppt，etc
+ */
 function handleFile(file: File) {
+  const fileId = "wx-" + v4();
+  filesMap.set(fileId, file);
+  console.log(file);
+  const fileDom = createFileDom(file);
+  fileDom.classList.add("wx-input-file");
+  insertNode(fileId, 'file', fileDom);
+}
+
+function handleVideo(file: File) {
   const fileId = "wx-" + v4();
   filesMap.set(fileId, file);
   console.log(file);
@@ -329,22 +342,32 @@ async function rpcChooseFile() {
   }
 }
 
+/**
+ * 文本需要去掉html样式，只保留文本
+ * 文件需要判断是否是本地文件，本地文件可以使用ffmpeg生成缩略图
+ * 不是本地文件，需要考虑使用canvas来生成缩略图
+ * @param e 剪切板内容变化事件
+ */
 async function onPaste(e: ClipboardEvent) {
   e.preventDefault();
   const files = e.clipboardData?.files || [];
-  // 如果有文件，就插入文件
   if (files.length > 0) {
+    console.log(files.length);
     let p = await utils.getClipboardFilePath()
     if (p && p.length > 0) {
-      let thumbFiles = await utils.createVideoThumb(p)
-      console.log(thumbFiles)
+      p.forEach(async (z) => {
+        let thumbFiles = await utils.createVideoThumb(z)
+        console.log(thumbFiles)
+      })
     }
     for (let i = 0; i < files.length; i++) {
       const item = files[i];
       console.log(item);
       if (item.type.indexOf("image") !== -1) {
         handleImage(item);
-      } else {
+      } else if (item.type.indexOf("video") !== -1) {
+        handleVideo(item);
+      }else{
         handleFile(item);
       }
     }
