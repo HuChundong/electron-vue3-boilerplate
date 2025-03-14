@@ -17,6 +17,7 @@ export default defineConfig({
   open: false,
   base: "/",
   build: {
+    cssCodeSplit: false,
     // outDir 的位置与 src/tsconfig.json 中的 outDir 息息相关
     outDir: path.join(__dirname, "../../build/renderer"),
     emptyOutDir: true,
