@@ -17,5 +17,6 @@ declare module 'vue' {
     TImage: typeof import('tdesign-vue-next')['Image']
     TInput: typeof import('tdesign-vue-next')['Input']
     TLayout: typeof import('tdesign-vue-next')['Layout']
+    TLoading: typeof import('tdesign-vue-next')['Loading']
   }
 }

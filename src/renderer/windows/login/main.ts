@@ -1,0 +1,17 @@
+import { createApp } from "vue";
+import "tdesign-vue-next/es/style/index.css";
+// 导入 FontAwesome 图标
+import { library as fontAwesomeLibrary } from "@fortawesome/fontawesome-svg-core";
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import { fas } from "@fortawesome/free-solid-svg-icons"; // solid样式图标
+import { far } from "@fortawesome/free-regular-svg-icons"; // solid样式图标
+import App from "./App.vue";
+import '../../style.css'
+import '../../theme.css'
+
+fontAwesomeLibrary.add(fas);
+fontAwesomeLibrary.add(far);
+const app = createApp(App);
+
+app.component("FontAwesomeIcon", FontAwesomeIcon);
+app.mount("#app");

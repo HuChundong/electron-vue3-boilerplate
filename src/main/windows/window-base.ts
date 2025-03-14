@@ -21,10 +21,10 @@ abstract class WindowBase{
   public openRouter(routerPath : string){
     let url = "";
     if(app.isPackaged){
-      url = `file://${app.getAppPath()}/build/renderer/index.html#${routerPath}`;
+      url = `file://${app.getAppPath()}/build/renderer/windows/main/index.html#${routerPath}`;
     }else{
       const rendererPort = process.argv[2];
-      url = `http://localhost:${rendererPort}/#${routerPath}`;
+      url = `http://localhost:${rendererPort}/windows/main/#${routerPath}`;
     }
 
     console.log(`Load URL: ${url}`);
@@ -34,13 +34,13 @@ abstract class WindowBase{
     }
   }
 
-  public openWorker(page : string){
+  public openWindow(page : string){
     let url = "";
     if(app.isPackaged){
-      url = `file://${app.getAppPath()}/build/renderer/${page}`;
+      url = `file://${app.getAppPath()}/build/renderer/windows/${page}/index.html`;
     }else{
       const rendererPort = process.argv[2];
-      url = `http://localhost:${rendererPort}/${page}`;
+      url = `http://localhost:${rendererPort}/windows/${page}/index.html`;
     }
 
     console.log(`Load URL: ${url}`);

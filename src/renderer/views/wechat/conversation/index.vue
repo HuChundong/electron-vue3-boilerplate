@@ -1,35 +1,18 @@
 <template>
   <div class="conversation">
-    <div
-      ref="conversationListRef"
-      class="conversation-container"
-      :style="{ width: conversationListWidth + 'px' }"
-    >
+    <div ref="conversationListRef" class="conversation-container" :style="{ width: conversationListWidth + 'px' }">
       <div class="search">
-        <t-input
-          class="search-input"
-          borderless
-          placeholder="搜索"
-          clearable
-          size="small"
-        >
+        <t-input class="search-input" borderless placeholder="搜索" size="small" clearable>
           <template #prefixIcon>
             <font-awesome-icon icon="fa-solid fa-search" size="xs" />
           </template>
         </t-input>
       </div>
       <div class="conversation-container-list">
-        <VList
-          v-slot="{ item, index }"
-          :data="conversations"
-          :style="{ height: '100%' }"
-        >
-          <conversationItem
-            :key="item.strUsrName"
-            :conversation="item"
-            :active="currentConversation == null? false : item.strUsrName == currentConversation?.strUsrName"
-            @conversation-click="onConversationClick"
-          />
+        <VList v-slot="{ item, index }" :data="conversations" :style="{ height: '100%' }">
+          <conversationItem :key="item.strUsrName" :conversation="item"
+            :active="currentConversation == null ? false : item.strUsrName == currentConversation?.strUsrName"
+            @conversation-click="onConversationClick" />
         </VList>
       </div>
     </div>
@@ -54,13 +37,13 @@ import { VList } from "virtua/vue";
 import { useMessageStore } from "@/stores/message";
 const messageStore = useMessageStore();
 dayjs.extend(utc);
-let conversationListWidth = ref("290");
-let currentConversation = ref(null as WxConversation|null);
+let conversationListWidth = ref("240");
+let currentConversation = ref(null as WxConversation | null);
 const conversations = messageStore.conversations; // ref<WxConversation[]>([]); // 使用 ref 来存储列表数据
 onMounted(() => {
 
 });
-function onConversationClick(conversation: WxConversation){
+function onConversationClick(conversation: WxConversation) {
   currentConversation.value = conversation;
   console.log(conversation);
 }
@@ -79,14 +62,13 @@ function onConversationClick(conversation: WxConversation){
     border-right: 1px solid var(--td-bg-color-container-active);
 
     .search {
-      height: 66px;
-      padding-top: 36px;
-      padding-left: 10px;
-      padding-right: 10px;
+      height: 70px;
+      padding: 26px 14px 0 14px;
 
       .search-input {
         background-color: var(--td-bg-color-container-active);
         border-radius: 4px;
+        padding: 2px;
       }
     }
 

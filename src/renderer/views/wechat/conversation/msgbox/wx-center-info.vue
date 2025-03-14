@@ -9,7 +9,6 @@ import DOMPurify from 'dompurify';
 configParseEmoji({ size: 15 }); // 设置一些参数
 let props = defineProps<{
   message: WxMessage | null;
-  avatar: string | "";
 }>();
 console.log(props.message?.content);
 let f = ''
@@ -19,22 +18,19 @@ if (props.message) {
 }
 </script>
 <template>
-  <div class="msg-box-content-text msg-bg" v-html="f"></div>
+  <div class="msg-box-info-text" v-html="f"></div>
 </template>
 
 <style scoped lang="less">
-.msg-box-content-text {
-  font-size: 14px;
-  max-width: 100%;
-  overflow-wrap: anywhere;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: fit-content;
-}
-
-.msg-box-content-extra {
-  margin-top: 4px;
-  background-color: var(--td-bg-color-secondarycomponent);
+.msg-box-info-text {
+  width: 100%;
+  max-width: 60%;
+  min-width: 300px;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+  font-size: 12px;
+  color: var(--td-text-color-secondary);
+  padding: 6px;
 }
 </style>

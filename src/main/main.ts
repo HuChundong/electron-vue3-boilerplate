@@ -6,6 +6,7 @@ import { CreateAppTray } from "./tray";
 import appState from "./app-state";
 import mqtt from "mqtt";
 import utils from "../lib/utils/main";
+import LoginWindow from "./windows/login";
 let mqttClient: mqtt.MqttClient;
 // 禁用沙盒
 // 在某些系统环境上，不禁用沙盒会导致界面花屏
@@ -32,6 +33,7 @@ if (!gotLock && appState.onlyAllowSingleInstance) {
     }
 
     log.info("App initialize ok");
+    const loginWindow = new LoginWindow();
     const primaryWindow = new WechatWindow();
     // const workerWindow = new WorkerWindow();
     appState.primaryWindow = primaryWindow;

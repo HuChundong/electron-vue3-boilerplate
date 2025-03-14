@@ -1,11 +1,9 @@
 <script setup lang="ts">
-import utils from "@utils/renderer";
 import { onMounted, onUnmounted } from "vue";
-import { useAccountStore } from "./stores/account";
-import { useMessageStore } from "./stores/message";
-import { CMD } from "./constants";
+import { useAccountStore } from "../../stores/account";
+import { useMessageStore } from "../../stores/message";
 import { useDebounceFn } from "@vueuse/core";
-import wxService from "./service/wx-service";
+import wxService from "../../service/wx-service";
 
 const store = useAccountStore();
 const messageStore = useMessageStore();

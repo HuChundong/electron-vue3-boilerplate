@@ -4,6 +4,7 @@ import WxImage from "./wx-image.vue";
 import WxVideo from "./wx-video.vue";
 import { WxMessage } from "@/typings/wx";
 import WxQuote from "./wx-quote.vue";
+import wxCenterInfo from "./wx-center-info.vue";
 let props = defineProps<{
   message: WxMessage;
   avatar: string | undefined;
@@ -20,11 +21,11 @@ function getComponent() {
     return WxText
   }
 }
+let infoMsg = props.message?.type === 10000
 </script>
 <template>
-  <div class="time-notify" />
   <!-- 这里通过添加reverse来左右反向就行了-->
-  <div class="msg-box" :class="message?.is_self ? 'self' : ''">
+  <div v-if="!infoMsg" class="msg-box" :class="message?.is_self ? 'self' : ''">
     <div class="msg-box-avatar">
       <t-avatar size="34px" shape="round" :image="avatar" />
     </div>
@@ -36,6 +37,9 @@ function getComponent() {
       <component :is="getComponent()" :message="message" :avatar="avatar || 'UNKNOW'" />
       <wx-quote v-if="message?.extra_msg" :message="message?.extra_msg" />
     </div>
+  </div>
+  <div v-else>
+    <wx-center-info :message="message" />
   </div>
 </template>
 <style scoped lang="less">

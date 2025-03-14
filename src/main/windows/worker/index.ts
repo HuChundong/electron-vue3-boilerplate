@@ -18,7 +18,7 @@ class WorkerWindow extends WindowBase{
       },
     });
 
-    this.openWorker("worker.html");
+    this.openWindow("worker");
   }
 
   protected registerIpcMainHandler(): void{  

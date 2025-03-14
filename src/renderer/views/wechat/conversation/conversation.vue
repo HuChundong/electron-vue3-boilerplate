@@ -15,11 +15,8 @@
     </div>
     <div class="session-body">
       <VList ref="listRef" v-slot="{ item, index }" :data="messages" :style="{ height: '100%' }">
-        <MsxBox
-          :key="item.id"
-          :message="item"
-          :avatar="item.is_self ? store.account?.small_head_url : props.conversation?.smallHeadImgUrl"
-        />
+        <MsxBox :key="item.id" :message="item"
+          :avatar="item.is_self ? store.account?.small_head_url : props.conversation?.smallHeadImgUrl" />
       </VList>
     </div>
     <div class="session-footer">
@@ -54,18 +51,18 @@ const messages = ref<WxMessage[]>([]); // 使用 ref 来存储列表数据
 watch(() => props.conversation, () => {
   try {
     console.log("获取消息记录");
-    if(!props.conversation){
+    if (!props.conversation) {
       return;
     }
     console.log("获取消息记录", props.conversation.strUsrName);
     messages.value = getMessagesByWxId.value(props.conversation.strUsrName);
     // 输入框聚焦到inputRef
-  } catch (e){
+  } catch (e) {
     console.error(e);
   }
 }, { immediate: true, deep: false });
 
-function onRobotSettingClick(){
+function onRobotSettingClick() {
   console.log("onRobotSettingClick");
   // 这里准备打开机器人的设置菜单
 }
@@ -76,7 +73,6 @@ function onRobotSettingClick(){
   flex-direction: column;
   height: 100%;
   min-width: 500px;
-
   .session-header {
     padding-top: 30px;
     padding-left: 16px;

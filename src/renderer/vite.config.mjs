@@ -23,8 +23,9 @@ export default defineConfig({
     emptyOutDir: true,
     rollupOptions: {
       input: {
-        index: path.resolve(__dirname, './index.html'),
-        nested: path.resolve(__dirname, './worker.html'),
+        index: path.resolve(__dirname, './windows/main/index.html'),
+        worker: path.resolve(__dirname, './worker.html'),
+        login: path.resolve(__dirname, './windows/login/index.html'),
       }
     }
   },
