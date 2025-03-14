@@ -485,6 +485,7 @@ async function rpcChooseFile() {
  * @param e 剪切板内容变化事件
  */
 async function onPaste(e: ClipboardEvent) {
+  // todo 目前不支持复杂的图文混排黏贴，什么毛病？
   e.preventDefault();
   const files = e.clipboardData?.files || [];
   if (files.length > 0) {
