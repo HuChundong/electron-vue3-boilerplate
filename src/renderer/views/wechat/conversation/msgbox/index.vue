@@ -5,6 +5,9 @@ import WxVideo from "./wx-video.vue";
 import { WxMessage } from "@/typings/wx";
 import WxQuote from "./wx-quote.vue";
 import wxCenterInfo from "./wx-center-info.vue";
+import { ref } from "vue";
+import { useMessageStore } from "@/stores/message";
+const messageStore = useMessageStore();
 let props = defineProps<{
   message: WxMessage;
   avatar: string | undefined;
@@ -22,6 +25,14 @@ function getComponent() {
   }
 }
 let infoMsg = props.message?.type === 10000
+let nickName = ref('')
+nickName.value = props.message?.sender
+if (props.message?.is_group) {
+  let roomMember = messageStore.getRoomMemberByWxId(props.message?.roomid || "", props.message?.sender)
+  if (roomMember) {
+    nickName.value = roomMember?.name
+  }
+} 
 </script>
 <template>
   <!-- 这里通过添加reverse来左右反向就行了-->
@@ -32,7 +43,7 @@ let infoMsg = props.message?.type === 10000
     <div class="msg-box-content">
       <!-- 群聊并且不是自己才需要显示昵称-->
       <div v-if="!message?.is_self && message?.is_group" class="nick-name">
-        {{ message?.sender }}
+        {{ nickName }}
       </div>
       <component :is="getComponent()" :message="message" :avatar="avatar || 'UNKNOW'" />
       <wx-quote v-if="message?.extra_msg" :message="message?.extra_msg" />

@@ -2,7 +2,7 @@
   <div class="session">
     <div class="session-header">
       <div class="left">
-        <span class="session-title">{{ conversation?.strNickName }}</span>
+        <span class="session-title">{{ conversation?.strNickName }}({{ memberCount }})</span>
       </div>
       <div class="right">
         <div class="button" @click="onRobotSettingClick">
@@ -46,6 +46,7 @@ const props = defineProps<{
 }>();
 const listRef = templateRef("listRef");
 const messages = ref<WxMessage[]>([]); // 使用 ref 来存储列表数据
+let memberCount = ref(0);
 
 // 这里要清理副作用
 watch(() => props.conversation, () => {
@@ -53,6 +54,10 @@ watch(() => props.conversation, () => {
     console.log("获取消息记录");
     if (!props.conversation) {
       return;
+    }
+    let m = messageStore.getChatroomById(props.conversation.strUsrName)
+    if (m) {
+      memberCount.value = m.size
     }
     console.log("获取消息记录", props.conversation.strUsrName);
     messages.value = getMessagesByWxId.value(props.conversation.strUsrName);
@@ -73,6 +78,7 @@ function onRobotSettingClick() {
   flex-direction: column;
   height: 100%;
   min-width: 500px;
+
   .session-header {
     padding-top: 30px;
     padding-left: 16px;

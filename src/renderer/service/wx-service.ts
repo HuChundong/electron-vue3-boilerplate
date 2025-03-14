@@ -17,23 +17,23 @@ import { Singleton } from "@utils/shared";
 import { useMessageStore } from "@/stores/message";
 import { CMD } from "@/constants";
 import { useAccountStore } from "@/stores/account";
-class WxService extends Singleton{
+class WxService extends Singleton {
   messageStore: any;
   accountStore: any;
   inited: boolean = false;
-  constructor(){
+  constructor() {
     super();
   }
 
-  init(){
-    if(this.inited){
+  init() {
+    if (this.inited) {
       return;
     }
     this.inited = true;
-    if(!this.messageStore){
+    if (!this.messageStore) {
       this.messageStore = useMessageStore();
     }
-    if(!this.accountStore){
+    if (!this.accountStore) {
       this.accountStore = useAccountStore();
     }
     utils.onMsgReceived((msg: { topic: string, payload: string }) => {
@@ -44,7 +44,7 @@ class WxService extends Singleton{
       const data = JSON.parse(msg.payload);
       this.receiveCmdResponse(data);
     });
-      // todo 如果这里还没有连接，那肯定就不能接收了
+    // todo 如果这里还没有连接，那肯定就不能接收了
     wxService.sendCMD(CMD.ACCOUNT, {})
     wxService.sendCMD(CMD.SESSION, {})
   }
@@ -54,55 +54,74 @@ class WxService extends Singleton{
    * 往pinia里面插入消息，ui层监听消息的变化
    * @param wxMsg 
    */
-  receiveMsg(wxMsg: WxMessage){
+  receiveMsg(wxMsg: WxMessage) {
     const receiver = wxMsg.is_group ? wxMsg.roomid : wxMsg.sender;
     this.messageStore.updateConversationLatestMsg(wxMsg);
-    if(receiver){
+    if (receiver) {
       this.messageStore.insertMessageByWxId(receiver || "", wxMsg);
     }
   }
 
-  sendCMD(cmd: CMD, data: any){
-    utils.cmdSend(JSON.stringify({ cmd, data: {}, ts: Date.now() }));
+  sendCMD(cmd: CMD, data: any) {
+    utils.cmdSend(JSON.stringify({ cmd, data: data, ts: Date.now() }));
   }
 
-  receiveCmdResponse(data: any){
-    switch (data.cmd){
+  receiveCmdResponse(data: any) {
+    switch (data.cmd) {
       case CMD.ACCOUNT:
         console.log("updateAccount", data.data);
-        this.accountStore.updateAccount(data.data);
+        try {
+          this.accountStore.updateAccount(data.data);
+        } catch (e) {
+          console.log("updateAccount error", e);
+        }
         break;
       case CMD.SESSION:
         console.log("updateSession", data.data);
-        this.messageStore.refreshConversation(data.data);
+        try {
+          this.messageStore.refreshConversation(data.data);
+        } catch (e) {
+          console.log("updateSession error", e);
+        }
+        break;
+      case CMD.ROOM_MEMBER:
+        console.log("群通讯录更新", data.data);
+        try {
+          const { roomid, members } = data.data;
+          this.messageStore.insertChatroom(roomid, members);
+        } catch (e) {
+          console.log("群通讯录更新 error", e);
+        }
+        break;
+      // this.messageStore.refreshConversation(data.data);
     }
   }
 
   // 获取用户信息
-  getUserInfo(){
+  getUserInfo() {
     return {};
   }
   // 获取会话记录
-  getSessions(){
+  getSessions() {
     return [];
   }
   // 获取通讯录
-  getContacts(){
+  getContacts() {
     return [];
   }
   // 获取聊天记录
-  getMessages(){
+  getMessages() {
     return [];
   }
   // 发送消息
-  async sendMessage(wxMsg: WxMessage){
+  async sendMessage(wxMsg: WxMessage) {
     await utils.msgSend(JSON.stringify(wxMsg));
     this.messageStore.updateConversationLatestMsg(wxMsg);
     this.messageStore.insertMessageByWxId(wxMsg.is_group ? wxMsg.roomid : wxMsg.sender, wxMsg);
   }
 }
 
-function getWxService(): WxService{
+function getWxService(): WxService {
   return WxService.instance();
 }
 

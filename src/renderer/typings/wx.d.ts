@@ -117,3 +117,10 @@ interface WxSendFile {
   thumbFile?: File,
   thumbPath?: string,
 }
+
+export interface WxRoomMember {
+  name: string,
+  state: number,
+  wxid: string,
+  avatar?: string
+}

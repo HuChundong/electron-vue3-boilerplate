@@ -35,6 +35,8 @@ import { WxConversation } from "@/typings/wx";
 /* @ts-expect-error  will fixed by author https://github.com/inokawa/virtua/issues/642*/
 import { VList } from "virtua/vue";
 import { useMessageStore } from "@/stores/message";
+import wxService from "@/service/wx-service";
+import { CMD } from "@/constants";
 const messageStore = useMessageStore();
 dayjs.extend(utc);
 let conversationListWidth = ref("240");
@@ -46,6 +48,13 @@ onMounted(() => {
 function onConversationClick(conversation: WxConversation) {
   currentConversation.value = conversation;
   console.log(conversation);
+  if (conversation.strUsrName.endsWith('@chatroom')) {
+    if (messageStore.getChatroomById(conversation.strUsrName) == null) {
+      wxService.sendCMD(CMD.ROOM_MEMBER, { roomid: conversation.strUsrName })
+    } else {
+      console.log('room member is exist');
+    }
+  }
 }
 </script>
 <style scoped lang="less">
