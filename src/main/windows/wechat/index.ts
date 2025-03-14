@@ -19,16 +19,19 @@ class WechatWindow extends WindowBase {
       backgroundColor: "#2c2c2c",
     });
 
+    this._browserWindow?.on("show", () => {
+      this._browserWindow?.webContents.send('window-show-event', 'Hello from Main Process!');
+    })
 
     this._browserWindow?.on("close", (e) => {
-      if(!appState.allowExitApp){
+      if (!appState.allowExitApp) {
         const win = this._browserWindow;
-        if(win){
-          if(win.isVisible()){
-            if(win.isMinimized()){
+        if (win) {
+          if (win.isVisible()) {
+            if (win.isMinimized()) {
               win.restore();
             }
-          }else{
+          } else {
             win.show();
           }
           win.webContents.send("show-close-primary-win-msgbox");
@@ -64,7 +67,7 @@ class WechatWindow extends WindowBase {
       this.browserWindow?.minimize();
     });
 
-    ipcMain.handle("async-exit-app", async(event) => {
+    ipcMain.handle("async-exit-app", async (event) => {
       // 暂停1500毫秒，模拟退出程序时的清理操作
       await delay(1500);
       appState.allowExitApp = true;

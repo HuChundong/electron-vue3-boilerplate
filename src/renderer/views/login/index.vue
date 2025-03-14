@@ -1,7 +1,10 @@
 <script lang="ts" setup>
 import utils from '@utils/renderer';
-import { ref } from 'vue';
-
+import { onMounted, ref } from 'vue';
+import { useAccountStore } from '@/stores/account';
+import wxService from '@/service/wx-service';
+import { CMD } from '@/constants';
+const accountStore = useAccountStore();
 function getElectronApi() {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return (window as any).loginWindowAPI;
@@ -13,7 +16,6 @@ function onMinimizeWindow() {
 
 function onRestoreWindow() {
     utils.openDevTools();
-    getElectronApi().restoreWindow();
 }
 
 function onCloseWindow() {
@@ -30,7 +32,10 @@ function login() {
         getElectronApi().loginSuccess();
     }, 2000);
 }
-
+onMounted(() => {
+    console.log(accountStore)
+    wxService.sendCMD(CMD.ACCOUNT, {})
+})
 let loading = ref(false);
 </script>
 <template>
@@ -50,10 +55,10 @@ let loading = ref(false);
         <div class="login-container">
             <div class="avatar">
                 <t-avatar style="border-radius: 10px;" shape="round" size="85px"
-                    image="https://wx.qlogo.cn/mmhead/ver_1/D58roxbjFysGiaiaHngUWI3BBpVD0z3zInOVmkrtJUKZtkzCUHY52WDlNnXkP1ZtJicLswqCMuYvrlUdYWuGzibMJWbibibkAJDszcmicQTOhq7B1S9XAn0srkww6TlKKb1EPu6dqiaYVYM1tvZTjuTYuJbLCw/0" />
+                    :image="accountStore.account?.small_head_url" />
             </div>
             <div class="nick-name">
-                <div v-if="!loading">夜黑风高码意浓 @AIBot</div>
+                <div v-if="!loading">{{ accountStore.account?.name || '' }}</div>
                 <div v-else class="loading"><t-loading text="正在进入..." size="26px"></t-loading></div>
             </div>
             <div class="login-btn" @click="login">

@@ -11,7 +11,9 @@ import '../../theme.css'
 
 fontAwesomeLibrary.add(fas);
 fontAwesomeLibrary.add(far);
+import { createPinia } from "pinia";
+const pinia = createPinia();
 const app = createApp(App);
-
+app.use(pinia);
 app.component("FontAwesomeIcon", FontAwesomeIcon);
 app.mount("#app");

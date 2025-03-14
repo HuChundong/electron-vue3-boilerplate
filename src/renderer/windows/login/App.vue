@@ -1,5 +1,14 @@
 <script lang="ts" setup>
+import { CMD } from '@/constants';
+import wxService from '@/service/wx-service';
 import LoginView from '@/views/login/index.vue'
+import { onMounted } from 'vue';
+onMounted(async () => {
+    if (wxService) {
+        wxService.init();
+        console.log("wxService", wxService);
+    }
+});
 </script>
 <template>
     <LoginView></LoginView>

@@ -4,6 +4,7 @@ import { useAccountStore } from "../../stores/account";
 import { useMessageStore } from "../../stores/message";
 import { useDebounceFn } from "@vueuse/core";
 import wxService from "../../service/wx-service";
+import { CMD } from "@/constants";
 
 const store = useAccountStore();
 const messageStore = useMessageStore();
@@ -34,9 +35,19 @@ onUnmounted(() => {
 onMounted(async () => {
   if (wxService) {
     console.log("wxService", wxService);
-    wxService.init();
+    getElectronApi().onWindowShow(() => {
+      wxService.init();
+      wxService.sendCMD(CMD.ACCOUNT, {})
+      wxService.sendCMD(CMD.SESSION, {})
+    })
   }
 });
+
+function getElectronApi() {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return (window as any).wechatWindowAPI;
+}
+
 </script>
 <template>
   <router-view v-slot="{ Component }">

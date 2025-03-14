@@ -34,9 +34,10 @@ if (!gotLock && appState.onlyAllowSingleInstance) {
 
     log.info("App initialize ok");
     const loginWindow = new LoginWindow();
-    const primaryWindow = new WechatWindow();
+    const wechatWindow = new WechatWindow();
     // const workerWindow = new WorkerWindow();
-    appState.primaryWindow = primaryWindow;
+    appState.loginWindow = loginWindow;
+    appState.primaryWindow = wechatWindow;
     // todo 这个应该要登录以后再创建
     appState.tray = CreateAppTray();
 
@@ -67,7 +68,7 @@ if (!gotLock && appState.onlyAllowSingleInstance) {
     mqttClient.on("connect", () => {
       appState.mqttClient = mqttClient;
       log.info("Connected to MQTT Broker");
-      utils.mqttConnect(primaryWindow.browserWindow);
+      utils.mqttConnect(loginWindow.browserWindow);
       // todo 这里应该要根据当前的微信实际id来监听，这个id动态传进来，方法这里的链接应该封装一个方法，让渲染进程来调用，比较合理哦
       mqttClient.subscribe("msg/wxid_jypzaftm8wxe22/received", (err) => {
         if (!err) {
@@ -80,16 +81,17 @@ if (!gotLock && appState.onlyAllowSingleInstance) {
         }
       });
       mqttClient.on("message", (topic, message) => {
+        const activeWindow = appState.loginWindow ? appState.loginWindow : appState.primaryWindow;
         log.info(`Received message: ${message.toString()} on topic: ${topic}`);
         const payload = message.toString();
         switch (topic) {
           case "msg/wxid_jypzaftm8wxe22/received": {
-            utils.msgReceived(primaryWindow.browserWindow, { topic, payload });
+            utils.msgReceived(activeWindow?.browserWindow || null, { topic, payload });
             break;
           }
           case "cmd/wxid_jypzaftm8wxe22/send": {
             const payload = message.toString();
-            utils.cmdS2r(primaryWindow.browserWindow, { topic, payload });
+            utils.cmdS2r(activeWindow?.browserWindow || null, { topic, payload });
             break;
           }
         }

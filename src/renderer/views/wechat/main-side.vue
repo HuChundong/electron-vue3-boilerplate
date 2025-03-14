@@ -1,7 +1,7 @@
 <template>
   <div class="main-side">
     <!-- 微信侧边栏，增加 头像，会话，通讯录，设置 4个功能模块-->
-    <t-avatar size="38px" shape="round" :image="store.account?.small_head_url" />
+    <t-avatar size="38px" shape="round" :image="account?.small_head_url" />
     <div class="button" :class="activeTab === 0 ? 'active' : ''" @click="onConersationClick">
       <font-awesome-icon :icon="activeTab === 0 ? 'fa-solid fa-message' : 'fa-regular fa-message'" />
     </div>
@@ -20,27 +20,31 @@
 <script setup lang="ts">
 import utils from "@utils/renderer";
 import { useRouter } from "vue-router";
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 import { useAccountStore } from "@/stores/account";
+import { storeToRefs } from "pinia";
 const router = useRouter();
 const store = useAccountStore();
-
+const { account } = storeToRefs(store)
 let activeTab = ref(0);
 // todo 从appstate中获取头像
-function onConersationClick(){
+function onConersationClick() {
   activeTab.value = 0;
   router.push({ name: "conversation", params: { username: "eduardo" } });
 }
-function onContactClick(){
+function onContactClick() {
   activeTab.value = 1;
   router.push({ name: "contact", params: { username: "eduardo" } });
 }
-function onDebugClick(){
+function onDebugClick() {
   utils.openDevTools();
 }
-function onSettingClick(){
+function onSettingClick() {
   alert("等待开发");
 }
+onMounted(() => {
+  console.log('侧边栏加载')
+})
 </script>
 <style lang="less" scoped>
 .main-side {

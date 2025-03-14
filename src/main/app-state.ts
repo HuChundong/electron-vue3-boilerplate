@@ -4,12 +4,14 @@
 
 import path from "path";
 import { Tray, app, dialog } from "electron";
-import WechatWindow from "./windows/wechat";
 import log from "electron-log/main";
 import { Singleton } from "../lib/utils/shared";
 import fd from "../lib/file-download/main";
 import utils from "../lib/utils/main";
 import { MqttClient } from "mqtt/*";
+import WindowBase from "./windows/window-base";
+import WechatWindow from "./windows/wechat";
+import LoginWindow from "./windows/login";
 
 // 应用环境（开发环境、测试环境、生产环境）
 enum AppEnv {
@@ -23,31 +25,31 @@ enum AppEnv {
  * 全局存储应用程序的状态数据，包含窗口对象、托盘对象等
  * @class
  */
-class AppState extends Singleton{
-  constructor(){
+class AppState extends Singleton {
+  constructor() {
     super();
     let envStr = "";
-    if(process.argv.length > 2){
+    if (process.argv.length > 2) {
       envStr = process.argv[2].toLowerCase();
     }
 
-    if(envStr == "development"){
+    if (envStr == "development") {
       this.appEnv = AppEnv.Development;
-    }else if(envStr == "test"){
+    } else if (envStr == "test") {
       this.appEnv = AppEnv.Test;
-    }else if(envStr == "production"){
+    } else if (envStr == "production") {
       this.appEnv = AppEnv.Production;
     }
   }
 
   // 初始化应用程序，应用程序启动时会调用该方法
-  public initialize(): boolean{
-    if(app.isPackaged){
+  public initialize(): boolean {
+    if (app.isPackaged) {
       const packageJSON = require(path.join(app.getAppPath(), "package.json"));
       this._appVersion = packageJSON.version;
 
       this._mainStaticPath = path.join(app.getAppPath(), "build/main/static");
-    }else{
+    } else {
       const packageJSON = require(path.join(app.getAppPath(), "../../package.json"));
       this._appVersion = packageJSON.version;
 
@@ -55,7 +57,7 @@ class AppState extends Singleton{
       this._mainStaticPath = path.join(app.getAppPath(), "static");
     }
 
-    if(!this.initLogger()){
+    if (!this.initLogger()) {
       return false;
     }
 
@@ -72,20 +74,20 @@ class AppState extends Singleton{
   }
 
   // 反初始化应用程序，应用程序程序退出前会调用该方法
-  public uninitialize(){
+  public uninitialize() {
     log.eventLogger.stopLogging();
     this._isInit = false;
   }
 
-  public get isInit(){
+  public get isInit() {
     return this._isInit;
   }
 
-  public get appVersion(){
+  public get appVersion() {
     return this._appVersion;
   }
 
-  public get mainStaticPath(){
+  public get mainStaticPath() {
     return this._mainStaticPath;
   }
 
@@ -97,6 +99,8 @@ class AppState extends Singleton{
   // 主窗口对象
   public primaryWindow: null | WechatWindow = null;
 
+  public loginWindow: null | LoginWindow = null;
+
   // 系统托盘
   public tray: null | Tray = null;
 
@@ -105,7 +109,7 @@ class AppState extends Singleton{
   public allowExitApp: boolean = false;
 
   // 当前应用程序仅允许运行一个实例
-  public onlyAllowSingleInstance : boolean = true;
+  public onlyAllowSingleInstance: boolean = true;
 
   // ======== Protected 成员 ========
   //
@@ -119,7 +123,7 @@ class AppState extends Singleton{
   protected _mainStaticPath: string = "";
 
   // 初始化文件日志系统
-  protected initLogger(): boolean{
+  protected initLogger(): boolean {
     log.initialize();
 
     // save electron events to file.
@@ -144,8 +148,8 @@ class AppState extends Singleton{
     // collect all unhandled errors/rejections
     log.errorHandler.startCatching({
       showDialog: false,
-      onError({ createIssue, error, processType, versions }){
-        if(processType === "renderer")
+      onError({ createIssue, error, processType, versions }) {
+        if (processType === "renderer")
           return;
 
         dialog.showMessageBox({
@@ -153,10 +157,10 @@ class AppState extends Singleton{
           message: error.message,
           detail: error.stack,
           type: "error",
-          buttons: [ "Ignore", "Report", "Exit" ],
+          buttons: ["Ignore", "Report", "Exit"],
         })
           .then((result) => {
-            if(result.response === 1){
+            if (result.response === 1) {
               createIssue("https://github.com/winsoft666/electron-vue3-template/issues/new", {
                 title: `Error report for ${versions.app}`,
                 body: `Error:\n\`\`\`${error.stack}\n\`\`\`\n` + `OS: ${versions.os}`,
@@ -164,7 +168,7 @@ class AppState extends Singleton{
               return;
             }
 
-            if(result.response === 2)
+            if (result.response === 2)
               app.quit();
           });
       },
@@ -173,7 +177,7 @@ class AppState extends Singleton{
   }
 }
 
-function getAppState(): AppState{
+function getAppState(): AppState {
   return AppState.instance();
 }
 

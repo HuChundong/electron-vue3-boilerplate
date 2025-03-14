@@ -37,13 +37,14 @@ import { VList } from "virtua/vue";
 import { useMessageStore } from "@/stores/message";
 import wxService from "@/service/wx-service";
 import { CMD } from "@/constants";
+import { storeToRefs } from "pinia";
 const messageStore = useMessageStore();
 dayjs.extend(utc);
 let conversationListWidth = ref("240");
 let currentConversation = ref(null as WxConversation | null);
-const conversations = messageStore.conversations; // ref<WxConversation[]>([]); // 使用 ref 来存储列表数据
+const { conversations } = storeToRefs(messageStore)
 onMounted(() => {
-
+  console.log('主界面加载')
 });
 function onConversationClick(conversation: WxConversation) {
   currentConversation.value = conversation;
