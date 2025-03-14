@@ -2,6 +2,7 @@
 const fsPromises = require("fs/promises");
 const fs = require("fs");
 const path = require("path");
+const FFmpegStatic = require("ffmpeg-static-electron-forge").default;
 
 async function prunePackageJson(buildPath) {
   const packageDotJsonPath = path.join(buildPath, "package.json");
@@ -79,6 +80,7 @@ module.exports = {
       // 精简 package.json，删除无需暴露的属性
       await prunePackageJson(buildPath);
 
+      
       // 删除与当前平台无关的 ffmpeg 文件
       const platformMap = {
         darwin: "darwin",
@@ -137,5 +139,11 @@ module.exports = {
       // 创建一个 ZIP 压缩包，支持所有平台
       name: "@electron-forge/maker-zip",
     },
+  ],
+  plugins: [
+    new FFmpegStatic({
+      remove: true, // Required
+      path: path.join(__dirname, "out", "Wechat-Plus-win32-x64"), // Set path of main build
+    }),
   ],
 };
