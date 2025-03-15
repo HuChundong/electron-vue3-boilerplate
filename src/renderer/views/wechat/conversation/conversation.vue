@@ -21,26 +21,12 @@
       </VList>
     </div>
     <div class="session-footer">
-      <ConversationInputBox :conversation="conversation" />
+      <ConversationInputBox ref="wxInputBox" :conversation="conversation" />
     </div>
-    <t-drawer style="margin-top: 70px;height: calc(100% - 70px);" attach="#td" show-in-attached-element
-      v-model:visible="robotDrawerVisible" :showOverlay="false" size="250px">
-      <template #header>MCP Market</template>
-      <div class="mcp-card">
-        <div class="mcp-card-header">AI 文生图</div>
-        <div class="mcp-card-body">使用ComfyUI工具，通过用户上传的简单描述生成图片</div>
-        <t-switch size="large" :label="['激活', '关闭']"></t-switch>
-      </div>
-      <div class="mcp-card">
-        <div class="mcp-card-header">AI 文字生成</div>
-        <div class="mcp-card-body">使用GPT-3.5模型，根据用户输入生成高质量文本</div>
-        <t-switch size="large" :label="['激活', '关闭']"></t-switch>
-      </div>
-      <div class="mcp-card">
-        <div class="mcp-card-header">AI 语音识别</div>
-        <div class="mcp-card-body">使用DeepSpeech模型，将语音转换为文本</div>
-        <t-switch size="large" :label="['激活', '关闭']"></t-switch>
-      </div>
+    <t-drawer style="margin-top: 70px; height: calc(100% - 70px);" :header="false" :footer="false"
+      class-name="robot-conatiner" attach="#td" show-in-attached-element v-model:visible="robotDrawerVisible"
+      :showOverlay="false" size="300px">
+      <RobotSide></RobotSide>
     </t-drawer>
   </div>
 </template>
@@ -50,12 +36,12 @@ import { WxConversation, WxMessage } from "@/typings/wx";
 import { templateRef } from "@vueuse/core";
 import { ref, watch } from "vue";
 import MsxBox from "./msgbox/index.vue";
-import utils from "@utils/renderer";
 /* @ts-expect-error  will fixed by author https://github.com/inokawa/virtua/issues/642*/
 import { VList } from "virtua/vue";
 import { useAccountStore } from "@/stores/account";
 import { useMessageStore } from "@/stores/message";
 import ConversationInputBox from "./conversation-input-box.vue";
+import RobotSide from "../robot/robot-side.vue";
 // todo 群聊，或者单聊，都有历史记录，这个历史记录的话，考虑直接采用json存储？标题是 群聊名称+(人数)
 // 图片的话，考虑保存到本地，然后异步加载，因为服务器上只保留7天在minio上
 const store = useAccountStore();
@@ -68,6 +54,7 @@ const listRef = templateRef("listRef");
 const messages = ref<WxMessage[]>([]); // 使用 ref 来存储列表数据
 let memberCount = ref(0);
 const robotDrawerVisible = ref(false);
+const wxInputBox = templateRef('wxInputBox')
 // 这里要清理副作用
 watch(() => props.conversation, () => {
   try {
@@ -83,6 +70,9 @@ watch(() => props.conversation, () => {
     }
     messages.value = getMessagesByWxId.value(props.conversation.strUsrName);
     // 输入框聚焦到inputRef
+    if (wxInputBox.value) {
+      wxInputBox.value.focusInput()
+    }
   } catch (e) {
     console.error(e);
   }
@@ -90,7 +80,7 @@ watch(() => props.conversation, () => {
 
 function onRobotSettingClick() {
   // 这里准备打开机器人的设置菜单
-  robotDrawerVisible.value = true
+  robotDrawerVisible.value = !robotDrawerVisible.value
 }
 </script>
 <style lang="less" scoped>
@@ -156,20 +146,9 @@ function onRobotSettingClick() {
   }
 }
 
-.mcp-card {
-  padding: 12px;
-  background-color: var(--td-bg-color-component);
-  border-radius: var(--td-radius-default);
-  margin: var(--td-comp-margin-m); /* 添加间距 */
-
-  .mcp-card-header {
-    border-bottom: 1px solid var(--td-bg-color-component-hover);
-    color: var(--td-text-color-anti);
-  }
-
-  .mcp-card-body {
-    font-size: 12px;
-    padding: 4px 0;
+:global(.robot-container) {
+  .t-drawer__body {
+    padding: 0 !important;
   }
 }
 </style>

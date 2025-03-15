@@ -11,7 +11,6 @@ import { templateRef } from "@vueuse/core";
 import { onMounted, ref, watch } from "vue";
 import { zipType, pptType, excelType, wordType, pdfType, videoType, unknownType } from "./file-type-svg";
 import { fileTypeFromBuffer } from "file-type";
-import { htmlToText } from "html-to-text";
 import { MinIOService } from "@/service/minio-service";
 import wxService from "@/service/wx-service";
 import { v4 } from "uuid";
@@ -605,6 +604,14 @@ function onLineBreak(e: KeyboardEvent) {
     document.execCommand("insertHTML", false, "<br>");
   }
 }
+
+function focusInput() {
+  wxEditor.value.focus()
+}
+
+defineExpose({
+  focusInput
+})
 </script>
 <template>
   <div class="tools">
