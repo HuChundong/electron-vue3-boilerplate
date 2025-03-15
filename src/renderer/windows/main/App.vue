@@ -57,6 +57,7 @@ function getElectronApi() {
 <style lang="less">
 body {
   font-family: var(--global-font-family);
+  overflow: hidden;
 }
 
 ::-webkit-scrollbar {

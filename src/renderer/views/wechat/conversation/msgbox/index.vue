@@ -7,6 +7,7 @@ import WxQuote from "./wx-quote.vue";
 import wxCenterInfo from "./wx-center-info.vue";
 import { ref } from "vue";
 import { useMessageStore } from "@/stores/message";
+import WxEmoji from "./wx-emoji.vue";
 const messageStore = useMessageStore();
 let props = defineProps<{
   message: WxMessage;
@@ -20,6 +21,8 @@ function getComponent() {
     return WxImage
   } else if (props.message?.type === 43) {
     return WxVideo
+  } else if (props.message?.type === 47) {
+    return WxEmoji
   } else if (props.message?.type === 49 && props.message?.subtype === 57) {
     return WxText
   }
@@ -117,11 +120,6 @@ if (props.message?.is_group) {
       border-right: 4px solid var(--td-bg-color-secondarycomponent);
       /* 小三角颜色 */
     }
-  }
-
-  .msg-box-content-image {
-    display: flex;
-    border-radius: 4px;
   }
 }
 </style>

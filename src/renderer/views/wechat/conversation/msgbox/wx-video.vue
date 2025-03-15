@@ -40,7 +40,7 @@ function imageOnError() {
 }
 </script>
 <template>
-  <div class="msg-box-content-image">
+  <div class="msg-box-content-video">
     <t-image v-if="success" v-show="imageWidth !== 'unset' || imageHeight !== 'unset'" :src="imageUrl"
       :style="{ width: imageWidth, height: imageHeight }" fit="fill" shape="round" :on-load="imageOnload"
       :on-error="imageOnError">
@@ -60,5 +60,10 @@ function imageOnError() {
 .play-icon {
   font-size: 40px;
   color: var(--td-text-color-anti);
+}
+
+.msg-box-content-video {
+  display: flex;
+  border-radius: 4px;
 }
 </style>

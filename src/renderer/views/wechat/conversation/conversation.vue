@@ -2,7 +2,8 @@
   <div class="session">
     <div class="session-header">
       <div class="left">
-        <span class="session-title">{{ conversation?.strNickName }}({{ memberCount }})</span>
+        <span class="session-title">{{ conversation?.strNickName }}<span v-if="memberCount > 0">({{ memberCount
+            }})</span></span>
       </div>
       <div class="right">
         <div class="button" @click="onRobotSettingClick">
@@ -13,7 +14,7 @@
         </div>
       </div>
     </div>
-    <div class="session-body">
+    <div id="td" class="session-body">
       <VList ref="listRef" v-slot="{ item, index }" :data="messages" :style="{ height: '100%' }">
         <MsxBox :key="item.id" :message="item"
           :avatar="item.is_self ? store.account?.small_head_url : props.conversation?.smallHeadImgUrl" />
@@ -22,6 +23,25 @@
     <div class="session-footer">
       <ConversationInputBox :conversation="conversation" />
     </div>
+    <t-drawer style="margin-top: 70px;height: calc(100% - 70px);" attach="#td" show-in-attached-element
+      v-model:visible="robotDrawerVisible" :showOverlay="false" size="250px">
+      <template #header>MCP Market</template>
+      <div class="mcp-card">
+        <div class="mcp-card-header">AI 文生图</div>
+        <div class="mcp-card-body">使用ComfyUI工具，通过用户上传的简单描述生成图片</div>
+        <t-switch size="large" :label="['激活', '关闭']"></t-switch>
+      </div>
+      <div class="mcp-card">
+        <div class="mcp-card-header">AI 文字生成</div>
+        <div class="mcp-card-body">使用GPT-3.5模型，根据用户输入生成高质量文本</div>
+        <t-switch size="large" :label="['激活', '关闭']"></t-switch>
+      </div>
+      <div class="mcp-card">
+        <div class="mcp-card-header">AI 语音识别</div>
+        <div class="mcp-card-body">使用DeepSpeech模型，将语音转换为文本</div>
+        <t-switch size="large" :label="['激活', '关闭']"></t-switch>
+      </div>
+    </t-drawer>
   </div>
 </template>
 <script setup lang="ts">
@@ -47,19 +67,20 @@ const props = defineProps<{
 const listRef = templateRef("listRef");
 const messages = ref<WxMessage[]>([]); // 使用 ref 来存储列表数据
 let memberCount = ref(0);
-
+const robotDrawerVisible = ref(false);
 // 这里要清理副作用
 watch(() => props.conversation, () => {
   try {
-    console.log("获取消息记录");
     if (!props.conversation) {
       return;
     }
+    robotDrawerVisible.value = false
     let m = messageStore.getChatroomById(props.conversation.strUsrName)
     if (m) {
       memberCount.value = m.size
+    } else {
+      memberCount.value = 0
     }
-    console.log("获取消息记录", props.conversation.strUsrName);
     messages.value = getMessagesByWxId.value(props.conversation.strUsrName);
     // 输入框聚焦到inputRef
   } catch (e) {
@@ -68,8 +89,8 @@ watch(() => props.conversation, () => {
 }, { immediate: true, deep: false });
 
 function onRobotSettingClick() {
-  console.log("onRobotSettingClick");
   // 这里准备打开机器人的设置菜单
+  robotDrawerVisible.value = true
 }
 </script>
 <style lang="less" scoped>
@@ -77,7 +98,7 @@ function onRobotSettingClick() {
   display: flex;
   flex-direction: column;
   height: 100%;
-  min-width: 500px;
+  min-width: 300px;
 
   .session-header {
     padding-top: 30px;
@@ -132,6 +153,22 @@ function onRobotSettingClick() {
     &:hover {
       background-color: var(--td-bg-color-secondarycontainer-hover);
     }
+  }
+}
+
+.mcp-card {
+  padding: 12px;
+  background-color: var(--td-bg-color-component);
+  border-radius: var(--td-radius-default);
+
+  .mcp-card-header {
+    border-bottom: 1px solid var(--td-bg-color-component-hover);
+    color: var(--td-text-color-anti);
+  }
+
+  .mcp-card-body {
+    font-size: 12px;
+    padding: 4px 0;
   }
 }
 </style>
