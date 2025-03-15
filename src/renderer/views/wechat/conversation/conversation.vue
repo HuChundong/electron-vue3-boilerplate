@@ -3,7 +3,7 @@
     <div class="session-header">
       <div class="left">
         <span class="session-title">{{ conversation?.strNickName }}<span v-if="memberCount > 0">({{ memberCount
-            }})</span></span>
+        }})</span></span>
       </div>
       <div class="right">
         <div class="button" @click="onRobotSettingClick">
@@ -23,9 +23,9 @@
     <div class="session-footer">
       <ConversationInputBox ref="wxInputBox" :conversation="conversation" />
     </div>
-    <t-drawer style="margin-top: 70px; height: calc(100% - 70px);" :header="false" :footer="false"
-      class-name="robot-conatiner" attach="#td" show-in-attached-element v-model:visible="robotDrawerVisible"
+    <t-drawer :footer="false" class="robot-container" attach="#td" v-model:visible="robotDrawerVisible"
       :showOverlay="false" size="300px">
+      <template #header>Mcp 插件</template>
       <RobotSide></RobotSide>
     </t-drawer>
   </div>
@@ -81,7 +81,10 @@ watch(() => props.conversation, () => {
 function onRobotSettingClick() {
   // 这里准备打开机器人的设置菜单
   robotDrawerVisible.value = !robotDrawerVisible.value
+  console.log(robotRes.value)
+  // robotRes.value?.$options = 'robot-container'
 }
+
 </script>
 <style lang="less" scoped>
 .session {
@@ -147,8 +150,11 @@ function onRobotSettingClick() {
 }
 
 :global(.robot-container) {
-  .t-drawer__body {
-    padding: 0 !important;
-  }
+  margin-top: 70px;
+  height: calc(100% - 70px);
+}
+
+:global(.robot-container .t-drawer__body) {
+  padding: 0 !important;
 }
 </style>
