@@ -708,6 +708,7 @@ defineExpose({
 }
 
 .wx-input-edit {
+  white-space: pre-wrap;
   caret-color: var(--td-brand-color);
   color: var(--td-text-color-primary);
   font-size: 16px;

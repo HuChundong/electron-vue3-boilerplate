@@ -120,7 +120,7 @@ if (props.message?.is_group) {
       border-bottom: 4px solid transparent;
       border-left: transparent;
       /* 移除左边框 */
-      border-right: 4px solid var(--td-bg-color-secondarycomponent);
+      border-right: 4px solid var(--td-bg-color-container-hover);
       /* 小三角颜色 */
     }
   }

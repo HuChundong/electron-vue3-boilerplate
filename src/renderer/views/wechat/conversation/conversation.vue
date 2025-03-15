@@ -3,7 +3,7 @@
     <div class="session-header">
       <div class="left">
         <span class="session-title">{{ conversation?.strNickName }}<span v-if="memberCount > 0">({{ memberCount
-        }})</span></span>
+            }})</span></span>
       </div>
       <div class="right">
         <div class="button" @click="onRobotSettingClick">
@@ -71,13 +71,21 @@ watch(() => props.conversation, () => {
     }
     messages.value = getMessagesByWxId.value(props.conversation.strUsrName);
     // 输入框聚焦到inputRef
-    if (wxInputBox.value) {
-      wxInputBox.value.focusInput()
-    }
+    nextTick(() => {
+      if (wxInputBox.value) {
+        wxInputBox.value.focusInput();
+      }
+    });
   } catch (e) {
     console.error(e);
   }
 }, { immediate: true, deep: false });
+
+watch(() => messages, () => {
+  nextTick(() => {
+    listRef.value.scrollTo(Number.MAX_SAFE_INTEGER);
+  })
+})
 
 function onRobotSettingClick() {
   // 这里准备打开机器人的设置菜单

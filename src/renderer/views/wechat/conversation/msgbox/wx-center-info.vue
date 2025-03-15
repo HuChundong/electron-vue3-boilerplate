@@ -11,14 +11,14 @@ let props = defineProps<{
   message: WxMessage | null;
 }>();
 console.log(props.message?.content);
-let f = ''
-if (props.message) {
+let f = props.message?.content
+/* if (props.message) {
   f = parseEmoji(props.message?.content || '');
   f = DOMPurify.sanitize(f);
-}
+} */
 </script>
 <template>
-  <div class="msg-box-info-text" v-html="f"></div>
+  <div class="msg-box-info-text">{{ f }}</div>
 </template>
 
 <style scoped lang="less">
