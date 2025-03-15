@@ -8,6 +8,7 @@ import wxCenterInfo from "./wx-center-info.vue";
 import { ref } from "vue";
 import { useMessageStore } from "@/stores/message";
 import WxEmoji from "./wx-emoji.vue";
+import WxHistory from "./wx-history.vue";
 const messageStore = useMessageStore();
 let props = defineProps<{
   message: WxMessage;
@@ -25,6 +26,8 @@ function getComponent() {
     return WxEmoji
   } else if (props.message?.type === 49 && props.message?.subtype === 57) {
     return WxText
+  }else if (props.message?.type === 49 && (props.message?.subtype === 19 || props.message?.subtype === 40)) {
+    return WxHistory
   }
 }
 let infoMsg = props.message?.type === 10000
@@ -101,7 +104,7 @@ if (props.message?.is_group) {
   }
 
   .msg-bg {
-    background-color: var(--td-bg-color-secondarycomponent);
+    background-color: var(--td-bg-color-container-hover);
     padding: 6px 10px;
     border-radius: 4px;
     position: relative;

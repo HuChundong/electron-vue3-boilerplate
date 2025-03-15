@@ -13,7 +13,6 @@ declare module 'vue' {
     TAside: typeof import('tdesign-vue-next')['Aside']
     TAvatar: typeof import('tdesign-vue-next')['Avatar']
     TButton: typeof import('tdesign-vue-next')['Button']
-    TCard: typeof import('tdesign-vue-next')['Card']
     TContent: typeof import('tdesign-vue-next')['Content']
     TDrawer: typeof import('tdesign-vue-next')['Drawer']
     TImage: typeof import('tdesign-vue-next')['Image']

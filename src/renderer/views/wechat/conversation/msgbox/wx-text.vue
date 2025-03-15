@@ -23,6 +23,7 @@ if (props.message) {
 .msg-box-content-text {
   font-size: 14px;
   max-width: 100%;
+  min-height: 34px;
   overflow-wrap: anywhere;
   display: flex;
   justify-content: center;
