@@ -34,7 +34,7 @@
 import { storeToRefs } from "pinia";
 import { WxConversation, WxMessage } from "@/typings/wx";
 import { templateRef } from "@vueuse/core";
-import { ref, watch } from "vue";
+import { ref, watch, nextTick } from "vue";
 import MsxBox from "./msgbox/index.vue";
 /* @ts-expect-error  will fixed by author https://github.com/inokawa/virtua/issues/642*/
 import { VList } from "virtua/vue";
@@ -52,6 +52,7 @@ const props = defineProps<{
 }>();
 const listRef = templateRef("listRef");
 const messages = ref<WxMessage[]>([]); // 使用 ref 来存储列表数据
+// 监听messages变化，listRef滚动到底部
 let memberCount = ref(0);
 const robotDrawerVisible = ref(false);
 const wxInputBox = templateRef('wxInputBox')
@@ -81,8 +82,6 @@ watch(() => props.conversation, () => {
 function onRobotSettingClick() {
   // 这里准备打开机器人的设置菜单
   robotDrawerVisible.value = !robotDrawerVisible.value
-  console.log(robotRes.value)
-  // robotRes.value?.$options = 'robot-container'
 }
 
 </script>
