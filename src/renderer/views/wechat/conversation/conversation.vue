@@ -160,6 +160,7 @@ function onRobotSettingClick() {
   padding: 12px;
   background-color: var(--td-bg-color-component);
   border-radius: var(--td-radius-default);
+  margin: var(--td-comp-margin-m); /* 添加间距 */
 
   .mcp-card-header {
     border-bottom: 1px solid var(--td-bg-color-component-hover);
