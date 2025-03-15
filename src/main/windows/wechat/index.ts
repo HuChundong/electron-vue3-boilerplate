@@ -22,6 +22,9 @@ class WechatWindow extends WindowBase {
     this._browserWindow?.on("show", () => {
       this._browserWindow?.webContents.send('window-show-event', 'Hello from Main Process!');
     })
+    this._browserWindow?.on("focus", () => {
+      this._browserWindow?.flashFrame(false);
+    })
 
     this._browserWindow?.on("close", (e) => {
       if (!appState.allowExitApp) {

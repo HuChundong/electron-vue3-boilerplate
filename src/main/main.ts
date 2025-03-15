@@ -95,6 +95,10 @@ if (!gotLock && appState.onlyAllowSingleInstance) {
             break;
           }
         }
+        // 修改闪烁的颜色为绿色
+        if (!activeWindow?.browserWindow?.isFocused()) {
+          activeWindow?.browserWindow?.flashFrame(true);
+        }
       });
     });
   });
