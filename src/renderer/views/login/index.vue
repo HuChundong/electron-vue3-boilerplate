@@ -99,7 +99,7 @@ let loading = ref(false);
         color: var(--td-text-color-secondary);
 
         .app-name {
-            font-size: 14px;
+            font-size: var(--td-font-size-body-medium);
             font-weight: 100;
             padding: 8px 14px;
         }
@@ -140,7 +140,7 @@ let loading = ref(false);
         display: flex;
         flex-direction: column;
         align-items: center;
-        padding: 0 50px;
+        padding: 0 var(--td-size-13);
         margin: 0;
 
         .avatar {
@@ -157,7 +157,7 @@ let loading = ref(false);
 
         .nick-name {
             padding-top: 25px;
-            font-size: 15px;
+            font-size: var(--td-font-size-body-large);
             font-weight: 400;
             color: var(--td-text-color-anti);
             flex: 1;
@@ -166,11 +166,11 @@ let loading = ref(false);
         .login-btn {
             width: 100%;
             text-align: center;
-            padding: 8px;
+            padding: var(--td-comp-paddingTB-s);
             background-color: var(--td-brand-color-active);
             color: var(--td-text-color-anti);
             border-radius: var(--td-radius-default);
-            font-size: 14px;
+            font-size: var(--td-font-size-body-medium);
         }
 
         .funs {
