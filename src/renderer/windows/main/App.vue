@@ -4,7 +4,6 @@ import { useAccountStore } from "../../stores/account";
 import { useMessageStore } from "../../stores/message";
 import { useDebounceFn } from "@vueuse/core";
 import wxService from "../../service/wx-service";
-import { CMD } from "@/constants";
 
 const store = useAccountStore();
 const messageStore = useMessageStore();

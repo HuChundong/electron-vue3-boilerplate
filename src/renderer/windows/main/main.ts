@@ -2,6 +2,8 @@ import { createApp } from "vue";
 import "tdesign-vue-next/es/style/index.css";
 import "../../style.css";
 import "../../theme.css";
+import '../../vue3-context-menu.css'
+import ContextMenu from '@imengyu/vue3-context-menu'
 // 导入 FontAwesome 图标
 import { library as fontAwesomeLibrary } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
@@ -17,5 +19,6 @@ const app = createApp(App);
 
 app.use(pinia);
 app.use(router);
+app.use(ContextMenu);
 app.component("FontAwesomeIcon", FontAwesomeIcon);
 app.mount("#app");

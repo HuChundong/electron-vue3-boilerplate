@@ -14,7 +14,7 @@
       </div>
       <div class="content-and-status">
         <div class="content">
-          {{ conversation.strContent }}
+          {{ conversation.strContent.replace('<revokemsg>', '').replace('<revokemsg>', '') }}
         </div>
         <div class="status">
           <font-awesome-icon v-if="!conversation.nStatus" icon="fa-regular fa-bell-slash" size="xs" />
