@@ -40,8 +40,15 @@ if (props.message?.is_group) {
   let roomMember = messageStore.getRoomMemberByWxId(props.message?.roomid || "", props.message?.sender)
   if (roomMember) {
     nickName.value = roomMember?.name
+    if (props.message.extra_msg) {
+      props.message.extra_msg.sender = roomMember.name
+    }
   }
-} 
+} else {
+  if (props.message.extra_msg) {
+    props.message.extra_msg.sender = nickName.value
+  }
+}
 </script>
 <template>
   <!-- 这里通过添加reverse来左右反向就行了-->

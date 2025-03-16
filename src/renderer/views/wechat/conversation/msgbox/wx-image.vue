@@ -7,7 +7,12 @@ let props = defineProps<{
   avatar: string;
 }>();
 
-let imageUrl = props.message.images[0].thumb.url
+let imageUrl
+if (props.message.images[0].thumb) {
+  imageUrl = props.message.images[0].thumb.url
+} else {
+  imageUrl = props.message.images[0].url
+}
 console.log(imageUrl)
 let imageWidth = ref("unset");
 let imageHeight = ref("unset");
