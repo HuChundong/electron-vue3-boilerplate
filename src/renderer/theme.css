@@ -104,6 +104,7 @@
   --td-font-gray-3: rgba(0, 0, 0, 0.4);
   --td-font-gray-4: rgba(0, 0, 0, 0.26);
   /* 字体配置 */
+  --td-font-size-main-icon: 18px;
   --td-font-family: PingFang SC, Microsoft YaHei, Arial Regular;
   --td-font-family-medium: PingFang SC, Microsoft YaHei, Arial Medium;
   --td-font-size-link-small: 12px;

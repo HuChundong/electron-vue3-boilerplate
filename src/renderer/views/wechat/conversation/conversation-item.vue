@@ -1,17 +1,6 @@
 <template>
-  <div
-    ref="target"
-    class="message"
-    :class="active ? 'active' : ''"
-    @click="onConversationClick"
-  >
-    <t-avatar
-      v-if="image.length > 0"
-      size="36px"
-      shape="round"
-      :image="image"
-      content="wait"
-    />
+  <div ref="target" class="message" :class="active ? 'active' : ''" @click="onConversationClick">
+    <t-avatar v-if="image.length > 0" size="36px" shape="round" :image="image" content="wait" />
     <t-avatar v-else size="36px" shape="round" content="wait" />
     <div class="message-content">
       <div class="contact-and-time">
@@ -28,11 +17,7 @@
           {{ conversation.strContent }}
         </div>
         <div class="status">
-          <font-awesome-icon
-            v-if="!conversation.nStatus"
-            icon="fa-regular fa-bell-slash"
-            size="xs"
-          />
+          <font-awesome-icon v-if="!conversation.nStatus" icon="fa-regular fa-bell-slash" size="xs" />
         </div>
       </div>
     </div>
@@ -46,13 +31,14 @@ import utc from "dayjs/plugin/utc";
 import { WxConversation } from "@/typings/wx";
 dayjs.extend(utc);
 
-const emit = defineEmits<{(e: "conversationClick", message: WxConversation): void;
+const emit = defineEmits<{
+  (e: "conversationClick", message: WxConversation): void;
 }>();
 const props = defineProps<{
   conversation: WxConversation;
   active: boolean;
 }>();
-function onConversationClick(){
+function onConversationClick() {
   emit("conversationClick", props.conversation);
 }
 let image = ref("");
@@ -61,7 +47,7 @@ const targetIsVisible = useElementVisibility(target);
 watch(
   () => targetIsVisible.value,
   (newVal) => {
-    if(newVal){
+    if (newVal) {
       image.value = props.conversation.smallHeadImgUrl || "";
     }
   }
@@ -79,21 +65,25 @@ watch(
   justify-content: center;
   align-items: center;
   padding: 14px 10px;
+
   &.active {
     background-color: var(--td-bg-color-component-hover);
   }
+
   .message-content {
     margin-left: 10px;
     display: flex;
     flex: 1;
     flex-direction: column;
     overflow: hidden;
+
     .contact-and-time {
       display: flex;
       flex-direction: row;
+
       .contact {
         max-width: 200px; // todo 后期在搞，现在写实宽度
-        font-size: 14px;
+        font-size: var(--td-font-size-body-medium);
         flex: 1;
         color: var(--td-text-color-anti);
         overflow: hidden;
@@ -108,9 +98,11 @@ watch(
         color: var(--td-text-color-secondary);
       }
     }
+
     .content-and-status {
       display: flex;
       flex-direction: row;
+
       .content {
         flex: 1;
         font-size: 13px;

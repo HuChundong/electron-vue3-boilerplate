@@ -50,7 +50,7 @@ if (props.message) {
 
     .msg-title {
         color: var(--td-text-color-anti);
-        font-size: 14px;
+        font-size: var(--td-font-size-body-medium);
         text-align: left;
         width: 100%;
         white-space: nowrap;

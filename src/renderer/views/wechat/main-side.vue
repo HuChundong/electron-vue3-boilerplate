@@ -62,18 +62,18 @@ onMounted(() => {
   }
 
   .button {
-    margin-top: 14px;
+    margin-top: var(--td-comp-margin-l);
     width: 38px;
     height: 38px;
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 18px;
+    font-size: var(--td-font-size-main-icon);
     color: var(--td-gray-color-7);
 
     &:hover {
       background-color: var(--td-bg-color-container-hover);
-      border-radius: 6px;
+      border-radius: var(--td-radius-medium)
     }
 
     &.active {

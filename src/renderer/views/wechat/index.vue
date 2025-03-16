@@ -69,7 +69,7 @@ function onOpenDevTools(){
 }
 
 .title {
-  font-size: 14px;
+  font-size:var(--td-font-size-body-medium);
   font-weight: bold;
   color: #ffffff;
 }

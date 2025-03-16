@@ -22,7 +22,7 @@ let f = props.message?.content
 
 <style scoped lang="less">
 .msg-box-content-text {
-  font-size: 14px;
+  font-size: var(--td-font-size-body-medium);
   max-width: 100%;
   min-height: 34px;
   overflow-wrap: anywhere;
