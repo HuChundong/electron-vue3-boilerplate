@@ -3,7 +3,7 @@
     <div class="session-header">
       <div class="left">
         <span class="session-title">{{ conversation?.strNickName }}<span v-if="memberCount > 0">({{ memberCount
-            }})</span></span>
+        }})</span></span>
       </div>
       <div class="right">
         <div class="button" @click="onRobotSettingClick">
@@ -15,8 +15,9 @@
       </div>
     </div>
     <div id="td" class="session-body">
-      <div @click="listRef.scrollTo(Number.MAX_SAFE_INTEGER)" class="new-msg-pop" v-if="newMsgCount > 0"><font-awesome-icon icon="fa-solid fa-angles-down" />&nbsp;{{ newMsgCount
-      }}条新消息</div>
+      <div @click="listRef.scrollTo(Number.MAX_SAFE_INTEGER)" class="new-msg-pop" v-if="newMsgCount > 0">
+        <font-awesome-icon icon="fa-solid fa-angles-down" />&nbsp;{{ newMsgCount
+        }}条新消息</div>
       <VList ref="listRef" v-slot="{ item, index }" :data="messages" :style="{ height: '100%' }"
         :onScrollEnd="onScrollEnd">
         <MsxBox :key="item.id" :message="item"
@@ -70,6 +71,7 @@ watch(() => props.conversation, () => {
     if (!props.conversation) {
       return;
     }
+    newMsgCount.value = 0;
     robotDrawerVisible.value = false
     let m = messageStore.getChatroomById(props.conversation.strUsrName)
     if (m) {

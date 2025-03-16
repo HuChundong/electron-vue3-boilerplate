@@ -1,5 +1,6 @@
 import { defineStore } from "pinia";
 import { WxConversation, WxMessage, WxRoomMember } from "@/typings/wx";
+import wxService from "@/service/wx-service";
 
 export const useMessageStore = defineStore("message", {
   state: () => ({
@@ -46,7 +47,7 @@ export const useMessageStore = defineStore("message", {
       })
       this.chatroom.set(room_id, memberMap);
     },
-    insertMessageByWxId(wx_id: string, message: WxMessage) {
+    async insertMessageByWxId(wx_id: string, message: WxMessage) {
       const messages = this.conversationMap.get(wx_id) || [];
       messages.push(message);
       this.conversationMap.set(wx_id, messages);
@@ -55,8 +56,13 @@ export const useMessageStore = defineStore("message", {
       console.log("更新对话信息", conversations);
       this.conversations = conversations;
     },
-    updateConversationLatestMsg(msg: WxMessage) {
+    async updateConversationLatestMsg(msg: WxMessage) {
       const index = this.conversations.findIndex(item => item.strUsrName === (msg.is_group ? msg.roomid : msg.sender));
+      if (index < 0) {
+        // 不存在，刷新一下
+        await wxService.sendSessionCMD()
+        return
+      }
       // 如果不存在的话，说明是全新的消息，要去调用一下那个同步session的接口，或者手动插入
       // todo 需要判断一下消息类型，图片，视频这种要转换一下的
       if (msg.type === 1 || (msg.type === 49 && msg.subtype === 57)) {

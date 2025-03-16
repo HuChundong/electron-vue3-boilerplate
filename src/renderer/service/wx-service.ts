@@ -66,6 +66,10 @@ class WxService extends Singleton {
     utils.cmdSend(JSON.stringify({ cmd, data: data, ts: Date.now() }));
   }
 
+  async sendSessionCMD() {
+    await this.sendCMD(CMD.SESSION, {})
+  }
+
   receiveCmdResponse(data: any) {
     switch (data.cmd) {
       case CMD.ACCOUNT:
@@ -113,6 +117,7 @@ class WxService extends Singleton {
   getMessages() {
     return [];
   }
+
   // 发送消息
   async sendMessage(wxMsg: WxMessage) {
     await utils.msgSend(JSON.stringify(wxMsg));
