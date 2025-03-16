@@ -27,10 +27,11 @@
 import { useElementVisibility } from "@vueuse/core";
 import { useTemplateRef, watch, ref } from "vue";
 import dayjs from "dayjs";
+import 'dayjs/locale/zh-cn'
 import utc from "dayjs/plugin/utc";
 import { WxConversation } from "@/typings/wx";
 dayjs.extend(utc);
-
+dayjs.locale('zh-cn')
 const emit = defineEmits<{
   (e: "conversationClick", message: WxConversation): void;
 }>();
@@ -65,15 +66,19 @@ function processTime(timestamp: number): string {
   const now = dayjs();
   const targetTime = dayjs.unix(timestamp);
   const diffInDays = now.diff(targetTime, 'day');
-
+  const differentYear = now.year() !== targetTime.year()
   if (diffInDays === 0) {
     return targetTime.format('HH:mm');
+  } else if (diffInDays > 3650) {
+    return ''
+  } else if (differentYear) {
+    return targetTime.format('YY/MM/DD')
   } else if (diffInDays === 1) {
     return `昨天 ${targetTime.format('HH:mm')}`;
-  } else if (diffInDays < 7) {
-    return targetTime.format('dddd');
+  } else if (diffInDays < 14) {
+    return targetTime.format('dddd')
   } else {
-    return targetTime.format('M月D日');
+    return targetTime.format('MD/DD');
   }
 }
 </script>
