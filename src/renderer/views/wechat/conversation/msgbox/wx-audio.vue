@@ -1,9 +1,6 @@
 <script setup lang="ts">
 import { WxMessage } from "@/typings/wx";
 import { configParseEmoji, parseEmoji } from "wechat-emoji-parser";
-import DOMPurify from 'dompurify';
-import { ref } from "vue";
-import { convert } from 'html-to-text'
 import { SonicIcon } from 'tdesign-icons-vue-next';
 configParseEmoji({ size: 15 }); // 设置一些参数
 let props = defineProps<{
@@ -20,13 +17,14 @@ let f = audio ? parseInt(String(audio.length! / 1000)) : 0
 // 这里的长度，会跟着语音边长，要稍微处理一下可能
 </script>
 <template>
-    <div class="msg-box-content-text msg-bg">
-        <SonicIcon />&nbsp; {{ f }}〃
+    <div class="msg-box-content-voice msg-bg">
+        <SonicIcon />
+        <div class="msg-box-content-voice-time">{{ f }}<i style="font-size: 10px;line-height: 14px;">〃</i></div>
     </div>
 </template>
 
 <style scoped lang="less">
-.msg-box-content-text {
+.msg-box-content-voice {
     font-size: var(--td-font-size-body-medium);
     max-width: 100%;
     min-height: 34px;
@@ -36,10 +34,16 @@ let f = audio ? parseInt(String(audio.length! / 1000)) : 0
     align-items: center;
     width: fit-content;
     white-space: pre-wrap;
-}
+    flex-direction: row;
 
-.msg-box-content-extra {
-    margin-top: 4px;
-    background-color: var(--td-bg-color-secondarycomponent);
+    .msg-box-content-voice-time {
+        display: flex;
+        flex-direction: row;
+        align-items: flex-start;
+    }
+
+    &.reverse {
+        flex-direction: row-reverse;
+    }
 }
 </style>

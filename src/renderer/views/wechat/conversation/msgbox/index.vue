@@ -61,7 +61,8 @@ if (props.message?.is_group) {
       <div v-if="!message?.is_self && message?.is_group" class="nick-name">
         {{ nickName }}
       </div>
-      <component :is="getComponent()" :message="message" :avatar="avatar || 'UNKNOW'" />
+      <component :class="message?.is_self ? 'reverse' : ''" :is="getComponent()" :message="message"
+        :avatar="avatar || 'UNKNOW'" />
       <wx-quote v-if="message?.extra_msg" :message="message?.extra_msg" />
     </div>
   </div>
