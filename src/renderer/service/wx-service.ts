@@ -46,8 +46,6 @@ class WxService extends Singleton {
       const data = JSON.parse(msg.payload);
       this.receiveCmdResponse(data);
     });
-    wxService.sendAccountCMD();
-    wxService.sendSessionCMD();
   }
 
   /**

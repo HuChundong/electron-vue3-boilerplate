@@ -6,7 +6,7 @@ import { onMounted } from 'vue';
 onMounted(async () => {
     if (wxService) {
         wxService.init();
-        console.log("wxService", wxService);
+        wxService.sendAccountCMD();
     }
 });
 </script>
