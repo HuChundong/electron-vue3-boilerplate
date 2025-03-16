@@ -66,6 +66,10 @@ class WxService extends Singleton {
     utils.cmdSend(JSON.stringify({ cmd, data: data, ts: Date.now() }));
   }
 
+  async sendAccountCMD() {
+    await this.sendCMD(CMD.ACCOUNT, {})
+  }
+
   async sendSessionCMD() {
     await this.sendCMD(CMD.SESSION, {})
   }

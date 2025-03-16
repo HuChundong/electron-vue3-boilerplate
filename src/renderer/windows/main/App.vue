@@ -37,8 +37,8 @@ onMounted(async () => {
     console.log("wxService", wxService);
     getElectronApi().onWindowShow(() => {
       wxService.init();
-      wxService.sendCMD(CMD.ACCOUNT, {})
-      wxService.sendCMD(CMD.SESSION, {})
+      wxService.sendAccountCMD()
+      wxService.sendSessionCMD()
     })
   }
 });
