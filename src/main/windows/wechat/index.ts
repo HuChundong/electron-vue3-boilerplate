@@ -7,7 +7,7 @@ class WechatWindow extends WindowBase {
   constructor() {
     // 调用WindowBase构造函数创建窗口
     super({
-      width: 800,
+      width: 960,
       height: 720,
       minHeight: 720,
       minWidth: 960,
