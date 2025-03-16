@@ -54,10 +54,16 @@ class WxService extends Singleton {
    * @param wxMsg 
    */
   receiveMsg(wxMsg: WxMessage) {
-    const receiver = wxMsg.is_group ? wxMsg.roomid : wxMsg.sender;
-    this.messageStore.updateConversationLatestMsg(wxMsg);
+    let receiver
+    if (wxMsg.is_self && wxMsg.roomid) {
+      // 如果是自己发送的消息，那么 room_id就是接收的人，如果是私聊就是对方的wxid，如果是群聊，就是群的id，sender就是自己的wxid
+      receiver = wxMsg.roomid
+    } else {
+      receiver = wxMsg.is_group ? wxMsg.roomid : wxMsg.sender;
+    }
+    this.messageStore.updateConversationLatestMsg(receiver, wxMsg);
     if (receiver) {
-      this.messageStore.insertMessageByWxId(receiver || "", wxMsg);
+      this.messageStore.insertMessageByWxId(receiver, wxMsg);
     }
   }
 

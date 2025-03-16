@@ -99,6 +99,7 @@ ipcMain.handle("electron-utils-msg-send", async(event, data) => {
 });
 
 ipcMain.handle("electron-utils-cmd-send", async(event, data) => {
+  log.info(data);
   return appState.mqttClient?.publishAsync("cmd/wxid_jypzaftm8wxe22/received", data);
 });
 ipcMain.handle("electron-utils-getfile", async(event, filePath) => {

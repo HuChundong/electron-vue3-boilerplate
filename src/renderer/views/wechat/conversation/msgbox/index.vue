@@ -9,6 +9,7 @@ import { ref } from "vue";
 import { useMessageStore } from "@/stores/message";
 import WxEmoji from "./wx-emoji.vue";
 import WxHistory from "./wx-history.vue";
+import WxAudio from "./wx-audio.vue";
 const messageStore = useMessageStore();
 let props = defineProps<{
   message: WxMessage;
@@ -20,6 +21,8 @@ function getComponent() {
     return WxText
   } else if (props.message?.type === 3) {
     return WxImage
+  } else if (props.message?.type === 34) {
+    return WxAudio
   } else if (props.message?.type === 43) {
     return WxVideo
   } else if (props.message?.type === 47) {
