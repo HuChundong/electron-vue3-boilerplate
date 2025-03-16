@@ -17,10 +17,12 @@ import { Singleton } from "@utils/shared";
 import { useMessageStore } from "@/stores/message";
 import { CMD } from "@/constants";
 import { useAccountStore } from "@/stores/account";
+
 class WxService extends Singleton {
   messageStore: any;
   accountStore: any;
   inited: boolean = false;
+
   constructor() {
     super();
   }
@@ -44,9 +46,8 @@ class WxService extends Singleton {
       const data = JSON.parse(msg.payload);
       this.receiveCmdResponse(data);
     });
-    // todo 如果这里还没有连接，那肯定就不能接收了
-    //wxService.sendCMD(CMD.ACCOUNT, {})
-    //wxService.sendCMD(CMD.SESSION, {})
+    wxService.sendAccountCMD()
+    wxService.sendSessionCMD()
   }
 
   /**

@@ -33,8 +33,7 @@ function login() {
     }, 2000);
 }
 onMounted(() => {
-    console.log(accountStore)
-    wxService.sendAccountCMD()
+
 })
 let loading = ref(false);
 </script>
