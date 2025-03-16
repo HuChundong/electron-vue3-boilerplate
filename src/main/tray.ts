@@ -7,7 +7,7 @@ import { Menu, MenuItem, Tray } from "electron";
 import appState, { AppEnv } from "./app-state";
 
 // 创建系统托盘
-function CreateAppTray(): Tray {
+function CreateAppTray(): Tray{
   const iconPath = process.platform === "win32" ?
     path.join(appState.mainStaticPath, "tray.ico") :
     path.join(appState.mainStaticPath, "tray.png");
@@ -27,12 +27,12 @@ function CreateAppTray(): Tray {
       registerAccelerator: true,
       click: () => {
         const win = appState.primaryWindow?.browserWindow;
-        if (win) {
-          if (win.isVisible()) {
-            if (win.isMinimized()) {
+        if(win){
+          if(win.isVisible()){
+            if(win.isMinimized()){
               win.restore();
             }
-          } else {
+          }else{
             win.show();
           }
         }
@@ -43,7 +43,7 @@ function CreateAppTray(): Tray {
       type: "normal",
       click: () => {
         const win = appState.primaryWindow?.browserWindow;
-        if (win) {
+        if(win){
           appState.allowExitApp = true;
           win.close();
         }
@@ -52,7 +52,7 @@ function CreateAppTray(): Tray {
   ]);
 
   // 在非生产环境添加一个打开调试工具菜单，方便调试
-  if (appState.appEnv != AppEnv.Production) {
+  if(appState.appEnv != AppEnv.Production){
     contextMenu.insert(
       0,
       new MenuItem({

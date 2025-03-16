@@ -6,8 +6,8 @@ import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { fas } from "@fortawesome/free-solid-svg-icons"; // solid样式图标
 import { far } from "@fortawesome/free-regular-svg-icons"; // solid样式图标
 import App from "./App.vue";
-import '../../style.css'
-import '../../theme.css'
+import "../../style.css";
+import "../../theme.css";
 
 fontAwesomeLibrary.add(fas);
 fontAwesomeLibrary.add(far);

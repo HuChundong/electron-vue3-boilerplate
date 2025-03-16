@@ -1,7 +1,7 @@
 import { BrowserWindow, app, dialog, session, Menu } from "electron";
 import log from "electron-log/main";
 import WechatWindow from "./windows/wechat";
-import WorkerWindow from './windows/worker'
+import WorkerWindow from "./windows/worker";
 import { CreateAppTray } from "./tray";
 import appState from "./app-state";
 import mqtt from "mqtt";
@@ -18,15 +18,15 @@ Menu.setApplicationMenu(null);
 const gotLock = app.requestSingleInstanceLock();
 
 // 如果程序只允许启动一个实例时，第二个实例启动后会直接退出
-if (!gotLock && appState.onlyAllowSingleInstance) {
+if(!gotLock && appState.onlyAllowSingleInstance){
   app.quit();
-} else {
-  app.whenReady().then(async () => {
+}else{
+  app.whenReady().then(async() => {
     // todo 正式版的时候要移除
-    if (process.env.NODE_ENV === "development") {
+    if(process.env.NODE_ENV === "development"){
       await session.defaultSession.loadExtension("C:\\Users\\hucd\\AppData\\Local\\Microsoft\\Edge\\User Data\\Default\\Extensions\\nhdogjmejiglipccpnnnanhbledajbpd\\7.7.0_0");
     }
-    if (!appState.initialize()) {
+    if(!appState.initialize()){
       dialog.showErrorBox("App initialization failed", "The program will exit after click the OK button.",);
       app.exit();
       return;
@@ -45,7 +45,7 @@ if (!gotLock && appState.onlyAllowSingleInstance) {
       callback({
         responseHeaders: {
           ...details.responseHeaders,
-          "Content-Security-Policy": ["script-src 'self'"],
+          "Content-Security-Policy": [ "script-src 'self'" ],
         },
       });
     });
@@ -71,12 +71,12 @@ if (!gotLock && appState.onlyAllowSingleInstance) {
       utils.mqttConnect(loginWindow.browserWindow);
       // todo 这里应该要根据当前的微信实际id来监听，这个id动态传进来，方法这里的链接应该封装一个方法，让渲染进程来调用，比较合理哦
       mqttClient.subscribe("msg/wxid_jypzaftm8wxe22/received", (err) => {
-        if (!err) {
+        if(!err){
           log.info("Subscribed to topic: msg/+/received");
         }
       });
       mqttClient.subscribe("cmd/wxid_jypzaftm8wxe22/send", (err) => {
-        if (!err) {
+        if(!err){
           log.info("Subscribed to topic: cmd/+/send");
         }
       });
@@ -84,7 +84,7 @@ if (!gotLock && appState.onlyAllowSingleInstance) {
         const activeWindow = appState.loginWindow ? appState.loginWindow : appState.primaryWindow;
         log.info(`Received message: ${message.toString()} on topic: ${topic}`);
         const payload = message.toString();
-        switch (topic) {
+        switch (topic){
           case "msg/wxid_jypzaftm8wxe22/received": {
             utils.msgReceived(activeWindow?.browserWindow || null, { topic, payload });
             break;
@@ -96,7 +96,7 @@ if (!gotLock && appState.onlyAllowSingleInstance) {
           }
         }
         // 修改闪烁的颜色为绿色
-        if (!activeWindow?.browserWindow?.isFocused()) {
+        if(!activeWindow?.browserWindow?.isFocused()){
           activeWindow?.browserWindow?.flashFrame(true);
         }
       });
@@ -111,12 +111,12 @@ if (!gotLock && appState.onlyAllowSingleInstance) {
   app.on("activate", () => {
     // On macOS it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
-    if (BrowserWindow.getAllWindows().length === 0)
+    if(BrowserWindow.getAllWindows().length === 0)
       appState.primaryWindow = new WechatWindow();
   });
 
   app.on("window-all-closed", () => {
-    if (process.platform !== "darwin")
+    if(process.platform !== "darwin")
       app.quit();
   });
 

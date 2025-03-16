@@ -9,6 +9,6 @@ contextBridge.exposeInMainWorld("wechatWindowAPI", {
   asyncExitApp: () => ipcRenderer.invoke("async-exit-app"),
   minToTray: () => ipcRenderer.send("min-to-tray"),
   onWindowShow: (callback) => {
-    ipcRenderer.on('window-show-event', (event, message) => callback(message));
+    ipcRenderer.on("window-show-event", (event, message) => callback(message));
   },
 });

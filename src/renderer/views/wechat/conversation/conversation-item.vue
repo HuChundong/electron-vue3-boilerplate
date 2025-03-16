@@ -72,7 +72,7 @@ function processTime(timestamp: number): string {
   } else if (diffInDays > 3650) {
     return ''
   } else if (differentYear) {
-    return targetTime.format('YY/MM/DD')
+    return targetTime.format('YY/MM/DD');
   } else if (diffInDays === 1) {
     return `昨天 ${targetTime.format('HH:mm')}`;
   } else if (diffInDays < 14) {
