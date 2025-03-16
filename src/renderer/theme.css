@@ -161,7 +161,7 @@
   --td-text-color-secondary: var(--td-font-gray-2);
   --td-text-color-placeholder: var(--td-font-gray-3);
   --td-text-color-disabled: var(--td-font-gray-4);
-  --td-text-color-anti: #fff;
+  --td-text-color-anti: #000000;
   --td-text-color-brand: var(--td-brand-color);
   --td-text-color-link: var(--td-brand-color);
   /* end 字体配置 */
