@@ -19,18 +19,18 @@
         <font-awesome-icon icon="fa-solid fa-angles-down" />&nbsp;{{ newMsgCount
         }}条新消息
       </div>
-      <VList ref="listRef" v-slot="{ item, index }" :data="messages" :style="{ height: '100%' }"
+      <v-list ref="listRef" v-slot="{ item, index }" :data="messages" :style="{ height: '100%' }"
         :onScrollEnd="onScrollEnd">
-        <MsxBox :key="item.id" :message="item" @contextmenu="onMsgRightClick($event, item)"
+        <msg-box :key="item.id" :message="item" @contextmenu="onMsgRightClick($event, item)"
           :avatar="item.is_self ? store.account?.small_head_url : props.conversation?.smallHeadImgUrl" />
-      </VList>
+      </v-list>
     </div>
     <div class="session-footer">
-      <ConversationInputBox ref="wxInputBox" :conversation="conversation" />
+      <conversation-input-box ref="wxInputBox" :conversation="conversation" />
     </div>
     <t-drawer :footer="false" :header="false" class="robot-container" attach="#td" v-model:visible="robotDrawerVisible"
       :showOverlay="false" size="300px">
-      <RobotSide></RobotSide>
+      <robot-side></robot-side>
     </t-drawer>
   </div>
 </template>
@@ -39,7 +39,7 @@ import { storeToRefs } from "pinia";
 import { WxConversation, WxMessage } from "@/typings/wx";
 import { templateRef } from "@vueuse/core";
 import { ref, watch, nextTick } from "vue";
-import MsxBox from "./msgbox/index.vue";
+import MsgBox from "./msgbox/index.vue";
 /* @ts-expect-error  will fixed by author https://github.com/inokawa/virtua/issues/642*/
 import { VList } from "virtua/vue";
 import { useAccountStore } from "@/stores/account";
