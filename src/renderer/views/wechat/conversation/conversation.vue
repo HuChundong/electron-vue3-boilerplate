@@ -3,7 +3,7 @@
     <div class="session-header">
       <div class="left">
         <span class="session-title">{{ conversation?.strNickName }}<span v-if="memberCount > 0">({{ memberCount
-        }})</span></span>
+            }})</span></span>
       </div>
       <div class="right">
         <div class="button" @click="onRobotSettingClick">
@@ -17,7 +17,8 @@
     <div id="td" class="session-body">
       <div @click="listRef.scrollTo(Number.MAX_SAFE_INTEGER)" class="new-msg-pop" v-if="newMsgCount > 0">
         <font-awesome-icon icon="fa-solid fa-angles-down" />&nbsp;{{ newMsgCount
-        }}条新消息</div>
+        }}条新消息
+      </div>
       <VList ref="listRef" v-slot="{ item, index }" :data="messages" :style="{ height: '100%' }"
         :onScrollEnd="onScrollEnd">
         <MsxBox :key="item.id" :message="item"
@@ -27,9 +28,8 @@
     <div class="session-footer">
       <ConversationInputBox ref="wxInputBox" :conversation="conversation" />
     </div>
-    <t-drawer :footer="false" class="robot-container" attach="#td" v-model:visible="robotDrawerVisible"
+    <t-drawer :footer="false" :header="false" class="robot-container" attach="#td" v-model:visible="robotDrawerVisible"
       :showOverlay="false" size="300px">
-      <template #header>Mcp 插件</template>
       <RobotSide></RobotSide>
     </t-drawer>
   </div>
@@ -96,13 +96,13 @@ messageStore.$onAction(({ name, args, after }) => {
   after(() => {
     if (name === 'insertMessageByWxId') {
       if (args[0] === props.conversation.strUsrName) {
-        console.log(args[1])
         if (args[1].is_self) {
           newMsgCount.value = 0
           listRef.value.scrollTo(Number.MAX_SAFE_INTEGER)
         } else if (listRef.value.findEndIndex() < messages.value.length - 2) {
-          console.log('用户在看老的消息，需要弹出一个新消息提醒')
           newMsgCount.value = newMsgCount.value + 1
+        } else {
+          listRef.value.scrollTo(Number.MAX_SAFE_INTEGER)
         }
       }
     }

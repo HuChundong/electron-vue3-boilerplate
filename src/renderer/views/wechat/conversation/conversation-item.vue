@@ -9,7 +9,7 @@
         </div>
         <!-- 这里的时间需要优化，根据微信的逻辑，距离当前时间远近不同，有不同的显示逻辑-->
         <div v-if="conversation" class="time">
-          {{ dayjs.unix(conversation.nTime).format("HH:mm") }}
+          {{ processTime(conversation.nTime) }}
         </div>
       </div>
       <div class="content-and-status">
@@ -52,6 +52,30 @@ watch(
     }
   }
 );
+
+/**
+ * 根据时间戳和当前事件，计算显示格式
+ * 1. 时间戳是当天，显示格式： "HH:mm"
+ * 2. 时间戳是昨天，显示格式："昨天 HH:mm"
+ * 3. 时间戳7天内，显示格式为 "周一 到 周日"
+ * 4. 超过七天，显示格式："M月D日"
+ * @param timestamp 消息时间戳
+ */
+function processTime(timestamp: number): string {
+  const now = dayjs();
+  const targetTime = dayjs.unix(timestamp);
+  const diffInDays = now.diff(targetTime, 'day');
+
+  if (diffInDays === 0) {
+    return targetTime.format('HH:mm');
+  } else if (diffInDays === 1) {
+    return `昨天 ${targetTime.format('HH:mm')}`;
+  } else if (diffInDays < 7) {
+    return targetTime.format('dddd');
+  } else {
+    return targetTime.format('M月D日');
+  }
+}
 </script>
 <style scoped lang="less">
 .message {
@@ -94,7 +118,7 @@ watch(
       .time {
         text-align: right;
         width: 60px;
-        font-size: 12px;
+        font-size: var(--td-font-size-body-small);
         color: var(--td-text-color-secondary);
       }
     }
@@ -105,7 +129,7 @@ watch(
 
       .content {
         flex: 1;
-        font-size: 13px;
+        font-size: var(--td-font-size-body-small);
         max-width: 200px; // todo 后期在搞，现在写实宽度
         color: var(--td-text-color-secondary);
         overflow: hidden;
