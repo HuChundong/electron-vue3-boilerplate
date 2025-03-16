@@ -2,7 +2,8 @@ import { paths, bins } from "ffmpeg-static-electron-forge";
 import ffmpeg from "fluent-ffmpeg";
 import path from "path";
 
-let ffmpegPath: string, ffprobePath: string;
+let ffmpegPath: string;
+// , ffprobePath: string;
 
 if(process.env.NODE_ENV !== "development"){
   ffmpegPath = paths.ffmpegPath.replace("app.asar", "app.asar.unpacked");

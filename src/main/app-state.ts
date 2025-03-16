@@ -45,11 +45,13 @@ class AppState extends Singleton{
   // 初始化应用程序，应用程序启动时会调用该方法
   public initialize(): boolean{
     if(app.isPackaged){
+      // eslint-disable-next-line
       const packageJSON = require(path.join(app.getAppPath(), "package.json"));
       this._appVersion = packageJSON.version;
 
       this._mainStaticPath = path.join(app.getAppPath(), "build/main/static");
     }else{
+      // eslint-disable-next-line
       const packageJSON = require(path.join(app.getAppPath(), "../../package.json"));
       this._appVersion = packageJSON.version;
 

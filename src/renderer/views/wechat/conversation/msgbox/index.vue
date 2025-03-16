@@ -26,7 +26,7 @@ function getComponent() {
     return WxEmoji
   } else if (props.message?.type === 49 && props.message?.subtype === 57) {
     return WxText
-  }else if (props.message?.type === 49 && (props.message?.subtype === 19 || props.message?.subtype === 40)) {
+  } else if (props.message?.type === 49 && (props.message?.subtype === 19 || props.message?.subtype === 40)) {
     return WxHistory
   }
 }

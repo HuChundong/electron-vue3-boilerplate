@@ -3,7 +3,7 @@
     <div class="session-header">
       <div class="left">
         <span class="session-title">{{ conversation?.strNickName }}<span v-if="memberCount > 0">({{ memberCount
-            }})</span></span>
+        }})</span></span>
       </div>
       <div class="right">
         <div class="button" @click="onRobotSettingClick">
