@@ -34,12 +34,14 @@ onUnmounted(() => {
 
 onMounted(async () => {
   if (wxService) {
-    console.log("wxService", wxService);
-    getElectronApi().onWindowShow(() => {
-      wxService.init();
-      wxService.sendAccountCMD();
-      wxService.sendSessionCMD();
-    })
+    /*     getElectronApi().onWindowShow(() => {
+          wxService.init();
+          wxService.sendAccountCMD();
+          wxService.sendSessionCMD();
+        }) */
+    wxService.init();
+    wxService.sendAccountCMD();
+    wxService.sendSessionCMD();
   }
 });
 
