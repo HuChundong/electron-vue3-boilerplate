@@ -4,6 +4,7 @@ import { useAccountStore } from "../../stores/account";
 import { useMessageStore } from "../../stores/message";
 import { useDebounceFn } from "@vueuse/core";
 import wxService from "../../service/wx-service";
+import { database } from "@/schema/drizzle";
 
 const store = useAccountStore();
 const messageStore = useMessageStore();

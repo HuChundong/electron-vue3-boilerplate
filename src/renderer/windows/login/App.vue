@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { CMD } from '@/constants';
+import { database } from '@/schema/drizzle';
 import wxService from '@/service/wx-service';
 import LoginView from '@/views/login/index.vue'
 import { onMounted } from 'vue';
@@ -8,6 +8,11 @@ onMounted(async () => {
         wxService.init();
         wxService.sendAccountCMD();
     }
+    database.query.message.findMany().then(result => {
+        alert(1)
+        console.log(result)
+        console.log('查询结束')
+    })
 });
 </script>
 <template>

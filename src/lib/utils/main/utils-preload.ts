@@ -1,11 +1,11 @@
 import { contextBridge, ipcRenderer, OpenDialogOptions } from "electron";
 
-function initialize(){
-  if(!ipcRenderer){
+function initialize() {
+  if (!ipcRenderer) {
     return;
   }
 
-  if(contextBridge && process.contextIsolated){
+  if (contextBridge && process.contextIsolated) {
     try {
       contextBridge.exposeInMainWorld("__ElectronUtils__", {
         openDevTools: () => ipcRenderer.send("electron-utils-open-dev-tools"),
@@ -31,9 +31,10 @@ function initialize(){
         getfile: (path: string) => ipcRenderer.invoke("electron-utils-getfile", path),
         createVideoThumb: (path: string) => ipcRenderer.invoke("electron-utils-create-video-thumb", path),
         getClipboardFilePath: () => ipcRenderer.invoke("electron-utils-get-clipboard-file-path"),
+        dbExecute: (...args) => ipcRenderer.invoke("electron-utils-db-execute", ...args),
         // === FALG LINE (DO NOT MODIFY/REMOVE) ===
       });
-    } catch (e){
+    } catch (e) {
       // Sometimes this files can be included twice
       console.log(e);
     }
