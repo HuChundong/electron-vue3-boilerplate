@@ -20,7 +20,7 @@
     这里还要考虑一下占位符，如果没有聊天记录的话，这里应该是空的？ 
     -->
     <div class="conversation-content">
-      <conversation v-if="currentConversation" :conversation="currentConversation" />
+      <conversation-main v-if="currentConversation" :conversation="currentConversation" />
     </div>
   </div>
 </template>
@@ -28,7 +28,7 @@
 // todo 这里实现拖动改变div大小的方法，第一个版本先不实现，全部写实，不要浪费时间在非核心功能上, 优化滚动条的样式,
 import { onMounted, ref } from "vue";
 import conversationItem from "./conversation-item.vue";
-import conversation from "./conversation.vue";
+import ConversationMain from "./conversation-main.vue";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import { WxConversation } from "@/typings/wx";
