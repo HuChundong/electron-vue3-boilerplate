@@ -6,8 +6,8 @@ import fs from 'fs'
 import { app } from 'electron'
 import path from 'path'
 
-const dbPath = app.isPackaged ? 'wxai.db' : path.join(app.getPath('userData'), 'wxai.db')
-
+const dbPath = true ? 'wxai.db' : path.join(app.getPath('userData'), 'wxai.db')
+console.log(dbPath)
 fs.mkdirSync(path.dirname(dbPath), { recursive: true })
 
 const sqlite = new Database(
