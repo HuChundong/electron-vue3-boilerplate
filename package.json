@@ -57,7 +57,7 @@
     "dayjs": "^1.11.13",
     "dompurify": "^3.2.4",
     "electron": "^35.0.2",
-    "eslint": "8.57",
+    "eslint": "^9.22.0",
     "eslint-plugin-vue": "^9.32.0",
     "file-type": "^20.4.0",
     "html-to-text": "^9.0.5",
