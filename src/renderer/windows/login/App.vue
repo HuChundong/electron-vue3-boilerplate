@@ -4,15 +4,14 @@ import wxService from '@/service/wx-service';
 import LoginView from '@/views/login/index.vue'
 import { onMounted } from 'vue';
 onMounted(async () => {
+    database.query.message.findMany().then(result => {
+        console.log(result)
+        console.log('查询结束')
+    })
     if (wxService) {
         wxService.init();
         wxService.sendAccountCMD();
     }
-    database.query.message.findMany().then(result => {
-        alert(1)
-        console.log(result)
-        console.log('查询结束')
-    })
 });
 </script>
 <template>

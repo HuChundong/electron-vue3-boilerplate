@@ -80,7 +80,7 @@ module.exports = {
       // 精简 package.json，删除无需暴露的属性
       await prunePackageJson(buildPath);
 
-      
+
       // 删除与当前平台无关的 ffmpeg 文件
       const platformMap = {
         darwin: "darwin",
@@ -105,8 +105,22 @@ module.exports = {
         "node_modules\\ffmpeg-static-electron-forge\\dist\\bin\\win32\\ia32",
         "node_modules\\ffmpeg-static-electron-forge\\dist\\bin\\win32\\x64",
       ];
-
+      console.log('ffmpegDirs')
       for (const dir of ffmpegDirs) {
+        if (dir.endsWith(`${currentPlatformDir}\\${currentArchDir}`)) {
+          const dirPath = path.join(buildPath, dir);
+          const sourcePath = path.join(__dirname, dir);
+          if (fs.existsSync(sourcePath)) {
+            await fsPromises.cp(sourcePath, dirPath, { recursive: true });
+          }
+          /* if (fs.existsSync(dirPath)) {
+            console.log(dirPath);
+            await fsPromises.rm(dirPath, { recursive: true, force: true });
+          } */
+        }
+      }
+
+      /* for (const dir of ffmpegDirs) {
         if (!dir.endsWith(`${currentPlatformDir}\\${currentArchDir}`)) {
           const dirPath = path.join(buildPath, dir);
           if (fs.existsSync(dirPath)) {
@@ -114,7 +128,7 @@ module.exports = {
             await fsPromises.rm(dirPath, { recursive: true, force: true });
           }
         }
-      }
+      } */
     },
   },
   rebuildConfig: {},
@@ -142,8 +156,12 @@ module.exports = {
   ],
   plugins: [
     new FFmpegStatic({
-      remove: true, // Required
+      remove: false, // Required
       path: path.join(__dirname, "out", "Wechat-Plus-win32-x64"), // Set path of main build
     }),
+    {
+      name: '@electron-forge/plugin-auto-unpack-natives',
+      config: {}
+    }
   ],
 };
