@@ -1,27 +1,29 @@
 <script lang="ts" setup>
 import utils from '@utils/renderer';
-import { onMounted, ref } from 'vue';
+import { onBeforeMount, onMounted, ref } from 'vue';
 import { useAccountStore } from '@/stores/account';
-import wxService from '@/service/wx-service';
-import { CMD } from '@/constants';
+import { database } from '@/schema/drizzle';
+import { WxAccount } from '@/typings/wx';
+import { accountTable } from '../../../db/schema';
 const accountStore = useAccountStore();
 function getElectronApi() {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return (window as any).loginWindowAPI;
 }
 
-function onMinimizeWindow() {
-    getElectronApi().minimizeWindow();
-}
-
-function onRestoreWindow() {
-    utils.openDevTools();
-}
+const wxAccount = ref(null as WxAccount | null)
+onBeforeMount(async () => {
+    const result = await database.query.accountTable.findMany()
+    if (result.length > 0) {
+        wxAccount.value = result[0] as any
+    } else {
+        wxAccount.value = accountStore.account
+    }
+})
 
 function onCloseWindow() {
     getElectronApi().exitLoginWindow();
 }
-
 function onOpenDevTools() {
     utils.openDevTools();
 }
@@ -32,8 +34,8 @@ function login() {
         getElectronApi().loginSuccess();
     }, 2000);
 }
-onMounted(() => {
 
+onMounted(() => {
 })
 let loading = ref(false);
 </script>
@@ -42,7 +44,7 @@ let loading = ref(false);
         <div class="login-header">
             <span class="app-name">微信（AI版）</span>
             <div class="buttons">
-                <div class="button" @click="onRestoreWindow">
+                <div class="button" @click="onOpenDevTools">
                     <!-- fa-clone-->
                     <font-awesome-icon icon="fa-solid fa-gear" />
                 </div>
@@ -51,13 +53,13 @@ let loading = ref(false);
                 </div>
             </div>
         </div>
-        <div class="login-container">
+        <div class="login-container" v-if="wxAccount !== null">
             <div class="avatar">
                 <t-avatar style="border-radius: 10px;" shape="round" size="85px"
-                    :image="accountStore.account?.small_head_url" />
+                    :image="wxAccount?.small_head_url" />
             </div>
             <div class="nick-name">
-                <div v-if="!loading">{{ accountStore.account?.name || '' }}</div>
+                <div v-if="!loading">{{ wxAccount?.name || '' }}</div>
                 <div v-else class="loading"><t-loading text="正在进入..." size="26px"></t-loading></div>
             </div>
             <div class="login-btn" @click="login">

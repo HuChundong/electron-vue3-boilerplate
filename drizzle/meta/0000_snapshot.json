@@ -1,19 +1,19 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "1de8945a-7c28-4ed6-8324-e08bce94bfdc",
+  "id": "82b61624-6dea-4133-80b0-02c510b18304",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "account": {
       "name": "account",
       "columns": {
-        "id": {
-          "name": "id",
-          "type": "integer",
+        "wxid": {
+          "name": "wxid",
+          "type": "text",
           "primaryKey": true,
           "notNull": true,
           "autoincrement": false,
-          "default": 0
+          "default": "''"
         },
         "mobile": {
           "name": "mobile",
@@ -31,6 +31,14 @@
           "autoincrement": false,
           "default": "''"
         },
+        "home": {
+          "name": "home",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "''"
+        },
         "small_head_url": {
           "name": "small_head_url",
           "type": "text",
@@ -39,8 +47,8 @@
           "autoincrement": false,
           "default": "''"
         },
-        "wxid": {
-          "name": "wxid",
+        "big_head_url": {
+          "name": "big_head_url",
           "type": "text",
           "primaryKey": false,
           "notNull": true,

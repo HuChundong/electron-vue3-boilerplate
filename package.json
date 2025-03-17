@@ -9,8 +9,9 @@
   "repository": "https://github.com/huchundong/wechat-ai",
   "main": "build/main/main.js",
   "scripts": {
+    "db": "npx drizzle-kit generate",
     "rebuild": "electron-rebuild -f -w wechat-ai",
-    "start": "electron .",
+    "start": "electron-forge start",
     "dev": "node scripts/dev-server.mjs development",
     "test": "node scripts/dev-server.mjs test",
     "production": "node scripts/dev-server.mjs production",
