@@ -45,8 +45,7 @@ function imageOnError() {
       :style="{ width: imageWidth, height: imageHeight }" fit="fill" shape="round" :on-load="imageOnload"
       :on-error="imageOnError">
       <template #overlayContent>
-        <div shape="mark" theme="primary" variant="light"
-          style="width: 100%;height: 100%;text-align: center; padding-top: 55%;">
+        <div shape="mark" theme="primary" variant="light" style="top:50%;left: 50%;transform: translate(-50%,-50%);">
           <!-- 先用这个把，素材后期统一替换 -->
           <font-awesome-icon class="play-icon" icon="fa-regular fa-circle-play" />
         </div>
