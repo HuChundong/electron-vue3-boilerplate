@@ -16,7 +16,7 @@ let f = props.message?.content
   <!--引用的消息目前就分 文本，图片，视频，还有引用的引用，从外面的extra_msg直接传进来-->
   <div class="quotebox">
     <div v-if="message?.type === 1" class="msg-box-content-text msg-bg">{{ f }}</div>
-    <div v-elseif="message?.type === 3" class="msg-box-content-text msg-bg">
+    <div v-else-if="message?.type === 3" class="msg-box-content-text msg-bg">
       <div class="quote-image">
         <div class="nick-name">{{ message?.sender }}</div>
         <t-image class="quote-img" :src="message?.images[0].url" fit="fill"></t-image>
