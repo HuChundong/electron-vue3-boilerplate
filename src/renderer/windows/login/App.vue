@@ -2,7 +2,7 @@
 import wxService from '@/service/wx-service';
 import LoginView from '@/views/login/index.vue'
 import { onBeforeMount, onMounted } from 'vue';
-onBeforeMount(async () => {
+onBeforeMount(() => {
     if (wxService) {
         wxService.init();
     }

@@ -22,10 +22,12 @@ let loading = ref(false);
 const { account: wxAccount } = storeToRefs(accountStore)
 
 onBeforeMount(async () => {
-    const result = await database.query.accountTable.findFirst({ with: { "conversations": true } })
+    const result = await database.query.accountTable.findFirst()
     console.log(result)
-    if (result?.wxid) {
+    if (result?.wxid && result?.bigHeadUrl !== '') {
         wxAccount.value = { ...result, small_head_url: result.smallHeadUrl, big_head_url: result.bigHeadUrl };
+    } else {
+        wxService.sendAccountCMD();
     }
 })
 
@@ -39,15 +41,18 @@ function onOpenDevTools() {
 async function login() {
     if (loading.value) return;
     loading.value = true;
-    const conversations = await database.query.accountTable.findMany();
+    const conversations = await database.query.conversationTable.findMany();
     if (conversations.length > 0) {
         utils.startInitData();
-        setTimeout(() => {
-            getElectronApi().loginSuccess();
-        }, 2000);
     } else {
         wxService.sendSessionCMD()
+        setTimeout(() => {
+            utils.startInitData();
+        }, 1500);
     }
+    setTimeout(() => {
+        getElectronApi().loginSuccess();
+    }, 3000);
     console.log("登录成功")
 }
 

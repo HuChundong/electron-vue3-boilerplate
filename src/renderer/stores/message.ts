@@ -63,6 +63,9 @@ export const useMessageStore = defineStore("message", {
     },
     async refreshConversation(conversations: WxConversation[]) {
       const accountStore = useAccountStore();
+      if (!accountStore.account) {
+        return;
+      }
       conversations.forEach(conversation => {
         conversation.mainWxid = accountStore.account?.wxid || "";
       });

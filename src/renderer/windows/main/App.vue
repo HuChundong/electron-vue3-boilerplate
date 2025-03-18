@@ -2,13 +2,25 @@
 import { onMounted, onBeforeMount } from "vue";
 import wxService from "../../service/wx-service";
 import utils from "@utils/renderer";
-
+import { database } from "@/schema/drizzle";
+import { useAccountStore } from "@/stores/account";
+import { useMessageStore } from "@/stores/message";
+const accountStore = useAccountStore();
+const messageStore = useMessageStore();
 onMounted(async () => {
 });
 
-onBeforeMount(() => {
-  utils.onInitData(() => {
+onBeforeMount(async () => {
+  utils.onInitData(async () => {
     console.log('init data')
+    let res = await database.query.accountTable.findMany({ with: { conversations: true } })
+    console.log(res);
+    if(res.length > 0){
+      accountStore.updateAccount({...res[0],small_head_url:res[0].smallHeadUrl,big_head_url:res[0].bigHeadUrl});
+      if(res[0].conversations.length > 0){
+        messageStore.refreshConversation(res[0].conversations);
+      }
+    }
     wxService.init();
   });
 });
