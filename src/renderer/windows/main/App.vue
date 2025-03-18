@@ -1,54 +1,14 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted } from "vue";
-import { useAccountStore } from "../../stores/account";
-import { useMessageStore } from "../../stores/message";
-import { useDebounceFn } from "@vueuse/core";
 import wxService from "../../service/wx-service";
-import { database } from "@/schema/drizzle";
-
-const store = useAccountStore();
-const messageStore = useMessageStore();
-const persistMessage = useDebounceFn((state) => {
-  console.log("持久化消息");
-  localStorage.setItem("message", JSON.stringify(state));
-}, 200);
-
-const persistAccount = useDebounceFn((state) => {
-  console.log("持久化用户信息");
-  localStorage.setItem("account", JSON.stringify(state));
-}, 200);
-
-const messageSubscription = messageStore.$subscribe((mutation, state) => {
-  persistMessage(state);
-});
-
-const accountSubscription = store.$subscribe((mutation, state) => {
-  persistAccount(state);
-});
-
-// 在组件卸载时取消订阅，防止内存泄漏
-onUnmounted(() => {
-  messageSubscription(); // 调用取消订阅函数
-  accountSubscription(); // 调用取消订阅函数
-});
 
 onMounted(async () => {
   if (wxService) {
-    /*     getElectronApi().onWindowShow(() => {
-          wxService.init();
-          wxService.sendAccountCMD();
-          wxService.sendSessionCMD();
-        }) */
     wxService.init();
-    //wxService.sendAccountCMD();
-    //wxService.sendSessionCMD();
+    wxService.sendAccountCMD();
+    wxService.sendSessionCMD();
   }
 });
-
-function getElectronApi() {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return (window as any).wechatWindowAPI;
-}
 
 </script>
 <template>

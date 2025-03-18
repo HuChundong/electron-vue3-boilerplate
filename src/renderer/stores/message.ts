@@ -1,6 +1,9 @@
 import { defineStore } from "pinia";
 import { WxConversation, WxMessage, WxRoomMember } from "@/typings/wx";
 import wxService from "@/service/wx-service";
+import { database } from "@/schema/drizzle";
+import { conversationTable } from "../../db/schema";
+import { eq } from "drizzle-orm";
 
 export const useMessageStore = defineStore("message", {
   state: () => ({
@@ -58,9 +61,12 @@ export const useMessageStore = defineStore("message", {
       messages.push(msg);
       this.conversationMap.set(wx_id, messages);
     },
-    refreshConversation(conversations: WxConversation[]) {
+    async refreshConversation(conversations: WxConversation[]) {
       console.log("更新对话信息", conversations);
       this.conversations = conversations;
+      await database.delete(conversationTable)
+      let result = await database.insert(conversationTable).values(conversations)
+      // 这里全量更新一下
     },
     async updateConversationLatestMsg(wx_id: string | null, msg: WxMessage) {
       if (!wx_id) {
@@ -84,9 +90,9 @@ export const useMessageStore = defineStore("message", {
       }
       this.conversations[index].nTime = msg.ts;
     },
-    removeConversation(wxid: string) {
+    async removeConversation(wxid: string) {
       this.conversations = this.conversations.filter(item => item.strUsrName !== wxid);
+      await database.delete(conversationTable).where(eq(conversationTable.strUsrName, wxid))
     }
   },
-
 });
