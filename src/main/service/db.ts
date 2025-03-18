@@ -14,11 +14,11 @@ const sqlite = new Database(
     dbPath
 )
 
-export const db = drizzle(sqlite, { schema })
+export const db = drizzle(sqlite, { schema, logger: true, })
 
-function toDrizzleResult(row: Record<string, any>)
+function toDrizzleResult(rows: Record<string, any>)
 function toDrizzleResult(rows: Record<string, any> | Array<Record<string, any>>) {
-    if (!rows) {
+    if (rows === undefined) {
         return []
     }
     if (Array.isArray(rows)) {
@@ -34,7 +34,8 @@ export const execute = async (e, sqlstr, params, method) => {
     console.log('sqlstr', sqlstr, params, method)
     const result = sqlite.prepare(sqlstr)
     const ret = result[method](...params)
-    return toDrizzleResult(ret)
+    return ret
+    //return toDrizzleResult(ret)
 }
 
 export const runMigrate = async () => {

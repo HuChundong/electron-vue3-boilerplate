@@ -3,21 +3,20 @@ import utils from '@utils/renderer';
 import { onBeforeMount, onMounted, ref } from 'vue';
 import { useAccountStore } from '@/stores/account';
 import { database } from '@/schema/drizzle';
-import { WxAccount } from '@/typings/wx';
-import { accountTable } from '../../../db/schema';
+import { storeToRefs } from 'pinia';
 const accountStore = useAccountStore();
 function getElectronApi() {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return (window as any).loginWindowAPI;
 }
 
-const wxAccount = ref(null as WxAccount | null)
+const { account: wxAccount } = storeToRefs(accountStore)
+
 onBeforeMount(async () => {
     const result = await database.query.accountTable.findMany()
+    console.log(result)
     if (result.length > 0) {
         wxAccount.value = result[0] as any
-    } else {
-        wxAccount.value = accountStore.account
     }
 })
 
@@ -55,8 +54,7 @@ let loading = ref(false);
         </div>
         <div class="login-container" v-if="wxAccount !== null">
             <div class="avatar">
-                <t-avatar style="border-radius: 10px;" shape="round" size="85px"
-                    :image="wxAccount?.small_head_url" />
+                <t-avatar style="border-radius: 10px;" shape="round" size="85px" :image="wxAccount?.small_head_url" />
             </div>
             <div class="nick-name">
                 <div v-if="!loading">{{ wxAccount?.name || '' }}</div>

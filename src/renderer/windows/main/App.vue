@@ -40,8 +40,8 @@ onMounted(async () => {
           wxService.sendSessionCMD();
         }) */
     wxService.init();
-    wxService.sendAccountCMD();
-    wxService.sendSessionCMD();
+    //wxService.sendAccountCMD();
+    //wxService.sendSessionCMD();
   }
 });
 
