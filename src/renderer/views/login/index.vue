@@ -4,19 +4,28 @@ import { onBeforeMount, onMounted, ref } from 'vue';
 import { useAccountStore } from '@/stores/account';
 import { database } from '@/schema/drizzle';
 import { storeToRefs } from 'pinia';
+import wxService from '@/service/wx-service';
+/**
+ * 从数据库查询上一次登录的用户
+ * 如果查不到，就发送获取当前登录用户的命令
+ * 如果拿不到当前的登录用户，就要发送获取登录二维码的命令
+ * 如果能拿到登录用户，那么发起获取会话记录的接口
+ * 拿到会话之后，写入数据库，然后通知后台的主界面加载
+ * 最后推出登录界面，显示主界面
+ */
 const accountStore = useAccountStore();
 function getElectronApi() {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return (window as any).loginWindowAPI;
 }
-
+let loading = ref(false);
 const { account: wxAccount } = storeToRefs(accountStore)
 
 onBeforeMount(async () => {
-    const result = await database.query.accountTable.findMany()
+    const result = await database.query.accountTable.findFirst({ with: { "conversations": true } })
     console.log(result)
-    if (result.length > 0) {
-        wxAccount.value = result[0] as any
+    if (result?.wxid) {
+        wxAccount.value = { ...result, small_head_url: result.smallHeadUrl, big_head_url: result.bigHeadUrl };
     }
 })
 
@@ -27,16 +36,23 @@ function onOpenDevTools() {
     utils.openDevTools();
 }
 
-function login() {
+async function login() {
+    if (loading.value) return;
     loading.value = true;
-    setTimeout(() => {
-        getElectronApi().loginSuccess();
-    }, 2000);
+    const conversations = await database.query.accountTable.findMany();
+    if (conversations.length > 0) {
+        utils.startInitData();
+        setTimeout(() => {
+            getElectronApi().loginSuccess();
+        }, 2000);
+    } else {
+        wxService.sendSessionCMD()
+    }
+    console.log("登录成功")
 }
 
 onMounted(() => {
 })
-let loading = ref(false);
 </script>
 <template>
     <div class="login-wrapper">

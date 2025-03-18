@@ -32,6 +32,10 @@ function initialize() {
         createVideoThumb: (path: string) => ipcRenderer.invoke("electron-utils-create-video-thumb", path),
         getClipboardFilePath: () => ipcRenderer.invoke("electron-utils-get-clipboard-file-path"),
         dbExecute: (...args) => ipcRenderer.invoke("electron-utils-db-execute", ...args),
+        onInitData: (callback) => ipcRenderer.on("electron-utils-init-data", (event) => {
+          callback();
+        }),
+        startInitData: () => ipcRenderer.send("electron-utils-start-init-data"),
         // === FALG LINE (DO NOT MODIFY/REMOVE) ===
       });
     } catch (e) {

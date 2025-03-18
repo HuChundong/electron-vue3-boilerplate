@@ -1,11 +1,10 @@
 <script lang="ts" setup>
 import wxService from '@/service/wx-service';
 import LoginView from '@/views/login/index.vue'
-import { onMounted } from 'vue';
-onMounted(async () => {
+import { onBeforeMount, onMounted } from 'vue';
+onBeforeMount(async () => {
     if (wxService) {
         wxService.init();
-        wxService.sendAccountCMD();
     }
 });
 </script>

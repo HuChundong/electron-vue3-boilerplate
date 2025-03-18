@@ -1,6 +1,5 @@
 import { sqliteTable as table, integer, text, uniqueIndex } from "drizzle-orm/sqlite-core";
-import { sql, relations } from "drizzle-orm";
-import type { Relation } from "drizzle-orm";
+import { relations } from "drizzle-orm";
 
 export const accountTable = table('account', {
   wxid: text("wxid").primaryKey().default(""),
@@ -15,8 +14,8 @@ export const accountTable = table('account', {
 export type AccountTable = typeof accountTable.$inferSelect;  // inferred type
 
 export const conversationTable = table('conversation', {
-  mainWxid: text("main_wxid").notNull().references(() => accountTable.wxid),        // Changed field name
-  strUsrName: text("str_usr_name").primaryKey().notNull(),      // Changed field name
+  mainWxid: text("main_wxid").notNull(),        // Changed field name
+  strUsrName: text("str_usr_name").primaryKey(),      // Changed field name
   strNickName: text("str_nick_name").notNull().default(""),  // Changed field name
   nMsgType: integer("n_msg_type").notNull().default(0),    // Changed field name
   reserved4: integer("reserved_4").notNull().default(0),     // Changed field name
@@ -63,3 +62,17 @@ export const messageTable = table("message", {
 
 // Define type for Message that uses camelCase
 export type MessageTable = typeof messageTable.$inferSelect;  // inferred type
+
+// Define Relations
+
+
+export const accountRelations = relations(accountTable, ({ many }) => ({
+  conversations: many(conversationTable),
+}));
+
+export const conversationRelations = relations(conversationTable, ({ one }) => ({
+  account: one(accountTable, {
+    fields: [conversationTable.mainWxid],
+    references: [accountTable.wxid],
+  }),
+}));

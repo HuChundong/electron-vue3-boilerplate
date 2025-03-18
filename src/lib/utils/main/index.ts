@@ -57,6 +57,11 @@ class Utils {
       browserWindow.webContents.send("electron-utils-cmd-s2r", data);
     }
   }
+  public initData(browserWindow: BrowserWindow | null) {
+    if (browserWindow) {
+      browserWindow.webContents.send("electron-utils-init-data");
+    }
+  }
   // === PUBLIC METHOD FALG LINE (DO NOT MODIFY/REMOVE) ===
 }
 
@@ -145,6 +150,12 @@ ipcMain.handle("electron-utils-get-clipboard-file-path", async (event) => {
   });
 });
 ipcMain.handle("electron-utils-db-execute", execute);
+
+ipcMain.on("electron-utils-start-init-data", (event) => {
+  if (appState.primaryWindow?.browserWindow) {
+    utils.initData(appState.primaryWindow?.browserWindow);
+  }
+});
 // === FALG LINE (DO NOT MODIFY/REMOVE) ===
 
 export default utils;

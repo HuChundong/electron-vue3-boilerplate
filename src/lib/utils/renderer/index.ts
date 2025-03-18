@@ -78,6 +78,12 @@ class Utils {
   public async dbExecute(...args: any): Promise<any> {
     return (window as any).__ElectronUtils__.dbExecute(...args);
   }
+  public onInitData(callback){
+    (window as any).__ElectronUtils__.onInitData(callback);
+  }
+  public startInitData(){
+    return (window as any).__ElectronUtils__.startInitData();
+  }
   // === FALG LINE (DO NOT MODIFY/REMOVE) ===
 }
 

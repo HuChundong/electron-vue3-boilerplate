@@ -8,9 +8,15 @@ export const database = drizzle(async (...args: any) => {
         const result = await utils.dbExecute(...args)
         return { rows: result }
     } catch (e: any) {
-        console.error('Error from sqlite proxy server: ', e.response.data)
+        console.error('Error from sqlite proxy server: ', e)
         return { rows: [] }
     }
 }, {
     schema: schema
 })
+
+// Define this helper somewhere in your codebase:
+export const takeUniqueOrThrow = <T extends any[]>(values: T): T[number] => {
+    if (values.length !== 1) throw new Error("Found non unique or inexistent value")
+    return values[0]!
+  }

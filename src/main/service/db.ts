@@ -34,8 +34,8 @@ export const execute = async (e, sqlstr, params, method) => {
     console.log('sqlstr', sqlstr, params, method)
     const result = sqlite.prepare(sqlstr)
     const ret = result[method](...params)
-    return ret
-    //return toDrizzleResult(ret)
+    //return ret
+    return toDrizzleResult(ret)
 }
 
 export const runMigrate = async () => {
