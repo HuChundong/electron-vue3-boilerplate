@@ -4,7 +4,7 @@ import wxService from "@/service/wx-service";
 import { database } from "@/schema/drizzle";
 import { conversationTable } from "../../db/schema";
 import { eq } from "drizzle-orm";
-
+import { useAccountStore } from "./account";
 export const useMessageStore = defineStore("message", {
   state: () => ({
     /**
@@ -62,6 +62,10 @@ export const useMessageStore = defineStore("message", {
       this.conversationMap.set(wx_id, messages);
     },
     async refreshConversation(conversations: WxConversation[]) {
+      const accountStore = useAccountStore();
+      conversations.forEach(conversation => {
+        conversation.mainWxid = accountStore.account?.wxid || "";
+      });
       console.log("更新对话信息", conversations);
       this.conversations = conversations;
       await database.delete(conversationTable)

@@ -1,13 +1,16 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted } from "vue";
+import { onMounted, onBeforeMount } from "vue";
 import wxService from "../../service/wx-service";
 
 onMounted(async () => {
   if (wxService) {
     wxService.init();
-    wxService.sendAccountCMD();
-    wxService.sendSessionCMD();
+    // wxService.sendAccountCMD();
+    // wxService.sendSessionCMD();
   }
+});
+
+onBeforeMount(() => {
 });
 
 </script>

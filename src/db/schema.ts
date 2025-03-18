@@ -1,54 +1,65 @@
-import { sqliteTable as table } from "drizzle-orm/sqlite-core";
-import * as t from "drizzle-orm/sqlite-core";
-import { AnySQLiteColumn } from "drizzle-orm/sqlite-core";
+import { sqliteTable as table, integer, text, uniqueIndex } from "drizzle-orm/sqlite-core";
+import { sql, relations } from "drizzle-orm";
+import type { Relation } from "drizzle-orm";
+
 export const accountTable = table('account', {
-  wxid: t.text("wxid").primaryKey().default(""),
-  mobile: t.text("mobile").notNull().default(""),
-  name: t.text("name").notNull().default(""),
-  home: t.text("home").notNull().default(""),
-  small_head_url: t.text("small_head_url").notNull().default(""),
-  big_head_url: t.text("big_head_url").notNull().default(""),
-})
+  wxid: text("wxid").primaryKey().default(""),
+  mobile: text("mobile").notNull().default(""),
+  name: text("name").notNull().default(""),
+  home: text("home").notNull().default(""),
+  smallHeadUrl: text("small_head_url").notNull().default(""),  // Changed field name
+  bigHeadUrl: text("big_head_url").notNull().default(""),    // Changed field name
+});
+
+// Define type for Account that uses camelCase
+export type AccountTable = typeof accountTable.$inferSelect;  // inferred type
 
 export const conversationTable = table('conversation', {
-  strUsrName: t.text("strUsrName").primaryKey().default(""),
-  strNickName: t.text("strNickName").notNull().default(""),
-  nMsgType: t.int("nMsgType").notNull().default(0),
-  Reserved4: t.int("Reserved4").notNull().default(0),
-  nMsgStatus: t.int("nMsgStatus").notNull().default(0),
-  nIsSend: t.int("nIsSend").notNull().default(0),
-  strContent: t.text("strContent").notNull().default(""),
-  nMsgLocalID: t.int("nMsgLocalID").notNull().default(0),
-  othersAtMe: t.int("othersAtMe").notNull().default(0),
-  Reserved0: t.int("Reserved0").notNull().default(0),
-  nUnReadCount: t.int("nUnReadCount").notNull().default(0),
-  nTime: t.int("nTime").notNull().default(0),
-  nStatus: t.int("nStatus").notNull().default(0),
-  editContent: t.text("editContent").notNull().default(""),
-  Reserved2: t.int("Reserved2").notNull().default(0),
-  smallHeadImgUrl: t.text("smallHeadImgUrl").notNull().default(""),
-  bigHeadImgUrl: t.text("bigHeadImgUrl").notNull().default(""),
-  nOrder: t.int("nOrder").notNull().default(0),
+  mainWxid: text("main_wxid").notNull().references(() => accountTable.wxid),        // Changed field name
+  strUsrName: text("str_usr_name").primaryKey().notNull(),      // Changed field name
+  strNickName: text("str_nick_name").notNull().default(""),  // Changed field name
+  nMsgType: integer("n_msg_type").notNull().default(0),    // Changed field name
+  reserved4: integer("reserved_4").notNull().default(0),     // Changed field name
+  nMsgStatus: integer("n_msg_status").notNull().default(0),  // Changed field name
+  nIsSend: integer("n_is_send").notNull().default(0),    // Changed field name
+  strContent: text("str_content").notNull().default(""),   // Changed field name
+  nMsgLocalId: integer("n_msg_local_id").notNull().default(0), // Changed field name
+  othersAtMe: integer("others_at_me").notNull().default(0),   // Changed field name
+  reserved0: integer("reserved_0").notNull().default(0),     // Changed field name
+  nUnReadCount: integer("n_un_read_count").notNull().default(0), // Changed field name
+  nTime: integer("n_time").notNull().default(0),         // Changed field name
+  nStatus: integer("n_status").notNull().default(0),       // Changed field name
+  editContent: text("edit_content").notNull().default(""),   // Changed field name
+  reserved2: integer("reserved_2").notNull().default(0),     // Changed field name
+  smallHeadImgUrl: text("small_head_img_url").notNull().default(""), // Changed field name
+  bigHeadImgUrl: text("big_head_img_url").notNull().default(""),   // Changed field name
+  nOrder: integer("n_order").notNull().default(0),        // Changed field name
 });
 
+// Define type for Conversation that uses camelCase
+export type ConversationTable = typeof conversationTable.$inferSelect; // inferred type
+
 export const messageTable = table("message", {
-  id: t.int("id").primaryKey().default(0),
-  isSelf: t.int("is_self", { mode: 'boolean' }),
-  isGroup: t.int("is_group", { mode: 'boolean' }),
-  type: t.int("type"),
-  subtype: t.int("subtype"),
-  ts: t.int("ts"),
-  roomid: t.text("roomid"),
-  content: t.text("content"),
-  sender: t.text("sender"),
-  sign: t.text("sign"),
-  thumb: t.text("thumb"),
-  extra: t.text("extra"),
-  xml: t.text("xml"),
-  images: t.text("images"),
-  files: t.text("files"),
-  videos: t.text("videos"),
-  audios: t.text("audios"),
-  extra_msg: t.text("extra_msg"),
-  aters: t.text("aters")
+  id: integer("id").primaryKey({ autoIncrement: true }), //autoIncrement must be used with primaryKey
+  isSelf: integer("is_self", { mode: 'boolean' }),      // Changed field name
+  isGroup: integer("is_group", { mode: 'boolean' }),     // Changed field name
+  type: integer("type"),
+  subtype: integer("subtype"),
+  ts: integer("ts"),
+  roomid: text("roomid"),
+  content: text("content"),
+  sender: text("sender"),
+  sign: text("sign"),
+  thumb: text("thumb"),
+  extra: text("extra"),
+  xml: text("xml"),
+  images: text("images"),
+  files: text("files"),
+  videos: text("videos"),
+  audios: text("audios"),
+  extraMsg: text("extra_msg"),          // Changed field name
+  aters: text("aters")
 });
+
+// Define type for Message that uses camelCase
+export type MessageTable = typeof messageTable.$inferSelect;  // inferred type

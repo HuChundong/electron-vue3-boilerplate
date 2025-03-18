@@ -1,4 +1,5 @@
 export interface WxConversation {
+  mainWxid: string,
   strUsrName: string,
   strNickName: string,
   nMsgType: number,
