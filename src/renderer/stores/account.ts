@@ -15,6 +15,10 @@ export const useAccountStore = defineStore("account", {
       console.log("更新用户信息,同步插入数据库", account);
       this.account = account;
       await database.insert(accountTable).values(account).onConflictDoUpdate({ target: accountTable.wxid, set: { ...account, bigHeadUrl: account.big_head_url, smallHeadUrl: account.small_head_url } })
+    },
+    async updateAccountState(account: WxAccount) {
+      console.log("更新用户信息,同步插入数据库", account);
+      this.account = account;
     }
   },
 });

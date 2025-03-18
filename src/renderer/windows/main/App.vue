@@ -15,10 +15,10 @@ onBeforeMount(async () => {
     console.log('init data')
     let res = await database.query.accountTable.findMany({ with: { conversations: true } })
     console.log(res);
-    if(res.length > 0){
-      accountStore.updateAccount({...res[0],small_head_url:res[0].smallHeadUrl,big_head_url:res[0].bigHeadUrl});
-      if(res[0].conversations.length > 0){
-        messageStore.refreshConversation(res[0].conversations);
+    if (res.length > 0) {
+      accountStore.updateAccountState({ ...res[0], small_head_url: res[0].smallHeadUrl, big_head_url: res[0].bigHeadUrl });
+      if (res[0].conversations.length > 0) {
+        messageStore.refreshConversationState(res[0].conversations);
       }
     }
     wxService.init();
