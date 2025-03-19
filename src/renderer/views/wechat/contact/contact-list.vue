@@ -50,7 +50,7 @@ function createTitleItem(id: string, title: string, memberCount: number) {
 
     const image = new Image({
         x: 10,
-        y: 15,
+        y: 10,
         url: rightImg,
         draggable: false,
         width: 20,
@@ -63,21 +63,21 @@ function createTitleItem(id: string, title: string, memberCount: number) {
         text: title,
         width: 150,
         fontSize: 16,
-        lineHeight: 50,
-        height: 50,
+        lineHeight: 40,
+        height: 40,
         fontWeight: 'light',
         textAlign: 'left',
         textWrap: 'none',
         textOverflow: 'ellipsis',
-        x: 35,
+        x: 32,
     })
     const count = new Text({
         fill: 'white',
         text: memberCount + "",
         width: 30,
         fontSize: 12,
-        lineHeight: 50,
-        height: 50,
+        lineHeight: 40,
+        height: 40,
         fontWeight: 'light',
         textAlign: 'right',
         textWrap: 'none',
@@ -87,7 +87,7 @@ function createTitleItem(id: string, title: string, memberCount: number) {
     roomTitleBox.add(image)
     roomTitleBox.add(text)
     roomTitleBox.add(count)
-    yPosition += 50
+    yPosition += 40
     console.log(roomTitleBox.y)
     return roomTitleBox
 }
@@ -101,7 +101,7 @@ function createContactItem(id: string, name: string, avatar: string) {
         y: yPosition
     })
     const image = new Image({
-        x: 25,
+        x: 30,
         y: 10,
         url: url,
         draggable: false,
@@ -120,7 +120,7 @@ function createContactItem(id: string, name: string, avatar: string) {
         textAlign: 'left',
         textWrap: 'none',
         textOverflow: 'ellipsis',
-        x: 65,
+        x: 70,
     })
     group.add([image, text])
     yPosition += 50;
@@ -168,7 +168,9 @@ onMounted(async () => {
         tree: { type: 'document' } // 给 tree 层添加视口  //
     })
     scrollBar = new ScrollBar(app, { theme: 'dark', minSize: 40, padding: [0, -2, -10, 0] })
-    const contactsDB = await database.query.contactTable.findMany()
+    const contactsDB = await database.query.contactTable.findMany({
+        orderBy: (table, { asc }) => [asc(table.PYInitial)]
+    })
     contactsDB.forEach(p => {
         if (p.UserName.endsWith('@chatroom')) {
             contactGroups.chatroom.members.push(p)
