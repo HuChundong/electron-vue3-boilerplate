@@ -59,6 +59,7 @@ async function login() {
 
 onMounted(() => {
 })
+
 </script>
 <template>
     <div class="login-wrapper">
@@ -76,7 +77,7 @@ onMounted(() => {
         </div>
         <div class="login-container" v-if="wxAccount !== null">
             <div class="avatar">
-                <t-avatar style="border-radius: 10px;" shape="round" size="85px" :image="wxAccount?.small_head_url" />
+                <t-avatar style="border-radius: 10px;" shape="round" size="85px" :image="wxAccount?.small_head_url.replace('https','localimage')" />
             </div>
             <div class="nick-name">
                 <div v-if="!loading">{{ wxAccount?.name || '' }}</div>

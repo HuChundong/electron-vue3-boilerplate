@@ -1,7 +1,7 @@
 <template>
   <div class="main-side">
     <!-- 微信侧边栏，增加 头像，会话，通讯录，设置 4个功能模块-->
-    <t-avatar size="38px" shape="round" :image="account?.small_head_url" />
+    <t-avatar size="38px" shape="round" :image="account?.small_head_url.replace('https','localimage')" />
     <div class="button" :class="activeTab === 0 ? 'active' : ''" @click="onConersationClick">
       <font-awesome-icon :icon="activeTab === 0 ? 'fa-solid fa-message' : 'fa-regular fa-message'" />
     </div>

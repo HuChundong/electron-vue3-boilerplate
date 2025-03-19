@@ -1,6 +1,6 @@
 <template>
   <div ref="target" class="message" :class="active ? 'active' : ''" @click="onConversationClick">
-    <t-avatar v-if="image.length > 0" size="36px" shape="round" :image="image" content="wait" />
+    <t-avatar v-if="image.length > 0" size="36px" shape="round" :image="image.replace('https','localimage')" content="wait" />
     <t-avatar v-else size="36px" shape="round" content="wait" />
     <div class="message-content">
       <div class="contact-and-time">

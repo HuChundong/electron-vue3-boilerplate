@@ -54,7 +54,7 @@ if (props.message?.is_group) {
   <!-- 这里通过添加reverse来左右反向就行了-->
   <div v-if="!infoMsg" class="msg-box" :class="message?.is_self ? 'self' : ''">
     <div class="msg-box-avatar">
-      <t-avatar size="34px" shape="round" :image="avatar" />
+      <t-avatar size="34px" shape="round" :image="avatar?.replace('https','localimage')" />
     </div>
     <div class="msg-box-content">
       <!-- 群聊并且不是自己才需要显示昵称-->

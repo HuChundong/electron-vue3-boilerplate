@@ -38,7 +38,7 @@ export function registerImageProtocol() {
         const filePath = path.join(imageTempPath, md5);
 
         try {
-            await fs.access(filePath); // 默认使用 F_OK
+            await fs.access(filePath);
             console.log(`${filePath} exists`);
             return net.fetch(filePath)
         } catch (err) {
