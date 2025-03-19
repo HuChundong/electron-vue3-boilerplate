@@ -6,7 +6,6 @@ import { WxContact } from "@/typings/wx";
 const props = defineProps<{
     contacts: WxContact[];
 }>();
-Platform.image.crossOrigin = false
 /**
  * 头像+名称
  * 拼音首字符分割线
@@ -19,8 +18,7 @@ onMounted(() => {
         view: 'leafer',
         tree: { type: 'document' } // 给 tree 层添加视口  //
     })
-    const url = props.contacts[0].smallHeadImgUrl || ''
-
+    const url = (props.contacts[0].smallHeadImgUrl || '').replace("https", "weaiimage")
     Resource.loadImage(url).then(() => {
         /**
          * 头像尺寸 30，圆角5

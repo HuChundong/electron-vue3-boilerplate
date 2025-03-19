@@ -1,4 +1,4 @@
-import { BrowserWindow, app, dialog, session, Menu } from "electron";
+import { BrowserWindow, app, dialog, session, Menu, protocol, net } from "electron";
 import log from "electron-log/main";
 import WechatWindow from "./windows/wechat";
 import WorkerWindow from "./windows/worker";
@@ -8,6 +8,7 @@ import mqtt from "mqtt";
 import utils from "../lib/utils/main";
 import LoginWindow from "./windows/login";
 import { runMigrate } from "./service/db";
+import { registerImageProtocol } from "./service/image-protocol";
 let mqttClient: mqtt.MqttClient;
 // 禁用沙盒
 // 在某些系统环境上，不禁用沙盒会导致界面花屏
@@ -17,6 +18,7 @@ let mqttClient: mqtt.MqttClient;
 Menu.setApplicationMenu(null);
 
 const gotLock = app.requestSingleInstanceLock();
+
 
 // 如果程序只允许启动一个实例时，第二个实例启动后会直接退出
 if (!gotLock && appState.onlyAllowSingleInstance) {
@@ -32,7 +34,7 @@ if (!gotLock && appState.onlyAllowSingleInstance) {
       app.exit();
       return;
     }
-
+    registerImageProtocol()
     await runMigrate()
 
     log.info("App initialize ok");
