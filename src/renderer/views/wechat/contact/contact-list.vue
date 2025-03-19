@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { App, Debug, Group, Text, Image, PointerEvent, Box, LeafList, RenderEvent, LeaferEvent } from 'leafer-ui'
+import { App, Group, Text, Image, PointerEvent, Box, LeafList, RenderEvent, LeaferEvent } from 'leafer-ui'
 import '@leafer-in/viewport' // 导入视口插件
 import '@leafer-in/editor' // 导入图形编辑器插件
 import '@leafer-in/animate' // 导入动画插件
@@ -7,9 +7,6 @@ import { onMounted, ref, nextTick, onBeforeMount } from 'vue';
 import { WxContact } from "@/typings/wx";
 import { ScrollBar } from '@leafer-in/scroll' // 导入滚动条插件
 import { database } from '@/schema/drizzle';
-const props = defineProps<{
-    contacts: WxContact[];
-}>();
 /**
  * 暂时先只处理两种类型的好友
  * 群聊和好友

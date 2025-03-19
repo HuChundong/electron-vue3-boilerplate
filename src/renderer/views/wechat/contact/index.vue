@@ -9,12 +9,7 @@
         </t-input>
       </div>
       <div class="contact-container-list">
-        <!--         <VList v-slot="{ item, index }" :data="contacts" :style="{ height: '100%' }">
-          <contactt-item :key="item.UserName" :conversation="item"
-            :active="currentContact == null ? false : item.UserName == currentContact?.UserName"
-            @conversation-click="onContactClick" />
-        </VList> -->
-        <contact-list :contacts="contacts"></contact-list>
+        <contact-list></contact-list>
       </div>
     </div>
     <!-- 点击对话，右侧内容区域刷新，查询最近的聊天记录，这个可以考虑直接从本地去获取，毕竟mqtt里面一直在实时刷新，不需要再查询了吧？先不做消息同步机制
@@ -31,20 +26,13 @@ import { onMounted, ref } from "vue";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import { WxContact } from "@/typings/wx";
-/* @ts-expect-error  will fixed by author https://github.com/inokawa/virtua/issues/642*/
-import { VList } from "virtua/vue";
-import wxService from "@/service/wx-service";
-import { CMD } from "@/constants";
-import { storeToRefs } from "pinia";
 import { useAccountStore } from "@/stores/account";
-import ContactItem from "./contact-item.vue";
 import ContactDetail from "./contact-detail.vue";
 import ContactList from "./contact-list.vue";
 const accountStore = useAccountStore();
 dayjs.extend(utc);
 let contactListWidth = ref("240");
 let currentContact = ref(null as WxContact | null);
-const { contacts } = storeToRefs(accountStore)
 onMounted(() => {
   console.log('主界面加载')
 });
