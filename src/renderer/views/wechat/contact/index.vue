@@ -77,7 +77,7 @@ function onContactClick(contact: WxContact) {
     }
 
     .contact-container-list {
-      height: calc(100% - 66px);
+      height: calc(100% - 70px);
       overflow-y: auto;
     }
   }
