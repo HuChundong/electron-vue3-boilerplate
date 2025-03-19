@@ -125,3 +125,37 @@ export interface WxRoomMember {
   wxid: string,
   avatar?: string
 }
+
+/* {
+  "Alias": "top1dev",
+  "RemarkPYInitial": "",
+  "Type": 3,
+  "PYInitial": "YHFGMYNAIBOT",
+  "ExtraBuf": "{\"region\":[\"\", \"\", \"\"], \"signature\":\"\\u5411\\u5f80\\u4e0d\\u7f81\\u6d12\\u8131\", \"telephone\":\"\", \"gender\":0}",
+  "Remark": "",
+  "NickName": "夜黑风高码意浓 @AIBot",
+  "smallHeadImgUrl": "https://wx.qlogo.cn/mmhead/ver_1/5MF4XBW1I9oLrjHCQ9pibweZoIysjbJOxibl6zeBxEcxbiadRV5fPCSRdsbwhyvDpvEnZTCkQP0GSsaf92EuN3yzUibBP2QHVA0BnpibiaaRSicrRlzy71MvMvWHOq8qYFgN3jib/132",
+  "labelName": "None",
+  "UserName": "kingme_hu"
+} */
+  interface WxContact {
+    Alias: string;
+    RemarkPYInitial: string;
+    Type: number;
+    PYInitial: string;
+    ExtraBuf: string; //  类型设置为 string，如果需要更具体的类型，请根据 ExtraBuf 的 JSON 结构定义一个接口
+    Remark: string;
+    NickName: string;
+    smallHeadImgUrl: string;
+    labelName: string; // 使用联合类型，明确指出 labelName 可以是 "None" 字符串或其他的字符串
+    UserName: string;
+  }
+  
+  // 为了处理 ExtraBuf，可以定义一个额外的类型：
+  interface ExtraBufInfo {
+    region: string[];  // 假设是字符串数组
+    signature: string;
+    telephone: string;
+    gender: number;
+  }
+  

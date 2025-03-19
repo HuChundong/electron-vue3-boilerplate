@@ -12,15 +12,20 @@ onMounted(async () => {
 
 onBeforeMount(async () => {
   utils.onInitData(async () => {
-    console.log('init data')
-    let res = await database.query.accountTable.findMany({ with: { conversations: true } })
-    console.log(res);
+    console.log('从数据库查询当前主用户和会话列表')
+    const res = await database.query.accountTable.findMany({ with: { conversations: true } })
     if (res.length > 0) {
       accountStore.updateAccountState({ ...res[0], small_head_url: res[0].smallHeadUrl, big_head_url: res[0].bigHeadUrl });
       if (res[0].conversations.length > 0) {
         messageStore.refreshConversationState(res[0].conversations);
       }
     }
+    console.log('从数据库查询联系人清单')
+    const contacts = await database.query.contactTable.findMany();
+    if (contacts.length > 0) {
+      accountStore.updateContactState(contacts);
+    }
+    console.log(contacts)
     wxService.init();
   });
 });

@@ -29,6 +29,7 @@ onBeforeMount(async () => {
     } else {
         wxService.sendAccountCMD();
     }
+    await wxService.sendContactCMD();
 })
 
 function onCloseWindow() {

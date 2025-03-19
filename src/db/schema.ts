@@ -64,6 +64,21 @@ export type MessageTable = typeof messageTable.$inferSelect;  // inferred type
 
 // Define Relations
 
+// 考虑聚合的话，这里都要添加wxid的主键
+export const contactTable = table("contact", {
+  Alias: text("alias").notNull(),
+  RemarkPYInitial: text("remark_py_initial").notNull(),
+  Type: integer("type").notNull(),
+  PYInitial: text("py_initial").notNull(),
+  ExtraBuf: text("extra_buf").notNull(),
+  Remark: text("remark").notNull(),
+  NickName: text("nick_name").notNull(),
+  smallHeadImgUrl: text("small_head_img_url").notNull(),
+  labelName: text("label_name").notNull(),
+  UserName: text("user_name").primaryKey().notNull(),
+});
+
+export type ContactTable = typeof contactTable.$inferSelect;  // inferred type
 
 export const accountRelations = relations(accountTable, ({ many }) => ({
   conversations: many(conversationTable),

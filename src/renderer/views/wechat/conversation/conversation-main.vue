@@ -63,6 +63,13 @@ function onScrollEnd() {
 }
 const allMenus = [
   {
+    label: "屏蔽此人",
+    type: 'all',
+    onClick: () => {
+      alert("You click a menu item");
+    }
+  },
+  {
     label: "复制",
     type: 'text',
     onClick: () => {

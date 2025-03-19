@@ -79,6 +79,10 @@ class WxService extends Singleton {
     await this.sendCMD(CMD.SESSION, {});
   }
 
+  async sendContactCMD() {
+    await this.sendCMD(CMD.CONTACT, {});
+  }
+
   receiveCmdResponse(data: any) {
     switch (data.cmd) {
       case CMD.ACCOUNT:
@@ -106,7 +110,14 @@ class WxService extends Singleton {
           console.log("群通讯录更新 error", e);
         }
         break;
-      // this.messageStore.refreshConversation(data.data);
+      case CMD.CONTACT:
+        console.log("通讯录更新", data.data);
+        try {
+          this.accountStore.updateContact(data.data);
+        } catch (e) {
+          console.log("通讯录更新 error", e);
+        }
+        break;
     }
   }
 
