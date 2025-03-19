@@ -35,17 +35,18 @@ const contactGroups = {
 let app: App
 let scrollBar: ScrollBar
 let yPosition = 0
+let currentBox = null as Box | null
 function createTitleItem(id: string, title: string, memberCount: number) {
     console.log('createTitleItem')
     const roomTitleBox = new Box({
         id: id,
-        hitSelf: true,
-        hitFill: 'all',
-        hitChildren: false,
         x: 0,
         y: yPosition,
         width: 238,
         fill: 'transparent',
+        hitSelf: true,
+        hitFill: 'all',
+        hitChildren: false,
     })
 
     const image = new Image({
@@ -92,13 +93,31 @@ function createTitleItem(id: string, title: string, memberCount: number) {
     return roomTitleBox
 }
 
+function onContactClick(id: string, box: Box) {
+    if (currentBox != null) {
+        currentBox.fill = 'transparent'
+    }
+    currentBox = box
+    currentBox.fill = '#4b4b4b'
+}
+
 function createContactItem(id: string, name: string, avatar: string) {
     console.log('createContactItem')
     const url = avatar.replace("https", "localimage")
-    const group = new Group({
+    const group = new Box({
         id: id,
         x: 0,
-        y: yPosition
+        y: yPosition,
+        width: 270,
+        fill: 'transparent',
+        hitSelf: true,
+        hitFill: 'all',
+        hitChildren: false,
+        event: {
+            [PointerEvent.CLICK]: function (e: PointerEvent) {
+                onContactClick(id, (e.current as Box))
+            },
+        }
     })
     const image = new Image({
         x: 30,
@@ -181,6 +200,9 @@ onMounted(async () => {
 
     const chatroomTitle = createTitleItem('chatroom', contactGroups.chatroom.title, contactGroups.chatroom.members.length)
     chatroomTitle.on(PointerEvent.CLICK, () => {
+        if (currentBox) {
+            currentBox.fill = "transparent"
+        }
         if (!contactGroups.chatroom.titleLeaf || !contactGroups.friends.titleLeaf) {
             return
         }
@@ -221,6 +243,9 @@ onMounted(async () => {
     }
     const friendsTitle = createTitleItem('friends', contactGroups.friends.title, contactGroups.friends.members.length)
     friendsTitle.on(PointerEvent.CLICK, () => {
+        if (currentBox) {
+            currentBox.fill = "transparent"
+        }
         const r = contactGroups.friends.opened ? 0 : 90
         contactGroups.friends.titleLeaf?.children[0].animate({ rotation: r }, { duration: 0.2 })
         if (contactGroups.friends.opened) {
