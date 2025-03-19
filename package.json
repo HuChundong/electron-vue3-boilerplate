@@ -54,6 +54,8 @@
     "@fortawesome/free-solid-svg-icons": "^6.7.2",
     "@fortawesome/vue-fontawesome": "^3.0.8",
     "@imengyu/vue3-context-menu": "^1.4.5",
+    "@leafer-in/animate": "^1.4.2",
+    "@leafer-in/color": "^1.4.2",
     "@leafer-in/editor": "^1.4.2",
     "@leafer-in/scroll": "^1.4.2",
     "@leafer-in/viewport": "^1.4.2",
