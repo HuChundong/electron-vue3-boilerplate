@@ -9,7 +9,7 @@
         </t-input>
       </div>
       <div class="contact-container-list">
-        <contact-list></contact-list>
+        <contact-list @contactClick="onContactClick"></contact-list>
       </div>
     </div>
     <!-- 点击对话，右侧内容区域刷新，查询最近的聊天记录，这个可以考虑直接从本地去获取，毕竟mqtt里面一直在实时刷新，不需要再查询了吧？先不做消息同步机制
@@ -29,6 +29,9 @@ import { WxContact } from "@/typings/wx";
 import { useAccountStore } from "@/stores/account";
 import ContactDetail from "./contact-detail.vue";
 import ContactList from "./contact-list.vue";
+import { database } from "@/schema/drizzle";
+import { eq } from "drizzle-orm";
+import { contactTable } from "../../../../db/schema";
 const accountStore = useAccountStore();
 dayjs.extend(utc);
 let contactListWidth = ref("240");
@@ -36,8 +39,10 @@ let currentContact = ref(null as WxContact | null);
 onMounted(() => {
   console.log('主界面加载')
 });
-function onContactClick(contact: WxContact) {
-  currentContact.value = contact;
+function onContactClick(wxid: string) {
+  database.query.contactTable.findFirst({ where: eq(contactTable.UserName, wxid) }).then((contact) => {
+    currentContact.value = contact as WxContact;
+  });
 }
 </script>
 <style scoped lang="less">

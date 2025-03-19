@@ -1,39 +1,48 @@
 <template>
   <div class="main-side">
     <!-- 微信侧边栏，增加 头像，会话，通讯录，设置 4个功能模块-->
-    <t-avatar size="38px" shape="round" :image="account?.small_head_url.replace('https','localimage')" />
-    <div class="button" :class="activeTab === 0 ? 'active' : ''" @click="onConersationClick">
-      <font-awesome-icon :icon="activeTab === 0 ? 'fa-solid fa-message' : 'fa-regular fa-message'" />
+    <t-avatar size="38px" shape="round" :image="account?.small_head_url.replace('https', 'localimage')" />
+    <div class="button" :class="activeTab === 'conversation' ? 'active' : ''" @click="onConersationClick">
+      <font-awesome-icon :icon="activeTab === 'conversation' ? 'fa-solid fa-message' : 'fa-regular fa-message'" />
     </div>
-    <div class="button" :class="activeTab === 1 ? 'active' : ''" @click="onContactClick">
-      <font-awesome-icon :icon="activeTab === 1 ? 'fa-solid fa-address-book' : 'fa-regular fa-address-book'" />
+    <div class="button" :class="activeTab === 'contact' ? 'active' : ''" @click="onContactClick">
+      <font-awesome-icon :icon="activeTab === 'contact' ? 'fa-solid fa-address-book' : 'fa-regular fa-address-book'" />
     </div>
     <div class="content-divider" />
-    <div class="button" :class="activeTab === 2 ? 'active' : ''" @click="onDebugClick">
+    <div class="button" :class="activeTab === 'debug' ? 'active' : ''" @click="onDebugClick">
       <font-awesome-icon icon="fa-solid fa-terminal" />
     </div>
-    <div class="button" :class="activeTab === 2 ? 'active' : ''" @click="onSettingClick">
+    <div class="button" :class="activeTab === 'setting' ? 'active' : ''" @click="onSettingClick">
       <font-awesome-icon icon="fa-solid fa-bars" />
     </div>
   </div>
 </template>
 <script setup lang="ts">
 import utils from "@utils/renderer";
-import { useRouter } from "vue-router";
-import { onMounted, ref } from "vue";
+import { useRouter, useRoute } from "vue-router";
+import { onMounted, ref, watch } from "vue";
 import { useAccountStore } from "@/stores/account";
 import { storeToRefs } from "pinia";
+const route = useRoute()
+// 当参数更改时获取用户信息
+watch(
+  () => route.name,
+  async newName => {
+    console.log(newName)
+    activeTab.value = newName as string
+  }
+)
 const router = useRouter();
 const store = useAccountStore();
 const { account } = storeToRefs(store)
-let activeTab = ref(0);
+let activeTab = ref('conversation');
 // todo 从appstate中获取头像
 function onConersationClick() {
-  activeTab.value = 0;
+  activeTab.value = 'conversation';
   router.push({ name: "conversation", params: { username: "eduardo" } });
 }
 function onContactClick() {
-  activeTab.value = 1;
+  activeTab.value = 'contact';
   router.push({ name: "contact", params: { username: "eduardo" } });
 }
 function onDebugClick() {

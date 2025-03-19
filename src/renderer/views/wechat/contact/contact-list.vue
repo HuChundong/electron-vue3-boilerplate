@@ -16,6 +16,11 @@ import { database } from '@/schema/drizzle';
  * 在leafer内有分成 标题元素，成员元素，按照顺序添加到leafer中
  * 点击标题的时候会展开折叠，这里用蠢办法，移除和添加来实现（等待咨询开发者，有没有高性能实现），标题是不移除的，把所有的成员放到一个group方便操作
  */
+
+const emit = defineEmits<{
+    (e: "contactClick", wxid: string): void;
+}>();
+
 interface ContactGroup {
     title: string // 标题
     members: WxContact[] // 组内成员
@@ -96,6 +101,7 @@ function onContactClick(id: string, box: Box) {
     }
     currentBox = box
     currentBox.fill = '#4b4b4b'
+    emit("contactClick", id);
 }
 
 function createContactItem(id: string, name: string, avatar: string) {
