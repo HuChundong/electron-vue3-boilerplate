@@ -189,11 +189,12 @@ onMounted(async () => {
         if (contactGroups.friends.titleLeaf.y) {
             if (contactGroups.chatroom.opened) {
                 contactGroups.chatroom.dataLeaf.removeAll(false)
-
-                contactGroups.friends.titleLeaf.y = contactGroups.friends.titleLeaf.y - contactGroups.chatroom.members.length * 50
+                const y = contactGroups.friends.titleLeaf.y - contactGroups.chatroom.members.length * 50
+                contactGroups.friends.titleLeaf.animate({ y }, { duration: 0.2 })
                 contactGroups.friends.leaferList.forEach(item => {
-                    if (item.y) {
-                        item.y = item.y - contactGroups.chatroom.members.length * 50
+                    if (item && item.y) {
+                        const y = item.y - contactGroups.chatroom.members.length * 50
+                        item.animate && item.animate({ y }, { duration: 0.2 })
                     }
                 })
             } else {
