@@ -150,7 +150,6 @@ ipcMain.handle("electron-utils-get-clipboard-file-path", async (event) => {
   });
 });
 ipcMain.handle("electron-utils-db-execute", execute);
-
 ipcMain.on("electron-utils-start-init-data", (event) => {
   if (appState.primaryWindow?.browserWindow) {
     utils.initData(appState.primaryWindow?.browserWindow);
