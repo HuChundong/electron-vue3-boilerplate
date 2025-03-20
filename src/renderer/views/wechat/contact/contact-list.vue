@@ -186,8 +186,26 @@ onMounted(async () => {
         },
         editor: {},
         view: 'leafer',
-        height: 650,
+        // height: '100',
         tree: { type: 'document' } // 给 tree 层添加视口  //
+    })
+    app.on(LeaferEvent.READY, () => {
+        app.tree.on(RenderEvent.AFTER, () => {
+            if (contactGroups.chatroom.titleLeaf == null) {
+                return
+            }
+            console.log('渲染完成')
+            // 在这里判断，是不是要把title固定
+            console.log(contactGroups.chatroom.titleLeaf.worldTransform.f)
+            // 就在这里判断，如果小于0+height，就是不可见，移动到画布外面了
+            // 点击事件，点击以后要把当前元素隐藏，然后滚动到对应的那个元素，同时折叠起来
+            if (contactGroups.chatroom.titleLeaf.worldTransform.f < 0) {
+                console.log('滚动事件修改了showtitle')
+                showTitle.value = true
+            } else {
+                showTitle.value = false
+            }
+        })
     })
     scrollBar = new ScrollBar(app, { theme: 'dark', minSize: 40, padding: [0, -2, -10, 0] })
     const contactsDB = await database.query.contactTable.findMany({
@@ -214,12 +232,10 @@ onMounted(async () => {
         if (contactGroups.friends.titleLeaf.y) {
             if (contactGroups.chatroom.opened) {
                 contactGroups.chatroom.dataLeaf.removeAll(false)
-                const y = contactGroups.friends.titleLeaf.y - contactGroups.chatroom.members.length * 50
-                contactGroups.friends.titleLeaf.animate({ y }, { duration: 0.2 })
+                contactGroups.friends.titleLeaf.y = contactGroups.friends.titleLeaf.y - contactGroups.chatroom.members.length * 50
                 contactGroups.friends.leaferList.forEach(item => {
                     if (item && item.y) {
-                        const y = item.y - contactGroups.chatroom.members.length * 50
-                        item.animate && item.animate({ y }, { duration: 0.2 })
+                        item.y = item.y - contactGroups.chatroom.members.length * 50
                     }
                 })
             } else {
@@ -276,25 +292,6 @@ onMounted(async () => {
         app.tree.add(contactGroups.friends.titleLeaf)
     }
     app.tree.add(contactGroups.friends.dataLeaf)
-    app.on(LeaferEvent.READY, () => {
-        console.log('ready')
-        app.tree.on(RenderEvent.AFTER, () => {
-            if (contactGroups.chatroom.titleLeaf == null) {
-                return
-            }
-            console.log('渲染完成')
-            // 在这里判断，是不是要把title固定
-            console.log(contactGroups.chatroom.titleLeaf.worldTransform.f)
-            // 就在这里判断，如果小于0+height，就是不可见，移动到画布外面了
-            // 点击事件，点击以后要把当前元素隐藏，然后滚动到对应的那个元素，同时折叠起来
-            if (contactGroups.chatroom.titleLeaf.worldTransform.f < 0) {
-                console.log('滚动事件修改了showtitle')
-                showTitle.value = true
-            } else {
-                showTitle.value = false
-            }
-        })
-    })
 })
 let currentGroup = ref({})
 </script>
